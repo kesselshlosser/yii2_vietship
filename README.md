@@ -20,5 +20,5 @@ vendor/             contains dependent 3rd-party packages
 ```
 
 #### You can find full information in links bellow ####
-* [Homepage](kh.vietshipvn.com)
+* [Homepage](http://kh.vietshipvn.com)
 #### Contacts ####
