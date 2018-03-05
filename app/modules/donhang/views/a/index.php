@@ -5,6 +5,12 @@ use app\modules\khachhang\models\Khachhang;
 use app\modules\goidichvu\models\Goidichvu;
 use yii\bootstrap\Modal;
 use app\modules\duongpho\models\Duongpho;
+use kartik\select2\Select2;
+use kartik\date\DatePicker;
+use kartik\checkbox\CheckboxX;
+use yii\easyii\models\Admin;
+use yii\helpers\ArrayHelper;
+use yii\bootstrap\ActiveForm;
 
 $this->title = "Đơn hàng";
 
@@ -371,13 +377,13 @@ $module = $this->context->module->id;
                                             
                                             <td>
                                                 <?=
-                                                    $item->tong_tien.' VNĐ';
+                                                    $item->tong_tien > 0 ? $item->tong_tien.' VNĐ' : '0 VNĐ';
                                                 ?>
                                             </td>
                                             
                                             <td>
                                                 <?=
-                                                    $item->tien_thu_ho.' VNĐ';
+                                                    $item->tien_thu_ho > 0 ? $item->tien_thu_ho.' VNĐ' : '0 VNĐ';
                                                 ?>
                                             </td>
                                             
@@ -394,9 +400,75 @@ $module = $this->context->module->id;
                                                     $item->trang_thai;
                                                 ?>
                                             </td>
-                                            <td style="text-align: center">
+                                            <td>
+                                                <?php
+                                                    Modal::begin([
+                                                        'header'=> '<h3 style="text-align : center;">Chọn nhân viên</h3>',
+                                                        'id'    => 'nvl'.$item->dh_id,
+                                                        'size'  => 'modal-sm',
+                                                        'options' => [
+                                                            'tabindex' => false
+                                                        ]
+                                                    ]);
+                                                ?>  
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <?php 
+                                                            $form = ActiveForm::begin([
+                                                                'enableAjaxValidation' => false,
+                                                                'options' => [
+                                                                    'enctype' => 'multipart/form-data',
+                                                                    'class' => 'model-form',
+                                                                    'id' => 'form-nvl'.$item->dh_id]
+                                                            ]);
+                                                            ?>
+                                                            <div class="col-md-12">
+                                                                <?= Select2::widget([
+                                                                        'name' => 'nvl_id',
+                                                                        'data' => ArrayHelper::map(Admin::find()->all(), 'admin_id', 'ten_hien_thi'),
+                                                                        'options' => [
+                                                                            'placeholder' => 'Chọn nhân viên lấy hàng...',
+                                                                            'style' => 'text-align: left',
+                                                                            'class' => 'form-control col-md-12'
+                                                                        ],
+                                                                        'pluginOptions' => [
+                                                                            'allowClear' => true
+                                                                        ],
+                                                                    ]);
+                                                                ?>
+                                                            </div>
+                                                            <div class="col-md-12" style="margin-top: 10px">
+                                                                <label>Chọn ngày</label>        
+                                                                <?= DatePicker::widget([
+                                                                        'name' => 'nvl_date',
+                                                                        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                                                                        'value' => date('d-m-Y'),
+                                                                        'size' => 'md',
+                                                                        'pluginOptions' => [
+                                                                            'autoclose'=>true
+                                                                        ]
+                                                                    ]);
+                                                                ?>
+                                                            </div>
+                                                            <div class="col-md-6" style="margin-top: 10px">
+                                                                <input type="radio" name="ca"/>
+                                                                <label style="padding-top: 6px">Buổi sáng</label>
+                                                            </div>
+                                                            <div class="col-md-6" style="margin-top: 10px">
+                                                                <input type="radio" name="ca"/>
+                                                                <label style="padding-top: 6px">Buổi chiều</label>
+                                                            </div>
+                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => 'nvl']) ?>
+                                                            <?php
+                                                            ActiveForm::end();
+                                                            ?>
+                                                        </div>
+                                                    </div>    
+                                                <?php
+                                                    Modal::end();
+                                                ?>
                                                 <div>
-                                                    <button type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> Chọn n/v lấy</button>
+                                                    <button data-toggle = 'modal' data-target = '#nvl<?= $item->dh_id?>' type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> Chọn n/v lấy</button>
                                                 </div>
                                                 <div>
                                                     <button type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-remove" style="vertical-align: baseline !important"></i> Hủy đơn</button>

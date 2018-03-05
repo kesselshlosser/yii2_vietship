@@ -21,6 +21,11 @@ class Donhang extends \yii\easyii\components\ActiveRecord
     public $dvpt4_rong;
     public $dvpt4_cao;
     public $dvpt4_can_nang;
+
+    public $nvl_id;
+    public $nvg_id;
+    public $nvh_id;
+    public $ca;
     
     public static function tableName()
     {
@@ -42,7 +47,8 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                 [
                     'ma_don_hang', 'trang_thai', 'nguoi_nhan_dia_chi_giao_hang', 'nguoi_nhan_ten',
                     'san_pham_ten', 'dich_vu_phu_troi', 'ghi_chu', 'ly_do_khong_duyet', 'pham_vi_don_hang',
-                    'hoan_hang', 'nguoi_nhan', 'san_pham', 'dia_chi_lay_hang'
+                    'hoan_hang', 'nguoi_nhan', 'san_pham', 'dia_chi_lay_hang', 'nhan_vien_lay_hang',
+                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang',
                 ],
                 'string',
                 'message' => '{attribute phải là kiểu chuỗi}'
@@ -50,8 +56,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
             [
                 [
                     'kh_id', 'tong_tien', 'cp_id', 'dclh_id', 'te',
-                    'tien_thu_ho', 'ung_tien', 'nhan_vien_lay_hang',
-                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang',
+                    'tien_thu_ho', 'ung_tien',
                     'time', 'lay_hang_ve', 'dvpt4_dai', 'dvpt4_rong', 'dvpt4_cao', 'dvpt4_can_nang'
                 ],
                 'integer',

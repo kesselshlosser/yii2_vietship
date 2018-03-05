@@ -20,12 +20,14 @@ class AController extends Controller
 {
     public function actionIndex()
     {
+        $model = new Donhang;
         $data = new ActiveDataProvider([
             'query' => Donhang::find(),
         ]);
 
         return $this->render('index', [
             'data' => $data,
+            'model' => $model
         ]);
     }
 
