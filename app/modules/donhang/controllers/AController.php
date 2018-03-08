@@ -24,11 +24,35 @@ class AController extends Controller
         $data = new ActiveDataProvider([
             'query' => Donhang::find(),
         ]);
-
-        return $this->render('index', [
-            'data' => $data,
-            'model' => $model
-        ]);
+        if (Yii::$app->request->post()) {
+            $formData = Yii::$app->request->post();
+            $dataArr = [];
+            $type = '';
+            switch ($formData['choosenvl']) {
+                case 'nvl': 
+                    $dataArr['id'] = $formData['nvl_id'];
+                    $dataArr['nvl_date'] = strtotime($formData['nvl_date']);
+                    $dataArr['ca'] = $formData['ca'];
+                    $type = 'nvl';
+                break;
+                case 'nvg':
+                    $type = 'nvg';
+                break;
+                default:
+                    $type = 'nvh';
+                break;
+            }
+            $dataJSON = json_encode($dataArr, JSON_UNESCAPED_UNICODE);
+            $dh_id = $formData['dh_id'];
+            $model = Donhang::findOne($dh_id);
+            $this->chooseEmployee($model, $dataJSON, $dh_id, $type);
+        } else {
+            echo 1;
+            return $this->render('index', [
+                'data' => $data,
+                'model' => $model
+            ]);
+        }
     }
 
     public function actionCreate()
@@ -964,6 +988,48 @@ class AController extends Controller
                 'hinh_thuc_khuyen_mai' => $hinh_thuc_khuyen_mai,
                 'gia_tri' => $gia_tri
             ];
+        }
+    }
+
+    // Hàm chọn nhân viên lấy - giao - hoàn
+    public function chooseEmployee($model, $dataJSON, $dh_id, $type) {
+        // echo '<pre>';
+        // print_r($model);
+        // echo '</pre>';
+        // echo '<br>';
+        // echo $dataJSON;
+        // echo '<br>';
+        // echo $dh_id;
+        // echo '<br>';
+        // echo $type;
+        // echo '<br>';
+        $message = '';
+        $error = '';
+        switch ($type) {
+            case 'nvl':
+                $model->nhan_vien_lay_hang = $dataJSON;
+                $model->trang_thai = 'Đang lấy';
+                $message = 'Chọn nhân viên lấy hàng thành công!';
+                $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
+            break;
+            case 'nvg':
+                $model->nhan_vien_giao_hang = $dataJSON;
+                $model->trang_thai = 'Đang giao';
+                $message = 'Chọn nhân viên giao hàng thành công!';
+                $error = 'Có lỗi trong lúc chọn nhân viên giao hàng!';
+            break;
+            default:
+                $model->nhan_vien_hoan_hang = $dataJSON;
+                $message = 'Chọn nhân viên hoàn hàng thành công!';
+                $error = 'Có lỗi trong lúc chọn nhân viên hoàn hàng!';
+            break;
+        }
+        if ($model->save(false)) {
+            $this->flash('success', $message);
+            return $this->redirect(['/admin/donhang']);
+        } else {
+            $this->flash('error', $error);
+            return $this->refresh();;
         }
     }
 }

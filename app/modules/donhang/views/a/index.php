@@ -450,15 +450,21 @@ $module = $this->context->module->id;
                                                                     ]);
                                                                 ?>
                                                             </div>
+                                                            <?php
+                                                                $currentHour = date('H');
+                                                                $currentMinute = date('i');
+                                                                $totalCurrentMinute = $currentHour * 60 + $currentMinute;
+                                                            ?>
                                                             <div class="col-md-6" style="margin-top: 10px">
-                                                                <input type="radio" name="ca"/>
+                                                                <input type="radio" name="ca" value="sang" <?= $totalCurrentMinute <= ((12*60) + 30) ? 'checked' : '' ?>/>
                                                                 <label style="padding-top: 6px">Buổi sáng</label>
                                                             </div>
                                                             <div class="col-md-6" style="margin-top: 10px">
-                                                                <input type="radio" name="ca"/>
+                                                                <input type="radio" name="ca" value="chieu" <?= $totalCurrentMinute > ((12*60) + 30) ? 'checked' : '' ?>/>
                                                                 <label style="padding-top: 6px">Buổi chiều</label>
                                                             </div>
-                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => 'nvl']) ?>
+                                                            <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
+                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => 'nvl', 'name' => 'choosenvl']) ?>
                                                             <?php
                                                             ActiveForm::end();
                                                             ?>

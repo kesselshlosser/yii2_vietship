@@ -26,6 +26,9 @@ class Donhang extends \yii\easyii\components\ActiveRecord
     public $nvg_id;
     public $nvh_id;
     public $ca;
+    public $nvl_date;
+    public $nvg_date;
+    public $nvh_date;
     
     public static function tableName()
     {
