@@ -474,16 +474,24 @@ $module = $this->context->module->id;
                                                     Modal::end();
                                                 ?>
                                                 <div>
-                                                    <button data-toggle = 'modal' data-target = '#nvl<?= $item->dh_id?>' type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> Chọn n/v lấy</button>
+                                                    <?php
+                                                        $actionType = 'default';
+                                                        if ($item->nhan_vien_lay_hang && $item->trang_thai == 'Đang lấy') {
+                                                            $actionType = 'nvlDangLay';
+                                                            $nvlArr = json_decode($item->nhan_vien_lay_hang, true);
+                                                            $nvl_ten = Admin::find()->where(['admin_id' => $nvlArr['id']])->one()['ten_hien_thi'];
+                                                        }
+                                                    ?>
+                                                    <button data-toggle='modal' data-target='#nvl<?= $item->dh_id?>' type="button" style='width:100%; margin-bottom: 3px;' class='btn <?= $actionType == 'default' ? "btn-sm btn-default" : ($actionType == 'nvlDangLay' ? "btn-sm btn-success" : "btn-sm btn-default")?>'><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> <?= $actionType == 'default' ? "Chọn n/v lấy" : ($actionType == 'nvlDangLay' ? $nvl_ten : "")?></button>
                                                 </div>
                                                 <div>
-                                                    <button type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-remove" style="vertical-align: baseline !important"></i> Hủy đơn</button>
+                                                    <button data-toggle='modal' data-target='#nvl<?= $item->dh_id?>' type="button" style="width:100%; margin-bottom: 3px" class="btn btn-sm btn-default"><i class='glyphicon <?= $actionType == "default" ? "glyphicon-remove" : ($actionType == "nvlDangLay" ? "glyphicon-user" : "")?>' style="vertical-align: baseline !important"></i> <?= $actionType == 'default' ? "Huỷ đơn" : ($actionType == 'nvlDangLay' ? "Chọn n/v khác" : "")?></button>
                                                 </div>
                                                 <div>
-                                                    <button type="button" style="width:120px; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa</button>
+                                                    <button type="button" style="width:100%; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa</button>
                                                 </div>
                                                 <div class="dropdown">
-                                                    <button style="width: 120px" class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="glyphicon glyphicon-option-horizontal" style="vertical-align: baseline !important"></i> Khác
+                                                    <button style="width: 100%" class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="glyphicon glyphicon-option-horizontal" style="vertical-align: baseline !important"></i> Khác
                                                     <span class="caret"></span></button>
                                                     <ul class="dropdown-menu" style="min-width: 140px">
                                                       <li><a href="#">Thêm phụ phí</a></li>
