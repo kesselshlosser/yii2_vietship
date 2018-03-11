@@ -402,6 +402,18 @@ $module = $this->context->module->id;
                                             </td>
                                             <td>
                                                 <?php
+                                                    $actionType = 'default';
+                                                    $formType = 'default';
+                                                    $submitTypeValue = 'chonNvl';
+                                                    if ($item->nhan_vien_lay_hang && $item->trang_thai == 'Đang lấy') {
+                                                        $actionType = 'nvlDangLay';
+                                                        $nvlArr = json_decode($item->nhan_vien_lay_hang, true);
+                                                        $nvl_ten = Admin::find()->where(['admin_id' => $nvlArr['id']])->one()['ten_hien_thi'];
+                                                    }
+                                                    if ($actionType == 'nvlDangLay') {
+                                                        $formType = 'chonNvKhac';
+                                                        $submitTypeValue = 'chonNvlKhac';
+                                                    }
                                                     Modal::begin([
                                                         'header'=> '<h3 style="text-align : center;">Chọn nhân viên</h3>',
                                                         'id'    => 'nvl'.$item->dh_id,
@@ -464,7 +476,8 @@ $module = $this->context->module->id;
                                                                 <label style="padding-top: 6px">Buổi chiều</label>
                                                             </div>
                                                             <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
-                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => 'nvl', 'name' => 'choosenvl']) ?>
+                                                            <input type="hidden" name="action_type" value="<?= $formType?>" />
+                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => $submitTypeValue, 'name' => 'smForm']) ?>
                                                             <?php
                                                             ActiveForm::end();
                                                             ?>
@@ -474,14 +487,6 @@ $module = $this->context->module->id;
                                                     Modal::end();
                                                 ?>
                                                 <div>
-                                                    <?php
-                                                        $actionType = 'default';
-                                                        if ($item->nhan_vien_lay_hang && $item->trang_thai == 'Đang lấy') {
-                                                            $actionType = 'nvlDangLay';
-                                                            $nvlArr = json_decode($item->nhan_vien_lay_hang, true);
-                                                            $nvl_ten = Admin::find()->where(['admin_id' => $nvlArr['id']])->one()['ten_hien_thi'];
-                                                        }
-                                                    ?>
                                                     <button data-toggle='modal' data-target='#nvl<?= $item->dh_id?>' type="button" style='width:100%; margin-bottom: 3px;' class='btn <?= $actionType == 'default' ? "btn-sm btn-default" : ($actionType == 'nvlDangLay' ? "btn-sm btn-success" : "btn-sm btn-default")?>'><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> <?= $actionType == 'default' ? "Chọn n/v lấy" : ($actionType == 'nvlDangLay' ? $nvl_ten : "")?></button>
                                                 </div>
                                                 <div>

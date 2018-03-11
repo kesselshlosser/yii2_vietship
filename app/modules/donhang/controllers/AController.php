@@ -15,6 +15,7 @@ use app\modules\khuvuc\models\Khuvuc;
 use app\modules\duongpho\models\Duongpho;
 use app\modules\goikhachhang\models\Goikhachhang;
 use app\modules\khachhang\models\Khachhang;
+use yii\easyii\models\Quyettoandonhang;
 
 class AController extends Controller
 {
@@ -27,25 +28,49 @@ class AController extends Controller
         if (Yii::$app->request->post()) {
             $formData = Yii::$app->request->post();
             $dataArr = [];
-            $type = '';
-            switch ($formData['choosenvl']) {
-                case 'nvl': 
+            $type = $formData['smForm'];
+            switch ($formData['smForm']) {
+                case 'chonNvl' || 'chonNvlKhac':
                     $dataArr['id'] = $formData['nvl_id'];
                     $dataArr['nvl_date'] = strtotime($formData['nvl_date']);
                     $dataArr['ca'] = $formData['ca'];
-                    $type = 'nvl';
                 break;
                 case 'nvg':
-                    $type = 'nvg';
                 break;
                 default:
-                    $type = 'nvh';
                 break;
             }
             $dataJSON = json_encode($dataArr, JSON_UNESCAPED_UNICODE);
             $dh_id = $formData['dh_id'];
             $model = Donhang::findOne($dh_id);
-            $this->chooseEmployee($model, $dataJSON, $dh_id, $type);
+            $saveDhStatus = $this->chooseEmployee($model, $dataJSON, $dh_id, $type);
+            if ($saveDhStatus) {
+                // Thêm nhân viên vào phần quyết toán
+                switch ($type) {
+                    case 'chonNvl':
+                        $message = 'Chọn nhân viên lấy hàng thành công!';
+                        $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
+                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'choxuly', 'quyettoan', $formData['ca'], 'create');
+                    break;
+                    case 'chonNvlKhac':
+                        $message = 'Chọn nhân viên lấy hàng thành công!';
+                        $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
+                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'choxuly', 'quyettoan', $formData['ca'], 'update');
+                    break;
+                    default:
+                    break;
+                }
+                if ($saveToDhqtStatus) {
+                    $this->flash('success', $message);
+                    return $this->redirect(['/admin/donhang']);
+                } else {
+                    $this->flash('error', $error);
+                    return $this->refresh();
+                }
+            } else {
+                $this->flash('error', $error);
+                return $this->refresh();
+            }
         } else {
             echo 1;
             return $this->render('index', [
@@ -993,43 +1018,64 @@ class AController extends Controller
 
     // Hàm chọn nhân viên lấy - giao - hoàn
     public function chooseEmployee($model, $dataJSON, $dh_id, $type) {
-        // echo '<pre>';
-        // print_r($model);
-        // echo '</pre>';
-        // echo '<br>';
-        // echo $dataJSON;
-        // echo '<br>';
-        // echo $dh_id;
-        // echo '<br>';
-        // echo $type;
-        // echo '<br>';
         $message = '';
         $error = '';
         switch ($type) {
-            case 'nvl':
+            case 'chonNvl' || 'chonNvlKhac':
                 $model->nhan_vien_lay_hang = $dataJSON;
                 $model->trang_thai = 'Đang lấy';
-                $message = 'Chọn nhân viên lấy hàng thành công!';
-                $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
+                // $message = 'Chọn nhân viên lấy hàng thành công!';
+                // $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
             break;
             case 'nvg':
                 $model->nhan_vien_giao_hang = $dataJSON;
                 $model->trang_thai = 'Đang giao';
-                $message = 'Chọn nhân viên giao hàng thành công!';
-                $error = 'Có lỗi trong lúc chọn nhân viên giao hàng!';
+                // $message = 'Chọn nhân viên giao hàng thành công!';
+                // $error = 'Có lỗi trong lúc chọn nhân viên giao hàng!';
             break;
             default:
                 $model->nhan_vien_hoan_hang = $dataJSON;
-                $message = 'Chọn nhân viên hoàn hàng thành công!';
-                $error = 'Có lỗi trong lúc chọn nhân viên hoàn hàng!';
+                // $message = 'Chọn nhân viên hoàn hàng thành công!';
+                // $error = 'Có lỗi trong lúc chọn nhân viên hoàn hàng!';
             break;
         }
         if ($model->save(false)) {
-            $this->flash('success', $message);
-            return $this->redirect(['/admin/donhang']);
+            return true;
+            // $this->flash('success', $message);
+            // return $this->redirect(['/admin/donhang']);
         } else {
-            $this->flash('error', $error);
-            return $this->refresh();;
+            return false;
+            // $this->flash('error', $error);
+            // return $this->refresh();
+        }
+    }
+
+    // Hàm thêm nhân viên vào phần quyết toán
+    public function addEmployeeToBalanceSheet($dh_id, $nv_id, $qtdh_nhiem_vu, $qtdh_trang_thai, $qtdh_loai, $qtdh_ca, $action_type) {
+        if ($action_type == 'create') {
+            $model = new Quyettoandonhang();
+            $model->dh_id = $dh_id;
+            $model->nv_id = $nv_id;
+            $model->qtdh_nhiem_vu = $qtdh_nhiem_vu;
+            $model->qtdh_trang_thai = $qtdh_trang_thai;
+            $model->qtdh_loai = $qtdh_loai;
+            $model->qtdh_ca = $qtdh_ca;
+            $model->qtdh_thoi_gian = time();
+        } else if ($action_type == 'update') {
+            $model = Quyettoandonhang::find()
+            ->where(['dh_id' => $dh_id])
+            ->andWhere(['qtdh_nhiem_vu' => $qtdh_nhiem_vu])
+            ->andWhere(['qtdh_trang_thai' => $qtdh_trang_thai])
+            ->one();
+            // $model = Quyettoandonhang::findOne($qtdh_id);
+            $model->qtdh_thoi_gian = time();
+            $model->nv_id = $nv_id;
+            $model->qtdh_ca = $qtdh_ca;
+        }
+        if ($model->save(false)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
