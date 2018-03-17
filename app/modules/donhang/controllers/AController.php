@@ -50,12 +50,12 @@ class AController extends Controller
                     case 'chonNvl':
                         $message = 'Chọn nhân viên lấy hàng thành công!';
                         $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
-                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'choxuly', 'quyettoan', $formData['ca'], 'create');
+                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'Chờ xử lý', 'quyettoan', $formData['ca'], 'create');
                     break;
                     case 'chonNvlKhac':
                         $message = 'Chọn nhân viên lấy hàng thành công!';
                         $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
-                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'choxuly', 'quyettoan', $formData['ca'], 'update');
+                        $saveToDhqtStatus = $this->addEmployeeToBalanceSheet($dh_id, $formData['nvl_id'], 'dilay', 'Chờ xử lý', 'quyettoan', $formData['ca'], 'update');
                     break;
                     default:
                     break;
