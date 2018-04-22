@@ -11,12 +11,19 @@ use kartik\checkbox\CheckboxX;
 use yii\easyii\models\Admin;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
+use richardfan\widget\JSRegister;
+use yii\widgets\Pjax;
 
 $this->title = "Đơn hàng";
+$baseUrl = \yii\helpers\Url::base(true);
 
 $module = $this->context->module->id;
 ?>
-
+<style>
+    .table thead tr, .table tbody tr td {
+        vertical-align: baseline !important
+    }
+</style>
 <!--page header start-->
 <div class="page-head-wrap">
     
@@ -74,7 +81,7 @@ $module = $this->context->module->id;
                                         <th>
                                             Trạng thái
                                         </th>
-                                        <th width="120px" style="text-align: center">
+                                        <th style="text-align: center">
                                             Tác vụ
                                         </th>
                                     </tr>
@@ -347,8 +354,7 @@ $module = $this->context->module->id;
                                                 <?php Modal::end();?>
                                                 <?= $item->ma_don_hang?>
                                                 <br>
-                                                <br>
-                                                <a data-toggle = 'modal' data-target = '#<?= $item->dh_id?>' class="btn btn-sm btn-default" style="margin-bottom: 8px"><i class="glyphicon glyphicon-modal-window" style="vertical-align: baseline"></i> Xem chi tiết</a>
+                                                <a data-toggle = 'modal' data-target = '#<?= $item->dh_id?>' class="btn btn-sm btn-default" style="margin-bottom: 8px"><i class="glyphicon glyphicon-modal-window" style="vertical-align: baseline"></i> Xem chi tiết</a><br>
                                                 <a target='_blank' class="btn btn-sm btn-default" href="<?= Url::to(['/admin/donhang/a/print']).'/'.$item->dh_id?>"><i class="glyphicon glyphicon-print" style="vertical-align: baseline"></i> In đơn hàng</a>
                                             </td>
                                             <td>
@@ -375,10 +381,17 @@ $module = $this->context->module->id;
                                                 ?>
                                             </td>
                                             
-                                            <td>
+                                            <td width='110'>
                                                 <?=
                                                     $item->tong_tien > 0 ? $item->tong_tien.' VNĐ' : '0 VNĐ';
                                                 ?>
+                                                <?php if ($item->phu_phi):?>
+                                                    <br>
+                                                    <br>
+                                                    <label>Phụ phí:</label>
+                                                    <br>
+                                                    <?= $item->phu_phi.' VNĐ'?>
+                                                <?php endif;?>
                                             </td>
                                             
                                             <td>
@@ -395,28 +408,82 @@ $module = $this->context->module->id;
                                                 ?>
                                             </td>
                                             
-                                            <td>
-                                                <?=
-                                                    $item->trang_thai;
+                                            <td width='120' style='text-align: center'>
+                                                <?php
+                                                    $labelStyle = 'background-color: #f39c12;';
+                                                    switch($item->trang_thai) {
+                                                        case 'Đang lấy':
+                                                        case 'Đang giao':
+                                                            $labelStyle = 'background-color: #00c0ef;';
+                                                        break;
+                                                        case 'Đã giao':
+                                                            $labelStyle = 'background-color: #00a65a;';
+                                                        break;
+                                                        case 'Đã huỷ':
+                                                            $labelStyle = 'background-color: #dd4b39;';
+                                                        break;
+                                                        case 'Chờ duyệt':
+                                                            $labelStyle = 'background-color: ##d2d6de;';
+                                                        break;
+                                                        default:
+                                                            $labelStyle = 'background-color: #f39c12;';
+                                                    }     
                                                 ?>
+                                                <span style='<?= $labelStyle?> font-weight: 600; line-height: 1; color: #fff; text-align: center; border-radius: .25em; padding: .5em .3em .6em; font-size: 75%'><?= $item->trang_thai ?></span>
                                             </td>
                                             <td>
+                                                <!--Modal chọn nhân viên-->
                                                 <?php
                                                     $actionType = 'default';
-                                                    $formType = 'default';
                                                     $submitTypeValue = 'chonNvl';
-                                                    if ($item->nhan_vien_lay_hang && $item->trang_thai == 'Đang lấy') {
+                                                    $placeHolderChonNv = 'Chọn nhân viên lấy hàng...';
+                                                    if ($item->trang_thai == 'Đang lấy') {
                                                         $actionType = 'nvlDangLay';
                                                         $nvlArr = json_decode($item->nhan_vien_lay_hang, true);
                                                         $nvl_ten = Admin::find()->where(['admin_id' => $nvlArr['id']])->one()['ten_hien_thi'];
+                                                    } elseif ($item->trang_thai == 'Đã lấy, chờ giao') {
+                                                        $actionType = 'chonNvg';
+                                                        $placeHolderChonNv = 'Chọn nhân viên giao hàng...';
+                                                    } elseif ($item->trang_thai == 'Đang giao') {
+                                                        $actionType = 'nvgDangGiao';
+                                                        $nvgArr = json_decode($item->nhan_vien_giao_hang, true);
+                                                        $nvg_ten = Admin::find()->where(['admin_id' => $nvgArr['id']])->one()['ten_hien_thi'];
+                                                    } elseif ($item->trang_thai == 'Đã giao') {
+                                                        $actionType = 'nvgDaGiao';
+                                                    } elseif ($item->trang_thai == 'Huỷ đơn') {
+                                                        $actionType = 'huyDon';
+                                                    } elseif ($item->trang_thai == 'Chờ hoàn hàng') {
+                                                        $actionType = 'chonNvh';
+                                                    } elseif ($item->trang_thai == 'Đang hoàn') {
+                                                        $actionType = 'nvhDangHoan';
+                                                        $nvhArr = json_decode($item->nhan_vien_hoan_hang, true);
+                                                        $nvh_ten = Admin::find()->where(['admin_id' => $nvhArr['id']])->one()['ten_hien_thi'];
                                                     }
-                                                    if ($actionType == 'nvlDangLay') {
-                                                        $formType = 'chonNvKhac';
-                                                        $submitTypeValue = 'chonNvlKhac';
+                                                    switch ($actionType) {
+                                                        case 'nvlDangLay':
+                                                            $submitTypeValue = 'chonNvlKhac';
+                                                        break;
+                                                        case 'chonNvg':
+                                                            $submitTypeValue = 'chonNvg';
+                                                        break;
+                                                        case 'nvgDangGiao':
+                                                            $submitTypeValue = 'chonNvgKhac';
+                                                        break;
+                                                        case 'nvgDaGiao':
+                                                        break;
+                                                        case 'chonNvh':
+                                                            $submitTypeValue = 'chonNvh';
+                                                        break;
+                                                        case 'nvhDangHoan':
+                                                            $submitTypeValue = 'chonNvhKhac';
+                                                        break;
+                                                        case 'huyDon':
+                                                            $submitTypeValue = 'huyDon';
+                                                        break;
                                                     }
                                                     Modal::begin([
                                                         'header'=> '<h3 style="text-align : center;">Chọn nhân viên</h3>',
-                                                        'id'    => 'nvl'.$item->dh_id,
+                                                        'id'    => 'nv'.$item->dh_id,
                                                         'size'  => 'modal-sm',
                                                         'options' => [
                                                             'tabindex' => false
@@ -431,15 +498,15 @@ $module = $this->context->module->id;
                                                                 'options' => [
                                                                     'enctype' => 'multipart/form-data',
                                                                     'class' => 'model-form',
-                                                                    'id' => 'form-nvl'.$item->dh_id]
+                                                                    'id' => 'form-nv'.$item->dh_id]
                                                             ]);
                                                             ?>
                                                             <div class="col-md-12">
                                                                 <?= Select2::widget([
-                                                                        'name' => 'nvl_id',
+                                                                        'name' => 'nv_id',
                                                                         'data' => ArrayHelper::map(Admin::find()->all(), 'admin_id', 'ten_hien_thi'),
                                                                         'options' => [
-                                                                            'placeholder' => 'Chọn nhân viên lấy hàng...',
+                                                                            'placeholder' => $placeHolderChonNv,
                                                                             'style' => 'text-align: left',
                                                                             'class' => 'form-control col-md-12'
                                                                         ],
@@ -452,7 +519,7 @@ $module = $this->context->module->id;
                                                             <div class="col-md-12" style="margin-top: 10px">
                                                                 <label>Chọn ngày</label>        
                                                                 <?= DatePicker::widget([
-                                                                        'name' => 'nvl_date',
+                                                                        'name' => 'nv_date',
                                                                         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
                                                                         'value' => date('d-m-Y'),
                                                                         'size' => 'md',
@@ -475,34 +542,249 @@ $module = $this->context->module->id;
                                                                 <input type="radio" name="ca" value="chieu" <?= $totalCurrentMinute > ((12*60) + 30) ? 'checked' : '' ?>/>
                                                                 <label style="padding-top: 6px">Buổi chiều</label>
                                                             </div>
-                                                            <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
-                                                            <input type="hidden" name="action_type" value="<?= $formType?>" />
-                                                            <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => $submitTypeValue, 'name' => 'smForm']) ?>
-                                                            <?php
-                                                            ActiveForm::end();
-                                                            ?>
+                                                            <div class='col-md-12' style='margin-top: 10'>
+                                                                <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
+                                                                <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => $submitTypeValue, 'name' => 'smForm']) ?>
+                                                            </div>
+                                                            <?php ActiveForm::end(); ?>
                                                         </div>
                                                     </div>    
                                                 <?php
                                                     Modal::end();
                                                 ?>
-                                                <div>
-                                                    <button data-toggle='modal' data-target='#nvl<?= $item->dh_id?>' type="button" style='width:100%; margin-bottom: 3px;' class='btn <?= $actionType == 'default' ? "btn-sm btn-default" : ($actionType == 'nvlDangLay' ? "btn-sm btn-success" : "btn-sm btn-default")?>'><i class="glyphicon glyphicon-user" style="vertical-align: baseline !important"></i> <?= $actionType == 'default' ? "Chọn n/v lấy" : ($actionType == 'nvlDangLay' ? $nvl_ten : "")?></button>
-                                                </div>
-                                                <div>
-                                                    <button data-toggle='modal' data-target='#nvl<?= $item->dh_id?>' type="button" style="width:100%; margin-bottom: 3px" class="btn btn-sm btn-default"><i class='glyphicon <?= $actionType == "default" ? "glyphicon-remove" : ($actionType == "nvlDangLay" ? "glyphicon-user" : "")?>' style="vertical-align: baseline !important"></i> <?= $actionType == 'default' ? "Huỷ đơn" : ($actionType == 'nvlDangLay' ? "Chọn n/v khác" : "")?></button>
-                                                </div>
-                                                <div>
-                                                    <button type="button" style="width:100%; margin-bottom: 3px" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa</button>
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button style="width: 100%" class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="glyphicon glyphicon-option-horizontal" style="vertical-align: baseline !important"></i> Khác
-                                                    <span class="caret"></span></button>
-                                                    <ul class="dropdown-menu" style="min-width: 140px">
-                                                      <li><a href="#">Thêm phụ phí</a></li>
-                                                      <li><a href="#">Xóa</a></li>
-                                                    </ul>
-                                                </div>
+                                                <!--End modal chọn nhân viên-->
+                                                <!--Modal huỷ đơn-->
+                                                <?php
+                                                    Modal::begin([
+                                                        'header'=> '<h3 style="text-align : center;">Huỷ đơn hàng</h3>',
+                                                        'id'    => 'huydon'.$item->dh_id,
+                                                        'size'  => 'modal-sm',
+                                                        'options' => [
+                                                            'tabindex' => false
+                                                        ]
+                                                    ]);
+                                                ?>
+                                                    <div class="row">
+                                                        <?php 
+                                                            $huyDonform = ActiveForm::begin([
+                                                                'enableAjaxValidation' => false
+                                                            ]);
+                                                        ?>
+                                                            <div class="col-md-12">
+                                                                <textarea rows="4" class="col-md-12" placeHolder="Lý do không duyệt" name='ly_do_khong_duyet'></textarea>
+                                                                <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
+                                                            </div>
+                                                            <div class='col-md-12' style='margin-top: 10px'>
+                                                                <?= Html::submitButton("Xác nhận", ['class' => 'btn btn-success btn-block', 'value' => 'huyDon', 'name' => 'smForm']) ?>
+                                                            </div>
+                                                        <?php ActiveForm::end();?>
+                                                        
+                                                    </div>    
+                                                <?php Modal::end();?>
+                                                <!--End modal huỷ đơn-->
+                                                <!--Modal thêm phụ phí-->
+                                                <?php
+                                                    Modal::begin([
+                                                        'header'=> '<h3 style="text-align : center;">Thêm phụ phí</h3>',
+                                                        'id'    => 'phuphi'.$item->dh_id,
+                                                        'size'  => 'modal-wide',
+                                                        'options' => [
+                                                            'tabindex' => false
+                                                        ]
+                                                    ]);
+                                                ?>
+                                                    <div class="row">
+                                                        <?php 
+                                                            $phuPhiform = ActiveForm::begin([
+                                                                'enableAjaxValidation' => false
+                                                            ]);
+                                                        ?>
+                                                            <div class="col-md-12">
+                                                                <label for='phu_phi'>Số tiền</label>
+                                                                <br>
+                                                                <input required
+                                                                    oninvalid="this.setCustomValidity('Bạn chưa nhập phụ phí')"
+                                                                    oninput="setCustomValidity('')"         
+                                                                    type='number'
+                                                                    value='0'
+                                                                    class="form-control"
+                                                                    id='phu_phi'
+                                                                    name='phu_phi'>
+                                                            </div>
+                                                            <div class="col-md-12" style='margin-top: 10px'>
+                                                                <label>Ghi chú</label>
+                                                                <br>
+                                                                <textarea rows='3' class="form-control" style='width: 100%' name='ghi_chu'></textarea>
+                                                            </div>
+                                                            <div class='col-md-12' style='margin-top: 10px'>
+                                                                <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/> 
+                                                                <?= Html::submitButton("Lưu", ['class' => 'btn btn-success btn-block', 'value' => 'phuphi', 'name' => 'smForm']) ?>
+                                                            </div>
+                                                        <?php ActiveForm::end();?>
+                                                    </div>
+
+                                                    <div class='row' style='margin-top: 20px'>
+                                                        <div class='col-md-12'>
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Số tiền</th>
+                                                                        <th>Ghi chú</th>
+                                                                        <th>Ngày tháng</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <?php if ($item->phu_phi):?>
+                                                                <?php
+                                                                    $arrGhiChu = $item->ghi_chu ? json_decode($item->ghi_chu, true) : [];
+                                                                    $ghiChu = '';
+                                                                    $ghiChuDate = '';
+                                                                    if (count($arrGhiChu) > 0) {
+                                                                        if ($arrGhiChu['ghi_chu']) {
+                                                                            $ghiChu = $arrGhiChu['ghi_chu'];
+                                                                        }
+                                                                        $ghiChuDate = date('d-m-Y H:i:s', $arrGhiChu['ghi_chu_thoi_gian']);
+                                                                    }
+                                                                ?>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td><?= $item->phu_phi.' VNĐ'?></td>
+                                                                            <td><?= $ghiChu?></td>
+                                                                            <td><?= $ghiChuDate?></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                <?php endif;?>
+                                                            </table>
+                                                        </div>
+                                                    </div>    
+                                                <?php Modal::end();?>
+                                                <!--End Modal thêm phụ phí-->
+                                                <?php if ($item->trang_thai == 'Huỷ đơn' || $item->trang_thai == 'Đã giao'):?>
+                                                    <a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" style='width: 100%' title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
+                                                <?php else:?>
+                                                    <div>
+                                                        <?php if ($actionType == 'default'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-default'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            Chọn n/v lấy
+                                                            </button>    
+                                                        <?php elseif ($actionType == 'nvlDangLay'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-success'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            <?= $nvl_ten?>
+                                                            </button>
+                                                        <?php elseif ($actionType == 'chonNvg'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-default'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            Chọn n/v giao
+                                                            </button>
+                                                        <?php elseif ($actionType == 'nvgDangGiao'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-success'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            <?= $nvg_ten?>
+                                                            </button>
+                                                        <?php elseif ($actionType == 'chonNvh'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-default'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            Chọn n/v hoàn
+                                                            </button>
+                                                        <?php elseif ($actionType == 'nvhDangHoan'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-success'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            <?= $nvh_ten?>
+                                                            </button>
+                                                        <?php endif;?>
+                                                    </div>
+                                                    <div>
+                                                        <?php if ($actionType == 'nvlDangLay' || $actionType == 'nvgDangGiao' || $actionType == 'nvhDangHoan'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#nv<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-default'
+                                                            >
+                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
+                                                            Chọn n/v khác
+                                                            </button>
+                                                        <!--Hoàn hàng-->
+                                                        <?php elseif ($actionType == 'chonNvg'):?>
+                                                            <a onclick="return confirm('Bạn chắc chắn muốn hoàn đơn hàng này?');"
+                                                               style='width:100%; margin-bottom: 3px;'
+                                                               href="<?= Url::to(['/admin/'.$module.'/a/hoanhang', 'id' => $item->dh_id]) ?>"
+                                                               class="confirm-delete btn btn-sm btn-default" title="<?= Yii::t('easyii', 'Delete item') ?>">
+                                                                Hoàn hàng
+                                                            </a>
+                                                        <?php endif;?>
+                                                    </div>
+                                                    <div>
+                                                        <a href='<?= $baseUrl."/admin/donhang/a/edit/".$item->dh_id?>'
+                                                           target="_blank"
+                                                           type="button"
+                                                           style="width:100%; margin-bottom: 3px"
+                                                           class="btn btn-sm btn-default">
+                                                            <i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa
+                                                        </a>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button style="width: 100%;" class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                                            Khác   
+                                                            <i class="glyphicon glyphicon-chevron-down" style="vertical-align: baseline !important"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu" style="min-width: 140px">
+                                                        <li>
+                                                            <a data-toggle='modal'
+                                                               data-target='#<?= 'phuphi'.$item->dh_id?>'>
+                                                                Thêm phụ phí
+                                                            </a>
+                                                        </li>
+                                                        <li><a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete" title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a></li>
+                                                        <?php if ($actionType == 'default'):?>  
+                                                            <li>
+                                                                <a data-toggle='modal'
+                                                                   data-target='#<?= 'huydon'.$item->dh_id?>'>
+                                                                    Huỷ đơn
+                                                                </a>                                                                            
+                                                            </li>
+                                                        <?php endif;?>
+                                                        </ul>
+                                                    </div>
+                                                <?php endif;?>
                                             </td>
                                         </tr>
                                     <?php endforeach;?>
@@ -520,4 +802,16 @@ $module = $this->context->module->id;
         </div>
     </div>
 </div>
-
+<?php JSRegister::begin(); ?>
+<script>
+    $('.dropdown-toggle').click(e => {
+        const target = e.target;
+        const parent = $(target).parents('.dropdown');
+        if ($(parent).hasClass('open')) {
+            $(parent).removeClass('open');
+        } else {
+            $(parent).addClass('open')
+        }
+    })
+</script>
+<?php JSRegister::end(); ?>
