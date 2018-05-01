@@ -262,8 +262,15 @@ $module = $this->context->module->id;
                                         <div class="col-md-5" style="padding-right: 5px">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <?= $form->field($model, 'tien_thu_ho')->textInput(['placeholder' => 'Tiền thu hộ', 'id' => 'form0-tien_thu_ho'])->label(FALSE)?>
+                                                    <div class="col-md-10" style='padding-left: 0px !important; padding-right: 0px !important'>
+                                                        <?= $form->field($model, 'tien_thu_ho')->textInput(['placeholder' => 'Tiền thu hộ', 'id' => 'form0-tien_thu_ho'])->label(FALSE)?>
+                                                    </div>
+                                                    <div class="col-md-2" style='padding-right: 0px !important'>
+                                                        <span style='height: 34px; line-height: 34px'>VNĐ</span>
+                                                    </div>
                                                 </div>
+
+                                                
 
                                                 <div class="col-md-12" id='form0-wrapper-ung_tien'>
                                                     <?php
@@ -929,7 +936,7 @@ $module = $this->context->module->id;
     //End cập nhật ghi chú
     
     //Function tính tiền tự động
-    function tinhtientudong(index)
+    function tinhtientudong(index, cb)
     {
         var kvl_id = $('#dclh-id').val();
         var kh_id = $('#kh-id').val();
@@ -971,9 +978,13 @@ $module = $this->context->module->id;
                     $(errorElement).text('');
                 }
             }
+
+            // Thông báo thời gian ship
+            cb && cb();
         })
         .fail((e) => {
             console.log(e);
+            cb && cb();
         })
     }
     //End function tính tiền tự động
@@ -1033,15 +1044,11 @@ $module = $this->context->module->id;
         var kh_id = $('#kh-id').val();
         if(kvg_id && kvl_id && kh_id)
         {
-            tinhtientudong(index);
+            tinhtientudong(index, () => thongbaothoigianship(index, gdv_id));
         }else
         {
             console.log("Chưa chọn nơi lấy hàng hoặc giao hàng hoặc khách hàng");
         }
-        tinhtientudong(index);
-        
-        //Thông báo về thời gian giao hàng và lấy hàng
-        thongbaothoigianship(index, gdv_id);
     })
     //Hình thức thanh toán change
     $('.hinh-thuc-thanh-toan').change((e) => {

@@ -89,7 +89,6 @@ $module = $this->context->module->id;
                                 <tbody>
                                     <?php foreach($data->models as $item):?>
                                         <tr data-id="<?= $item->primaryKey ?>">
-                                            
                                             <td>
                                                 <?php 
                                                     $model_kh = Khachhang::find()->where(['kh_id' => $item->kh_id])->one();

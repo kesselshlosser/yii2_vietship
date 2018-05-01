@@ -24,6 +24,7 @@ class AController extends Controller
         $model = new Donhang;
         $data = new ActiveDataProvider([
             'query' => Donhang::find(),
+            // 'sort'=> ['defaultOrder' => ['time' => SORT_DESC]]
         ]);
         if (Yii::$app->request->post()) {
             $formData = Yii::$app->request->post();
@@ -413,7 +414,10 @@ class AController extends Controller
     public function actionDelete($id)
     {
         if(($model = Donhang::findOne($id))){
-            $model->delete();
+            if ($model->delete()) {
+                // Xoá tất cả trong bảng quyết toán đơn hàng
+                Quyettoandonhang::deleteAll(['dh_id' => $id]);
+            }
         } else {
             $this->error = "Không tìm thấy đơn hàng nào";
         }

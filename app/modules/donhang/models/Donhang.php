@@ -51,7 +51,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                     'ma_don_hang', 'trang_thai', 'nguoi_nhan_dia_chi_giao_hang', 'nguoi_nhan_ten',
                     'san_pham_ten', 'dich_vu_phu_troi', 'ghi_chu', 'ly_do_khong_duyet', 'pham_vi_don_hang',
                     'hoan_hang', 'nguoi_nhan', 'san_pham', 'dia_chi_lay_hang', 'nhan_vien_lay_hang',
-                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang',
+                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang', 'ghi_chu_hinh_thuc_thanh_toan'
                 ],
                 'string',
                 'message' => '{attribute phải là kiểu chuỗi}'
