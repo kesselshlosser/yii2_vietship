@@ -4,6 +4,7 @@ namespace app\modules\donhang\models;
 use Yii;
 use yii\helpers\StringHelper;
 use yii\easyii\models\Diachilayhang;
+use \app\modules\khachhang\api\Khachhang;
 
 class Donhang extends \yii\easyii\components\ActiveRecord
 {
@@ -111,5 +112,9 @@ class Donhang extends \yii\easyii\components\ActiveRecord
             ->where(['kh_id' => $kh_id])
             ->select(['kh_id','ten_goi_nho','dia_chi_text','dp_id', 'so_dien_thoai', 'dclh_id'])->asArray()->all();
         return $data;
+    }
+
+    public function getKhachhang() {
+        return $this->hasOne(Khachhang::className(), ['kh_id' => 'kh_id']);
     }
 }

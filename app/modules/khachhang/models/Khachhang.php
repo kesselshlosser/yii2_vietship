@@ -10,6 +10,7 @@ use yii\helpers\StringHelper;
 use yii\easyii\models\Hinhthucthanhtoan;
 use yii\easyii\models\Diachilayhang;
 use app\modules\goikhachhang\models\Goikhachhang;
+use \app\modules\donhang\models\Donhang;
 use yii\easyii\models\Setting;
 
 class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\IdentityInterface
@@ -34,7 +35,7 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
             ],
             ['email', 'email', 'message' => "Không đúng định dạng email"],
             [['time'], 'integer'],
-            ['gkh_id', 'safe'],
+            [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan'], 'safe'],
             ['time', 'default', 'value' => time()],
             ['slug', 'match', 'pattern' => self::$SLUG_PATTERN, 'message' => Yii::t('easyii', 'Slug can contain only 0-9, a-z and "-" characters (max: 128).')],
             ['slug', 'default', 'value' => null],
@@ -66,6 +67,27 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
                 'ensureUnique' => true
             ],
         ];
+    }
+
+    public static function tinhSoDuNo($kh_id, $hinh_thuc_thanh_toan, $tien_ship, $tien_thu_ho) {
+        $model = static::findOne($kh_id);
+        switch($hinh_thuc_thanh_toan) {
+            case 'Người gửi thanh toán':
+            case 'Người nhận thanh toán':
+                $model->sodu = $model->sodu + $tien_thu_ho;
+            break;
+            case 'Thanh toán sau COD':
+                $model->sodu = $model->sodu + ( $tien_thu_ho - $tien_ship );
+            break;
+            case 'Thanh toán sau':
+                $model->sono = $model->sono + $tien_ship;
+            break;
+        }
+
+        if ($model->save(false)) {
+            return true;
+        }
+        return false;
     }
 
     public function getPhotos()
@@ -164,5 +186,9 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
     public function getHinhthucthanhtoan()
     {
         return $this->hasOne(Hinhthucthanhtoan::className(), ['kh_id' => 'kh_id']);
+    }
+
+    public function getDonhang() {
+        return $this->hasMany(Donhang::className(), ['kh_id' => 'kh_id']);
     }
 }
