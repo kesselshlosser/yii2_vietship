@@ -37,6 +37,9 @@ class AController extends Controller
     {
         $data = new ActiveDataProvider([
             'query' => Khachhang::find()->sortDate(),
+            'pagination' => [
+                'pageSize' => 0
+            ]
         ]);
 
         return $this->render('index', [
@@ -414,6 +417,7 @@ class AController extends Controller
         // Thanh toán với từng khách hàng
         if (\Yii::$app->request->post()) {
             $dataPost = \Yii::$app->request->post();
+            $don_hang_da_xuat_hoa_don = [];
             $kh_id = $dataPost['kh_id'];
             $chuyen_tra_khach = $dataPost['chuyen_tra_khach'];
             $time = time();
@@ -437,6 +441,7 @@ class AController extends Controller
             if ($model_hoa_don->save(false)) {
                 // Lưu vào bảng hoá đơn chi tiết
                 foreach($arr_don_hang as $key => $item) {
+                    $don_hang_da_xuat_hoa_don[$key] = $item['dh_id'];
                     $ma_don_hang = $item['ma_don_hang'];
                     $ma_hoa_don = $ma_hoa_don;
                     $dia_chi_nguoi_nhan = json_decode($item['nguoi_nhan'], true)['dia_chi_giao_hang'];
@@ -456,20 +461,60 @@ class AController extends Controller
                     $model_hoa_don_chi_tiet->time = $item['time'];
     
                     if ($model_hoa_don_chi_tiet->save(false)) {
-                        // Chuyển trạng thái chờ thanh toán của khách hàng từ 0 -> 1
-                        $model_kh = Khachhang::findOne($kh_id);
-                        $model_kh->cho_thanh_toan = 1;
-                        $model_kh->save(false);
-                        return $this->redirect(['hoadon']);
+                        
                     } else {
                         
                     }
+                }
+
+                // Lưu list các đơn hàng đã được xuất hoá đơn
+                $model_kh = Khachhang::findOne($kh_id);
+                if (!empty($model_kh->don_hang_da_xuat_hoa_don)) {
+                    $new_arr = json_decode($model_kh->don_hang_da_xuat_hoa_don, true);
+                } else {
+                    $new_arr = [];
+                }
+                foreach($don_hang_da_xuat_hoa_don as $key => $value) {
+                    array_push($new_arr, $value);
+                }
+                $json_don_hang_da_xuat_hoa_don = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
+                $model_kh->don_hang_da_xuat_hoa_don = $json_don_hang_da_xuat_hoa_don;
+                if ($model_kh->save(false)) {
+                    return $this->redirect(['hoadon']);
                 }
             } else {
 
             }
         } else {
-            $model_kh = Khachhang::find()->with(['donhang', 'hinhthucthanhtoan'])->where(['cho_thanh_toan' => 0])->asArray()->all();
+            $model_kh = Khachhang::find()->with(['donhang', 'hinhthucthanhtoan'])->asArray()->all();
+            $number_model_kh = count($model_kh);
+            for ($k = 0; $k < $number_model_kh; $k++) {
+                $number_don_hang = count($model_kh[$k]['donhang']);
+                $don_hang_da_xuat_hoa_don = $model_kh[$k]['don_hang_da_xuat_hoa_don']; // Chuỗi json ['1','2','3']
+                if (!empty($don_hang_da_xuat_hoa_don)) {
+                    $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
+                    for ($i = 0; $i < $number_don_hang; $i++) {
+                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                            unset($model_kh[$k]['donhang'][$i]);
+                            continue;
+                        }
+                        $dh_id = $model_kh[$k]['donhang'][$i]['dh_id'];
+                        for ($j = 0; $j < count($arr_don_hang_da_xuat_hoa_don); $j++) {
+                            if ($arr_don_hang_da_xuat_hoa_don[$j] == $dh_id) {
+                                // Đã xuất hoá đơn -> unset
+                                unset($model_kh[$k]['donhang'][$i]);
+                            }
+                        }    
+                    }
+                } else {
+                    for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
+                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                            unset($model_kh[$k]['donhang'][$i]);
+                        }
+                    }
+                    continue;
+                }
+            }
             return $this->render('thanhtoan', [
                 'models' => $model_kh
             ]);
@@ -478,63 +523,169 @@ class AController extends Controller
     // Thanh toán với KH đến kỳ
     public function actionThanhtoandenky() {
         // Thanh toán với từng khách hàng
-        $model_kh = Khachhang::find()->with(['donhang', 'hinhthucthanhtoan'])->where(['cho_thanh_toan' => 0])->asArray()->all();
-        foreach($model_kh as $k => $model) {
-            $arr_tgtt = json_decode($model['hinhthucthanhtoan']['thoi_gian_thanh_toan'], true);
-            $type_tt = $arr_tgtt['type'];
-            $time_tt = $arr_tgtt['time'];
-            $now_day = date('d', time());
-            $now_day_of_week = date('N', time()) + 1;
-            $model_dh = $model['donhang'];
-            foreach($model_dh as $key => $dh) {
-                $dh_day = date('d', $dh['time']);
-                $dh_day_of_week = date('N', $dh['time']) + 1;
-                switch ($type_tt) {
-                    case 'Thanh toán cuối ngày':
-                        if ($now_day != $dh_day) {
-                            unset($model_kh[$k]['donhang'][$key]);
-                        }       
-                    break;
-                    case 'Thanh toán vào hôm sau':
-                        if ($now_day != $dh_day + 1) {
-                            unset($model_kh[$k]['donhang'][$key]);
+        if (\Yii::$app->request->post()) {
+            $dataPost = \Yii::$app->request->post();
+            $don_hang_da_xuat_hoa_don = [];
+            $kh_id = $dataPost['kh_id'];
+            $chuyen_tra_khach = $dataPost['chuyen_tra_khach'];
+            $time = time();
+            $arr_don_hang = json_decode($dataPost['donhang'], true);
+            $model_hd = Hoadon::find()->orderBy('id DESC')->one();
+            if (count($model_hd) === 0) {
+                $prefix = 1;
+            } else {
+                $prefix = $model_hd['id'] + 1;
+            }
+            // Ma hoa don HD-216-00001
+            $ma_hoa_don = 'HD-'.$kh_id.'-'.$prefix;
+            
+            // Lưu vào bảng hoá đơn
+            $model_hoa_don = new Hoadon();
+            $model_hoa_don->ma_hoa_don = $ma_hoa_don;
+            $model_hoa_don->kh_id = $kh_id;
+            $model_hoa_don->chuyen_tra_khach = $chuyen_tra_khach;
+            $model_hoa_don->trang_thai = 'Chờ xử lý';
+            $model_hoa_don->time = $time;
+            if ($model_hoa_don->save(false)) {
+                // Lưu vào bảng hoá đơn chi tiết
+                foreach($arr_don_hang as $key => $item) {
+                    $don_hang_da_xuat_hoa_don[$key] = $item['dh_id'];
+                    $ma_don_hang = $item['ma_don_hang'];
+                    $ma_hoa_don = $ma_hoa_don;
+                    $dia_chi_nguoi_nhan = json_decode($item['nguoi_nhan'], true)['dia_chi_giao_hang'];
+                    $gdv_id = $item['gdv_id'];
+                    $hinh_thuc_thanh_toan = $item['hinh_thuc_thanh_toan'];
+                    $tong_tien = $item['tong_tien'];
+                    $tien_thu_ho = $item['tien_thu_ho'];
+                    
+                    $model_hoa_don_chi_tiet = new Hoadonchitiet();
+                    $model_hoa_don_chi_tiet->ma_hoa_don = $ma_hoa_don;
+                    $model_hoa_don_chi_tiet->ma_don_hang = $ma_don_hang;
+                    $model_hoa_don_chi_tiet->dia_chi_nguoi_nhan = $dia_chi_nguoi_nhan;
+                    $model_hoa_don_chi_tiet->gdv_id = $gdv_id;
+                    $model_hoa_don_chi_tiet->hinh_thuc_thanh_toan = $hinh_thuc_thanh_toan;
+                    $model_hoa_don_chi_tiet->tong_tien = $tong_tien;
+                    $model_hoa_don_chi_tiet->tien_thu_ho = $tien_thu_ho;
+                    $model_hoa_don_chi_tiet->time = $item['time'];
+    
+                    if ($model_hoa_don_chi_tiet->save(false)) {
+                        
+                    } else {
+                        
+                    }
+                }
+
+                // Lưu list các đơn hàng đã được xuất hoá đơn
+                $model_kh = Khachhang::findOne($kh_id);
+                if (!empty($model_kh->don_hang_da_xuat_hoa_don)) {
+                    $new_arr = json_decode($model_kh->don_hang_da_xuat_hoa_don, true);
+                } else {
+                    $new_arr = [];
+                }
+                foreach($don_hang_da_xuat_hoa_don as $key => $value) {
+                    array_push($new_arr, $value);
+                }
+                $json_don_hang_da_xuat_hoa_don = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
+                $model_kh->don_hang_da_xuat_hoa_don = $json_don_hang_da_xuat_hoa_don;
+                if ($model_kh->save(false)) {
+                    return $this->redirect(['hoadon']);
+                }
+            } else {
+
+            }
+        } else {
+            $model_kh = Khachhang::find()->with(['donhang', 'hinhthucthanhtoan'])->asArray()->all();
+            // Lọc ra các hoá đơn chưa thanh toán và trạng thái là đã giao
+            $number_model_kh = count($model_kh);
+                for ($k = 0; $k < $number_model_kh; $k++) {
+                    $number_don_hang = count($model_kh[$k]['donhang']);
+                    $don_hang_da_xuat_hoa_don = $model_kh[$k]['don_hang_da_xuat_hoa_don']; // Chuỗi json ['1','2','3']
+                    if (!empty($don_hang_da_xuat_hoa_don)) {
+                        $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
+                        for ($i = 0; $i < $number_don_hang; $i++) {
+                            if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                                unset($model_kh[$k]['donhang'][$i]);
+                                continue;
+                            }
+                            $dh_id = $model_kh[$k]['donhang'][$i]['dh_id'];
+                            for ($j = 0; $j < count($arr_don_hang_da_xuat_hoa_don); $j++) {
+                                if ($arr_don_hang_da_xuat_hoa_don[$j] == $dh_id) {
+                                    // Đã xuất hoá đơn -> unset
+                                    unset($model_kh[$k]['donhang'][$i]);
+                                }
+                            }    
                         }
-                    break;
-                    case 'Thanh toán vào thứ 2, 4, 6':
-                        if (($now_day_of_week != 2) && ($now_day_of_week != 4) && ($now_day_of_week != 6)) {
-                            unset($model_kh[$k]['donhang'][$key]);
+                    } else {
+                        for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
+                            if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                                unset($model_kh[$k]['donhang'][$i]);
+                            }
                         }
-                    break;
-                    case 'Mỗi tuần 1 lần':
-                        if ($time_tt != $now_day_of_week) {
-                            unset($model_kh[$k]['donhang'][$key]);
-                        }
-                    break;
-                    case 'Theo yêu cầu':
-                    break;
+                        continue;
+                    }
+                }
+            // Lọc ra các hoá đơn mà đến kỳ phải thanh toán
+            foreach($model_kh as $k => $model) {
+                $arr_tgtt = json_decode($model['hinhthucthanhtoan']['thoi_gian_thanh_toan'], true);
+                $type_tt = $arr_tgtt['type'];
+                $time_tt = $arr_tgtt['time'];
+                $now_day = date('d', time());
+                $now_day_of_week = date('N', time()) + 1;
+                $model_dh = $model['donhang'];
+                foreach($model_dh as $key => $dh) {
+                    $dh_day = date('d', $dh['time']);
+                    $dh_day_of_week = date('N', $dh['time']) + 1;
+                    switch ($type_tt) {
+                        case 'Thanh toán cuối ngày':
+                            if ($now_day != $dh_day) {
+                                unset($model_kh[$k]['donhang'][$key]);
+                            }       
+                        break;
+                        case 'Thanh toán vào hôm sau':
+                            if ($now_day != $dh_day + 1) {
+                                unset($model_kh[$k]['donhang'][$key]);
+                            }
+                        break;
+                        case 'Thanh toán vào thứ 2, 4, 6':
+                            if (($now_day_of_week != 2) && ($now_day_of_week != 4) && ($now_day_of_week != 6)) {
+                                unset($model_kh[$k]['donhang'][$key]);
+                            }
+                        break;
+                        case 'Mỗi tuần 1 lần':
+                            if ($time_tt != $now_day_of_week) {
+                                unset($model_kh[$k]['donhang'][$key]);
+                            }
+                        break;
+                        case 'Theo yêu cầu':
+                        break;
+                    }
                 }
             }
+            return $this->render('thanhtoandenky', [
+                'models' => $model_kh
+            ]);
         }
-        return $this->render('thanhtoandenky', [
-            'models' => $model_kh
-        ]);
     }
 
     public function actionHoadon() {
         $model = Hoadon::find()->with('hoadonchitiet')->asArray()->all();
+        $model_choxuly = [];
         $model_dangtt = [];
         $model_datt = [];
         foreach($model as $key => $item) {
-            if ($item['trang_thai'] == 'Chờ xử lý' || $item['trang_thai'] == 'Đang thanh toán') {
+            if ($item['trang_thai'] == 'Đang thanh toán') {
                 $model_dangtt[$key] = $model[$key];
-            } else {
+            } else if ($item['trang_thai'] == 'Đã thanh toán') {
                 $model_datt[$key] = $model[$key];
+            } else if ($item['trang_thai'] == 'Chờ xử lý') {
+                $model_choxuly[$key] = $model[$key];
             }
         }
         return $this->render('hoadon', [
             'models' => $model,
             'models_dangtt' => $model_dangtt,
             'models_datt' => $model_datt,
+            'models_choxuly' => $model_choxuly
         ]);
     }
 }

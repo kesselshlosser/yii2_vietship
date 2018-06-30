@@ -79,10 +79,14 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                 'tien_thu_ho', 'compare', 'compareAttribute' => 'tong_tien', 'operator' => '>=',
                 'whenClient' => "function(attribute, value) {
                     var formId = attribute.\$form[0].id;
-                    return ($('#'+formId+'-hinh_thuc_thanh_toan').val() == 'Thanh toán sau COD' && $('#'+formId+'-tien_thu_ho').val() < $('#'+formId+'-tong-tien').val());
+                    return ($('#'+formId+'-hinh_thuc_thanh_toan').val() == 'Thanh toán sau COD' && parseInt($('#'+formId+'-tien_thu_ho').val()) < parseInt($('#'+formId+'-tong-tien').val()));
                 }",
                 'message' => 'Tiền thu hộ không được nhỏ hơn tổng tiền ship'
-            ],            
+            ], 
+            [
+                ['lich_trinh_don_hang'],
+                'safe'
+            ]           
         ];
     }
 
@@ -112,6 +116,37 @@ class Donhang extends \yii\easyii\components\ActiveRecord
             ->where(['kh_id' => $kh_id])
             ->select(['kh_id','ten_goi_nho','dia_chi_text','dp_id', 'so_dien_thoai', 'dclh_id'])->asArray()->all();
         return $data;
+    }
+
+    public static function updateLichTrinhDonHang($dh_id, $arr_lich_trinh_don) {
+        $model_dh = static::findOne($dh_id);
+        if (!empty($model_dh->lich_trinh_don_hang)) {
+            // Có rồi thì thêm lịch trình đơn hàng
+            $new_arr = json_decode($model_dh->lich_trinh_don_hang, true);
+        } else {
+            // Chưa có tạo mới
+            $new_arr = [];
+        }
+        array_push($new_arr, $arr_lich_trinh_don);
+        $lich_trinh_don_hang = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
+        $model_dh->lich_trinh_don_hang = $lich_trinh_don_hang;
+        if ($model_dh->save(false)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function getNewLichTrinhDon($model_dh, $arr_lich_trinh_don) {
+        if (!empty($model_dh->lich_trinh_don_hang)) {
+            // Có rồi thì thêm lịch trình đơn hàng
+            $new_arr = json_decode($model_dh->lich_trinh_don_hang, true);
+        } else {
+            // Chưa có tạo mới
+            $new_arr = [];
+        }
+        array_push($new_arr, $arr_lich_trinh_don);
+        $lich_trinh_don_hang = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
+        return $lich_trinh_don_hang;
     }
 
     public function getKhachhang() {

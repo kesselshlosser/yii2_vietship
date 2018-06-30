@@ -35,7 +35,7 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
             ],
             ['email', 'email', 'message' => "Không đúng định dạng email"],
             [['time'], 'integer'],
-            [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan'], 'safe'],
+            [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan', 'don_hang_da_xuat_hoa_don'], 'safe'],
             ['time', 'default', 'value' => time()],
             ['slug', 'match', 'pattern' => self::$SLUG_PATTERN, 'message' => Yii::t('easyii', 'Slug can contain only 0-9, a-z and "-" characters (max: 128).')],
             ['slug', 'default', 'value' => null],

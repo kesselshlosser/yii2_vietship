@@ -16,6 +16,7 @@ use app\modules\duongpho\models\Duongpho;
 use app\modules\goikhachhang\models\Goikhachhang;
 use app\modules\khachhang\models\Khachhang;
 use yii\easyii\models\Quyettoandonhang;
+use \yii\easyii\models\Admin;
 
 class AController extends Controller
 {
@@ -24,10 +25,15 @@ class AController extends Controller
         $model = new Donhang;
         $data = new ActiveDataProvider([
             'query' => Donhang::find(),
-            // 'sort'=> ['defaultOrder' => ['time' => SORT_DESC]]
+            'pagination' => [
+                'pageSize' => 0
+            ]
         ]);
         if (Yii::$app->request->post()) {
             $formData = Yii::$app->request->post();
+            if (isset($formData['dh_trang_thai'])) {
+                $dh_trang_thai = $formData['dh_trang_thai'];
+            }
             $dataArr = [];
             $type = $formData['smForm'];
             switch ($type) {
@@ -62,7 +68,7 @@ class AController extends Controller
                         $message = 'Huỷ đơn hàng thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang']);
+                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
                 break;
                 case 'phuphi':
                     $dh_id = $formData['dh_id'];
@@ -82,7 +88,35 @@ class AController extends Controller
                         $message = 'Thêm phụ phí thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang']);
+                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                break;
+                case 'hoanhang':
+                    $dh_id = $formData['dh_id'];
+                    $ly_do_hoan_hang = $formData['ly_do_hoan_hang'];
+                    $model = Donhang::findOne($dh_id);
+                    if (isset($dh_trang_thai) && $dh_trang_thai == 'Đang giao') {
+                        $arr_lich_trinh_don = [
+                            'time' => time(),
+                            'action' => 'Hoàn hàng',
+                            'lydo' => $ly_do_hoan_hang,
+                            'ghichu' => 'Báo hoàn',
+                            'trangThai' => isset($dh_trang_thai) ? $dh_trang_thai : ''
+                        ];
+                        $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
+                    } else {
+                        $arr_lich_trinh_don = [
+                            'time' => time(),
+                            'action' => 'Hoàn hàng',
+                            'lydo' => $ly_do_hoan_hang,
+                            'ghichu' => '',
+                            'trangThai' => isset($dh_trang_thai) ? $dh_trang_thai : ''
+                        ];
+                        $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
+                        $model->trang_thai = 'Chờ hoàn hàng';
+                    }
+                    if ($model->save(false)) {
+                        return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    }
                 break;
                 default:
                 break;
@@ -90,7 +124,7 @@ class AController extends Controller
             $dataJSON = json_encode($dataArr, JSON_UNESCAPED_UNICODE);
             $dh_id = $formData['dh_id'];
             $model = Donhang::findOne($dh_id);
-            $saveDhStatus = $this->chooseEmployee($model, $dataJSON, $dh_id, $type);
+            $saveDhStatus = $this->chooseEmployee($model, $dataJSON, $formData['nv_id'], $type, $dh_trang_thai);
             if ($saveDhStatus) {
                 // Thêm nhân viên vào phần quyết toán
                 switch ($type) {
@@ -127,7 +161,7 @@ class AController extends Controller
                 }
                 if ($saveToDhqtStatus) {
                     $this->flash('success', $message);
-                    return $this->redirect(['/admin/donhang']);
+                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
                 } else {
                     $this->flash('error', $error);
                     return $this->refresh();
@@ -233,6 +267,14 @@ class AController extends Controller
             $model->dia_chi_lay_hang = $dia_chi_lay_hang;
             
             //Các trường mặc định
+            $arr_lich_trinh_don = [
+                'time' => time(),
+                'action' => 'Tạo mới đơn hàng',
+                'lydo' => '',
+                'ghichu' => '',
+                'trangThai' => 'Chờ duyệt'
+            ];
+            $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
             $model->trang_thai = 'Đã duyệt,chờ lấy';
             $model->kh_id = $kh_id;
             $model->time = time();
@@ -707,6 +749,8 @@ class AController extends Controller
                         $thoigianship .= '-- Thời gian giao: 8h30 - 12h hôm sau ('.$ngay_giao.').<br>';
                     }
                 }
+            } else {
+                $thoigianship = 'Không làm việc vào chủ nhật';
             }
         }
         elseif($gdv == 'Tiết kiệm')
@@ -742,6 +786,8 @@ class AController extends Controller
                         $thoigianship .= '-- Thời gian giao: 13h30 - 17h30 hôm sau ('.$ngay_giao.').<br>';
                     }
                 }
+            } else {
+                $thoigianship = 'Không làm việc vào chủ nhật';
             }
         }
         elseif($gdv == 'Hỏa tốc')
@@ -777,6 +823,8 @@ class AController extends Controller
                     $strLayGiao = $lay.' - '.$giao;
                     $thoigianship = '-- Thời gian lấy và giao: '.$strLayGiao.' hôm nay ('.$ngay_lay_giao.').<br>';
                 }
+            } else {
+                $thoigianship = 'Không làm việc vào chủ nhật';
             }
         }
         
@@ -795,6 +843,9 @@ class AController extends Controller
     {
         $currentTime = time();
         $arrGoiKhachHang = json_decode(Khachhang::find()->where(['kh_id' => $kh_id])->one()['gkh_id'], true);
+        if (empty($arrGoiKhachHang)) {
+            return [];
+        }
         for($i = 0; $i < count($arrGoiKhachHang); $i++)
         {
             $muc_do_uu_tien = Goikhachhang::find()->where(['gkh_id' => $arrGoiKhachHang[$i]])->one()['muc_do_uu_tien'];
@@ -1091,29 +1142,88 @@ class AController extends Controller
     }
 
     // Hàm chọn nhân viên lấy - giao - hoàn
-    public function chooseEmployee($model, $dataJSON, $dh_id, $type) {
+    public function chooseEmployee($model, $dataJSON, $nv_id, $type, $dh_trang_thai) {
         $message = '';
         $error = '';
+        $nvTen = Admin::find()->where(['admin_id' => $nv_id])->one()['ten_hien_thi'];
         switch ($type) {
             case 'chonNvl':
-            case 'chonNvlKhac':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' => 'Đã duyệt, chờ lấy'
+                ];
                 $model->nhan_vien_lay_hang = $dataJSON;
                 $model->trang_thai = 'Đang lấy';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
+            break;
+            case 'chonNvlKhac':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' => 'Đang lấy'
+                ];
+                $model->nhan_vien_lay_hang = $dataJSON;
+                $model->trang_thai = 'Đang lấy';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
                 // $message = 'Chọn nhân viên lấy hàng thành công!';
                 // $error = 'Có lỗi trong lúc chọn nhân viên lấy hàng!';
             break;
             case 'chonNvg':
-            case 'chonNvgKhac':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi giao hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' =>  $dh_trang_thai === 'Chờ giao lại' ? 'Chờ giao lại' : 'Đã lấy, chờ giao'
+                ];
                 $model->nhan_vien_giao_hang = $dataJSON;
                 $model->trang_thai = 'Đang giao';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
+            break;
+            case 'chonNvgKhac':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi giao hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' => 'Đang giao'
+                ];
+                $model->nhan_vien_giao_hang = $dataJSON;
+                $model->trang_thai = 'Đang giao';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
                 // $message = 'Chọn nhân viên giao hàng thành công!';
                 // $error = 'Có lỗi trong lúc chọn nhân viên giao hàng!';
             break;
-            default:
+            case 'chonNvh':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi hoàn hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' => 'Chờ hoàn hàng'
+                ];
                 $model->nhan_vien_hoan_hang = $dataJSON;
                 $model->trang_thai = 'Đang hoàn';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
                 // $message = 'Chọn nhân viên hoàn hàng thành công!';
                 // $error = 'Có lỗi trong lúc chọn nhân viên hoàn hàng!';
+            break;
+            case 'chonNvhKhac':
+                $arr_lich_trinh_don = [
+                    'time' => time(),
+                    'action' => 'Chọn nhân viên '.$nvTen.' đi hoàn hàng',
+                    'lydo' => '',
+                    'ghichu' => '',
+                    'trangThai' => 'Đang hoàn'
+                ];
+                $model->nhan_vien_hoan_hang = $dataJSON;
+                $model->trang_thai = 'Đang hoàn';
+                $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
             break;
         }
         if ($model->save(false)) {

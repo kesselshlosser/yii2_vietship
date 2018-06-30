@@ -51,7 +51,7 @@ $module = $this->context->module->id;
                     </header>
                     <div class="panel-body">
                         <?php if($data->count > 0):?>
-                            <table class="table responsive-data-table table-striped" style="font-size: 13px; width: 100%">
+                            <table id='table-don-hang' class="table responsive-data-table table-striped" style="font-size: 13px; width: 100%">
                                 <thead>
                                     <tr>
                                         <th>
@@ -88,7 +88,7 @@ $module = $this->context->module->id;
                                 </thead>
                                 <tbody>
                                     <?php foreach($data->models as $item):?>
-                                        <tr data-id="<?= $item->primaryKey ?>">
+                                        <tr data-id="<?= $item->primaryKey ?>" id='<?= $item->dh_id?>'>
                                             <td>
                                                 <?php 
                                                     $model_kh = Khachhang::find()->where(['kh_id' => $item->kh_id])->one();
@@ -96,12 +96,12 @@ $module = $this->context->module->id;
                                                     $so_dien_thoai = $model_kh['so_dien_thoai'];
                                                     Modal::begin([
                                                         'header'=> '<h3 style="text-align : center;">Đơn hàng '.$item->ma_don_hang.' - Khách hàng '.$ten.'</h3>',
-                                                        'id'    => $item->dh_id,
+                                                        'id'    => 'chi-tiet'.$item->dh_id,
                                                         'size'  => 'modal-lg',
                                                     ]);
                                                 ?>
                                                 <div class="row">
-                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <div class='col-md-6 col-sm-6 col-xs-6'>
                                                         <div class="panel panel-danger">
                                                             <header class="panel-heading">
                                                                 Thông tin đơn hàng
@@ -225,7 +225,8 @@ $module = $this->context->module->id;
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+                                                    </div>
+                                                    <div class='col-md-6 col-sm-6 col-xs-6'>
                                                         <div class="panel panel-danger">                                                            
                                                             <header class="panel-heading">
                                                                 Thông tin người gửi
@@ -262,7 +263,10 @@ $module = $this->context->module->id;
                                                                 </div>                                                                                                                                
                                                             </div>
                                                         </div>
-                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class='col-md-6 col-sm-6 col-xs-6'>
                                                         <div class="panel panel-danger">
                                                             <?php
                                                                 $arr_nguoi_nhan = json_decode($item->nguoi_nhan, true);
@@ -305,7 +309,8 @@ $module = $this->context->module->id;
                                                                 </div>                                                                                                                                
                                                             </div>
                                                         </div>
-                                                        
+                                                    </div>
+                                                    <div class='col-md-6 col-sm-6 col-xs-6'>
                                                         <div class="panel panel-danger">
                                                             <?php
                                                                 $arr_san_pham = json_decode($item->san_pham, true);
@@ -338,22 +343,52 @@ $module = $this->context->module->id;
                                                             </div>
                                                         </div>
                                                     </div>
-                                                
-                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                </div>
+                                                <div class='row'>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
                                                         <div class="panel panel-danger">
                                                             <header class="panel-heading">
                                                                 Lịch trình
                                                             </header>
                                                             <div class="panel-body">
-                                                                                                                                                                                               
+                                                                <?php if (!empty($item->lich_trinh_don_hang)):?>
+                                                                    <div class='col-md-12 col-sm-12 col-xs-12'>
+                                                                        <table class='table table-bordered'>
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Thời gian</th>
+                                                                                    <th>Trạng thái</th>
+                                                                                    <th>Ghi chú</th>
+                                                                                </tr>
+                                                                            </thead>
+
+                                                                            <tbody>
+                                                                                <?php $lich_trinh_don_hang = json_decode($item->lich_trinh_don_hang, true);
+                                                                                    foreach($lich_trinh_don_hang as $ltdh):
+                                                                                    $time = date('H:i d-m-Y', $ltdh['time']);
+                                                                                    $action = (isset($ltdh['action']) && !empty($ltdh['action'])) ? $ltdh['action'] : '';
+                                                                                    $lydo = (isset($ltdh['lydo']) && !empty($ltdh['lydo'])) ? $ltdh['lydo'] : '';
+                                                                                    $ghichu = (isset($ltdh['ghichu']) && !empty($ltdh['ghichu'])) ? $ltdh['ghichu'] : '';
+                                                                                    $trangThai = (isset($ltdh['trangThai']) && !empty($ltdh['trangThai'])) ? $ltdh['trangThai'] : '';
+                                                                                ?>
+                                                                                    <tr>
+                                                                                        <td><?= $time?></td>
+                                                                                        <td><?= $trangThai?></td>
+                                                                                        <td><?= $action?> <?= !empty($lydo) ? '- '.$lydo : ''?> <?= !empty($ghichu) ? '- '.$ghichu : ''?></td>
+                                                                                    </tr>
+                                                                                <?php endforeach;?>
+                                                                            </tbody>
+                                                                        </table>  
+                                                                    </div>    
+                                                                <?php endif;?>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>        
+                                                </div>
                                                 <?php Modal::end();?>
                                                 <?= $item->ma_don_hang?>
                                                 <br>
-                                                <a data-toggle = 'modal' data-target = '#<?= $item->dh_id?>' class="btn btn-sm btn-default" style="margin-bottom: 8px"><i class="glyphicon glyphicon-modal-window" style="vertical-align: baseline"></i> Xem chi tiết</a><br>
+                                                <a data-toggle = 'modal' data-target = '#chi-tiet<?= $item->dh_id?>' class="btn btn-sm btn-default" style="margin-bottom: 8px"><i class="glyphicon glyphicon-modal-window" style="vertical-align: baseline"></i> Xem chi tiết</a><br>
                                                 <a target='_blank' class="btn btn-sm btn-default" href="<?= Url::to(['/admin/donhang/a/print']).'/'.$item->dh_id?>"><i class="glyphicon glyphicon-print" style="vertical-align: baseline"></i> In đơn hàng</a>
                                             </td>
                                             <td>
@@ -440,7 +475,7 @@ $module = $this->context->module->id;
                                                         $actionType = 'nvlDangLay';
                                                         $nvlArr = json_decode($item->nhan_vien_lay_hang, true);
                                                         $nvl_ten = Admin::find()->where(['admin_id' => $nvlArr['id']])->one()['ten_hien_thi'];
-                                                    } elseif ($item->trang_thai == 'Đã lấy, chờ giao') {
+                                                    } elseif ($item->trang_thai == 'Chờ giao lại' || $item->trang_thai == 'Đã lấy, chờ giao') {
                                                         $actionType = 'chonNvg';
                                                         $placeHolderChonNv = 'Chọn nhân viên giao hàng...';
                                                     } elseif ($item->trang_thai == 'Đang giao') {
@@ -451,12 +486,14 @@ $module = $this->context->module->id;
                                                         $actionType = 'nvgDaGiao';
                                                     } elseif ($item->trang_thai == 'Huỷ đơn') {
                                                         $actionType = 'huyDon';
-                                                    } elseif ($item->trang_thai == 'Chờ hoàn hàng') {
+                                                    } elseif ($item->trang_thai == 'Chờ hoàn hàng' || $item->trang_thai == 'Chờ hoàn lại') {
                                                         $actionType = 'chonNvh';
                                                     } elseif ($item->trang_thai == 'Đang hoàn') {
                                                         $actionType = 'nvhDangHoan';
                                                         $nvhArr = json_decode($item->nhan_vien_hoan_hang, true);
                                                         $nvh_ten = Admin::find()->where(['admin_id' => $nvhArr['id']])->one()['ten_hien_thi'];
+                                                    } elseif ($item->trang_thai == 'Đã hoàn') {
+                                                        $actionType = 'nvhDaHoan';
                                                     }
                                                     switch ($actionType) {
                                                         case 'nvlDangLay':
@@ -490,7 +527,7 @@ $module = $this->context->module->id;
                                                     ]);
                                                 ?>  
                                                     <div class="row">
-                                                        <div class="col-md-12">
+                                                        <div class="col-md-12 chon-nv-wrapper">
                                                             <?php 
                                                             $form = ActiveForm::begin([
                                                                 'enableAjaxValidation' => false,
@@ -507,13 +544,17 @@ $module = $this->context->module->id;
                                                                         'options' => [
                                                                             'placeholder' => $placeHolderChonNv,
                                                                             'style' => 'text-align: left',
-                                                                            'class' => 'form-control col-md-12'
+                                                                            'class' => 'form-control col-md-12 chon-nv-input',
                                                                         ],
                                                                         'pluginOptions' => [
                                                                             'allowClear' => true
                                                                         ],
+                                                                        'pluginEvents' => [
+                                                                            "select2:select" => "function(e) { showHideError(e.target, false) }",
+                                                                        ]
                                                                     ]);
                                                                 ?>
+                                                                <div style='display: none; text-align: center; background-color: red; margin-top: 8px' class='chon-nv-error'><span style='color: white'>Bạn chưa chọn nhân viên</span></div>
                                                             </div>
                                                             <div class="col-md-12" style="margin-top: 10px">
                                                                 <label>Chọn ngày</label>        
@@ -543,7 +584,8 @@ $module = $this->context->module->id;
                                                             </div>
                                                             <div class='col-md-12' style='margin-top: 10'>
                                                                 <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
-                                                                <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block', 'value' => $submitTypeValue, 'name' => 'smForm']) ?>
+                                                                <input type="hidden" name="dh_trang_thai" value="<?= $item->trang_thai?>"/>
+                                                                <?= Html::submitButton("Chọn nhân viên", ['class' => 'btn btn-success btn-block btn-chon-nv', 'value' => $submitTypeValue, 'name' => 'smForm']) ?>
                                                             </div>
                                                             <?php ActiveForm::end(); ?>
                                                         </div>
@@ -657,6 +699,34 @@ $module = $this->context->module->id;
                                                     </div>    
                                                 <?php Modal::end();?>
                                                 <!--End Modal thêm phụ phí-->
+                                                <!-- Modal hoàn hàng-->
+                                                <?php
+                                                    Modal::begin([
+                                                        'header'=> '<h3 style="text-align : center;">Lý do hoàn hàng</h3>',
+                                                        'id'    => 'hh'.$item->dh_id,
+                                                        'size'  => 'modal-sm',
+                                                        'options' => [
+                                                            'tabindex' => false
+                                                        ]
+                                                    ]);
+                                                ?>
+                                                    <?php echo Html::beginForm('donhang/a/index', 'post');?>
+                                                        <textarea
+                                                            required
+                                                            rows="4"
+                                                            class="col-md-12"
+                                                            style="margin-bottom: 8px"
+                                                            placeHolder="Lý do hoàn hàng"
+                                                            name='ly_do_hoan_hang'
+                                                            oninvalid = 'this.setCustomValidity("Bạn chưa nhập lý do hoàn hàng")'
+                                                            oninput = 'setCustomValidity("")'
+                                                        ></textarea>
+                                                        <input type='hidden' value='<?= $item->dh_id?>' name='dh_id'/>
+                                                        <input type='hidden' value='<?= $item->trang_thai?>' name='dh_trang_thai' />
+                                                    <?php echo Html::submitButton('<i class="glyphicon glyphicon-remove"></i><span> Hoàn hàng</span>', ['class' => 'btn btn-success btn-block', 'value' => 'hoanhang', 'name' => 'smForm', 'style' => 'margin-top: 8px']);?>
+                                                    <?php echo Html::endForm();?>
+                                                <?php Modal::end()?>
+                                                <!-- End Modal hoàn hàng-->
                                                 <?php if ($item->trang_thai == 'Huỷ đơn' || $item->trang_thai == 'Đã giao'):?>
                                                     <a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" style='width: 100%' title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
                                                 <?php else:?>
@@ -742,13 +812,16 @@ $module = $this->context->module->id;
                                                             Chọn n/v khác
                                                             </button>
                                                         <!--Hoàn hàng-->
-                                                        <?php elseif ($actionType == 'chonNvg'):?>
-                                                            <a onclick="return confirm('Bạn chắc chắn muốn hoàn đơn hàng này?');"
-                                                               style='width:100%; margin-bottom: 3px;'
-                                                               href="<?= Url::to(['/admin/'.$module.'/a/hoanhang', 'id' => $item->dh_id]) ?>"
-                                                               class="confirm-delete btn btn-sm btn-default" title="<?= Yii::t('easyii', 'Delete item') ?>">
-                                                                Hoàn hàng
-                                                            </a>
+                                                        <?php elseif ($actionType == 'chonNvg' || $actionType == 'nvgDangGiao'):?>
+                                                            <button
+                                                                data-toggle='modal'
+                                                                data-target='#hh<?= $item->dh_id?>'
+                                                                type="button"
+                                                                style='width:100%; margin-bottom: 3px;'
+                                                                class='btn btn-sm btn-default'
+                                                            >
+                                                            Hoàn hàng
+                                                            </button>
                                                         <?php endif;?>
                                                     </div>
                                                     <div>
@@ -803,6 +876,31 @@ $module = $this->context->module->id;
 </div>
 <?php JSRegister::begin(); ?>
 <script>
+    console.log('aaaaa')
+    function showHideError(element, isShow) {
+        const parent = $(element).parents('.chon-nv-wrapper')
+        const errorWarning = $(parent).find('.chon-nv-error');
+        if (isShow) {
+            $(errorWarning).show();
+        } else {
+            $(errorWarning).hide();
+        }
+    }
+    // Validate chon nhan vien
+    $('.btn-chon-nv').click(e => {
+        const target = e.target
+        const parent = $(target).parents('.chon-nv-wrapper')
+        const elementValidate = $(parent).find('.chon-nv-input')
+        const elementValidateValue = $(elementValidate).val();
+        const errorWarning = $(parent).find('.chon-nv-error');
+        if (elementValidateValue) {
+            $(errorWarning).hide();
+        } else {
+            e.preventDefault()
+            $(errorWarning).show();
+        }
+    })
+
     $('.dropdown-toggle').click(e => {
         const target = e.target;
         const parent = $(target).parents('.dropdown');

@@ -269,6 +269,7 @@ $module = $this->context->module->id;
                                                 <?php
                                                     $gkh = json_decode($item->gkh_id, true);
                                                     $str_gkh = '';
+                                                    if ($gkh != ''):
                                                     foreach($gkh as $gkh):
                                                 ?>
                                                     <?php
@@ -325,6 +326,7 @@ $module = $this->context->module->id;
                                                         
                                                 <?php endforeach;?>
                                                 <?php echo $str_gkh;?>
+                                                <?php endif;?>
                                             </td>
                                             <td>
                                                 <?= $item->dia_chi;?>

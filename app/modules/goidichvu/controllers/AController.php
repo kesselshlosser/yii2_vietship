@@ -14,6 +14,9 @@ class AController extends Controller
     {
         $data = new ActiveDataProvider([
             'query' => Goidichvu::find(),
+            'pagination' => [
+                'pageSize' => 0
+            ]
         ]);
 
         return $this->render('index', [

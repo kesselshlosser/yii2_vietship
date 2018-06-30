@@ -1,56 +1,49 @@
 {
-    "name": "noumo/easyii-shop",
-    "description": "Easyiicms simple shop with examples of all modules",
-    "keywords": ["yii2", "cms", "control panel", "admin", "easy", "shop"],
-    "homepage": "http://easyiicms.com",
-    "type": "project",
-    "license": "GNU GPL V3",
-    "support": {
-        "wiki": "http://easyiicms.com/docs",
-        "source": "https://github.com/noumo/easyii-shop.git",
-        "issues": "https://github.com/noumo/easyii-shop/issues"
+  "name": "noumo/easyii-shop",
+  "description": "Easyiicms simple shop with examples of all modules",
+  "keywords": ["yii2", "cms", "control panel", "admin", "easy", "shop"],
+  "homepage": "http://easyiicms.com",
+  "type": "project",
+  "license": "GNU GPL V3",
+  "support": {
+    "wiki": "http://easyiicms.com/docs",
+    "source": "https://github.com/noumo/easyii-shop.git",
+    "issues": "https://github.com/noumo/easyii-shop/issues"
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.4.0",
+    "noumo/easyii": "dev-master",
+    "richardfan1126/yii2-js-register": "*",
+    "kartik-v/yii2-widget-select2": "@dev",
+    "wbraganca/yii2-dynamicform": "*",
+    "nizsheanez/yii2-asset-converter": "1.*",
+    "kartik-v/yii2-checkbox-x": "@dev",
+    "kartik-v/yii2-date-range": "dev-master",
+    "kartik-v/yii2-widget-datepicker": "@dev",
+    "kartik-v/yii2-field-range": "*",
+    "unclead/yii2-multiple-input": "~2.0",
+    "kartik-v/yii2-widget-depdrop": "@dev",
+    "kartik-v/yii2-widget-switchinput": "*",
+    "phpoffice/phpexcel": "1.8.x-dev"
+  },
+  "require-dev": {
+    "yiisoft/yii2-codeception": "*",
+    "yiisoft/yii2-debug": "*",
+    "yiisoft/yii2-gii": "*",
+    "yiisoft/yii2-faker": "*"
+  },
+  "scripts": {
+    "post-create-project-cmd": ["yii\\composer\\Installer::postCreateProject"]
+  },
+  "extra": {
+    "yii\\composer\\Installer::postCreateProject": {
+      "generateCookieValidationKey": ["app/config/web.php"]
     },
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.4.0",
-        "noumo/easyii": "dev-master",
-        "richardfan1126/yii2-js-register": "*",
-        "kartik-v/yii2-widget-select2": "@dev",
-        "wbraganca/yii2-dynamicform": "*",
-        "nizsheanez/yii2-asset-converter": "1.*",
-        "kartik-v/yii2-checkbox-x": "@dev",
-        "kartik-v/yii2-date-range": "dev-master",
-        "kartik-v/yii2-widget-datepicker": "@dev",
-        "kartik-v/yii2-field-range": "*",
-        "unclead/yii2-multiple-input": "~2.0",
-        "kartik-v/yii2-widget-depdrop": "@dev",
-        "kartik-v/yii2-widget-switchinput": "*"
+    "asset-installer-paths": {
+      "npm-asset-library": "vendor/npm",
+      "bower-asset-library": "vendor/bower"
     },
-    "require-dev": {
-        "yiisoft/yii2-codeception": "*",
-        "yiisoft/yii2-debug": "*",
-        "yiisoft/yii2-gii": "*",
-        "yiisoft/yii2-faker": "*"
-    },
-    "scripts": {
-        "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject"
-        ]
-    },
-    "extra": {
-        "yii\\composer\\Installer::postCreateProject": {
-            "generateCookieValidationKey": [
-                "app/config/web.php"
-            ]
-        },
-        "asset-installer-paths": {
-            "npm-asset-library": "vendor/npm",
-            "bower-asset-library": "vendor/bower"
-        },
-	    "writable": [
-            "assets",
-            "uploads",
-            "runtime"
-        ]
-    }
+    "writable": ["assets", "uploads", "runtime"]
+  }
 }

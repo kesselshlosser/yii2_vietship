@@ -14,6 +14,9 @@ class AController extends Controller
     {
         $data = new ActiveDataProvider([
             'query' => Duongpho::find(),
+            'pagination' => [
+                'pageSize' => 0
+            ]
         ]);
 
         return $this->render('index', [
