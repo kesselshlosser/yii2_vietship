@@ -26,7 +26,7 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
     {
         return [
             [['ten_dang_nhap', 'email'], 'unique', 'message' => '{attribute} đã tồn tại'],
-            [['ten_dang_nhap', 'mat_khau', 'email', 'so_dien_thoai', 'dia_chi'], 'required', 'message' => "Bạn chưa nhập {attribute}"],
+            [['ten_dang_nhap', 'mat_khau', 'email', 'so_dien_thoai', 'dia_chi', 'ten_shop'], 'required', 'message' => "Bạn chưa nhập {attribute}"],
             [
                 [
                     'ten_dang_nhap', 'mat_khau', 'ten_hien_thi', 'email',
@@ -35,7 +35,7 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
             ],
             ['email', 'email', 'message' => "Không đúng định dạng email"],
             [['time'], 'integer'],
-            [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan', 'don_hang_da_xuat_hoa_don'], 'safe'],
+            [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan', 'don_hang_da_xuat_hoa_don', 'setting'], 'safe'],
             ['time', 'default', 'value' => time()],
             ['slug', 'match', 'pattern' => self::$SLUG_PATTERN, 'message' => Yii::t('easyii', 'Slug can contain only 0-9, a-z and "-" characters (max: 128).')],
             ['slug', 'default', 'value' => null],
@@ -98,12 +98,12 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            if ($this->isNewRecord) {
-                $this->auth_key = $this->generateAuthKey();
-                $this->mat_khau = $this->hashPassword($this->mat_khau);
-            } else {
-                $this->mat_khau = $this->mat_khau != '' ? $this->hashPassword($this->mat_khau) : $this->oldAttributes['mat_khau'];
-            }
+            // if ($this->isNewRecord) {
+            //     $this->auth_key = $this->generateAuthKey();
+            //     $this->mat_khau = $this->hashPassword($this->mat_khau);
+            // } else {
+            //     $this->mat_khau = $this->mat_khau != '' ? $this->hashPassword($this->mat_khau) : $this->oldAttributes['mat_khau'];
+            // }
             return true;
         } else {
             return false;
@@ -190,5 +190,16 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
 
     public function getDonhang() {
         return $this->hasMany(Donhang::className(), ['kh_id' => 'kh_id']);
+    }
+
+    public static function checkLogin($email, $pw) {
+        $model = self::find()
+        ->where(['ten_dang_nhap' => $email])
+        ->andWhere(['mat_khau' => $pw])
+        ->one();
+        if (count($model) > 0) {
+            return true;
+        }
+        return false;
     }
 }

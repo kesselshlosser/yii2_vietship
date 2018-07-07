@@ -332,7 +332,7 @@ class AController extends Controller
                         $model_httt->thong_tin_ngan_hang = NULL;
                     }
                     //TH4 : pre = "Chuyển khoản" current = "Chuyển khoản" -> cập nhật lại thong_tin_ngan_hang
-                    if($prev_httt == 'Tiền mặt' && $current_httt == "Tiền mặt")
+                    if($prev_httt == 'Chuyển khoản' && $current_httt == "Chuyển khoản")
                     {
                         $model_httt->thong_tin_ngan_hang = json_encode($dataPost_httt['arr_ttck'], JSON_UNESCAPED_UNICODE);
                     }
@@ -492,26 +492,37 @@ class AController extends Controller
                 $number_don_hang = count($model_kh[$k]['donhang']);
                 $don_hang_da_xuat_hoa_don = $model_kh[$k]['don_hang_da_xuat_hoa_don']; // Chuỗi json ['1','2','3']
                 if (!empty($don_hang_da_xuat_hoa_don)) {
+                    $arr_unset = [];
                     $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
                     for ($i = 0; $i < $number_don_hang; $i++) {
                         if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
-                            unset($model_kh[$k]['donhang'][$i]);
+                            // unset($model_kh[$k]['donhang'][$i]);
+                            array_push($arr_unset, $i);
                             continue;
                         }
                         $dh_id = $model_kh[$k]['donhang'][$i]['dh_id'];
                         for ($j = 0; $j < count($arr_don_hang_da_xuat_hoa_don); $j++) {
                             if ($arr_don_hang_da_xuat_hoa_don[$j] == $dh_id) {
                                 // Đã xuất hoá đơn -> unset
-                                unset($model_kh[$k]['donhang'][$i]);
+                                // unset($model_kh[$k]['donhang'][$i]);
+                                array_push($arr_unset, $i);
                             }
                         }    
                     }
+                    foreach($arr_unset as $unsetIndex) {
+                        unset($model_kh[$k]['donhang'][$unsetIndex]);
+                     }
                 } else {
+                    $arr_unset = [];
                     for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
                         if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
-                            unset($model_kh[$k]['donhang'][$i]);
+                            // unset($model_kh[$k]['donhang'][$i]);
+                            array_push($arr_unset, $i);
                         }
                     }
+                    foreach($arr_unset as $unsetIndex) {
+                        unset($model_kh[$k]['donhang'][$unsetIndex]);
+                     }
                     continue;
                 }
             }
@@ -601,25 +612,36 @@ class AController extends Controller
                     $number_don_hang = count($model_kh[$k]['donhang']);
                     $don_hang_da_xuat_hoa_don = $model_kh[$k]['don_hang_da_xuat_hoa_don']; // Chuỗi json ['1','2','3']
                     if (!empty($don_hang_da_xuat_hoa_don)) {
+                        $arr_unset = [];
                         $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
                         for ($i = 0; $i < $number_don_hang; $i++) {
                             if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
-                                unset($model_kh[$k]['donhang'][$i]);
+                                // unset($model_kh[$k]['donhang'][$i]);
+                                array_push($arr_unset, $i);
                                 continue;
                             }
                             $dh_id = $model_kh[$k]['donhang'][$i]['dh_id'];
                             for ($j = 0; $j < count($arr_don_hang_da_xuat_hoa_don); $j++) {
                                 if ($arr_don_hang_da_xuat_hoa_don[$j] == $dh_id) {
                                     // Đã xuất hoá đơn -> unset
-                                    unset($model_kh[$k]['donhang'][$i]);
+                                    // unset($model_kh[$k]['donhang'][$i]);
+                                    array_push($arr_unset, $i);
                                 }
                             }    
                         }
+                        foreach($arr_unset as $unsetIndex) {
+                            unset($model_kh[$k]['donhang'][$unsetIndex]);
+                         }
                     } else {
+                        $arr_unset = [];
                         for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
                             if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
-                                unset($model_kh[$k]['donhang'][$i]);
+                                echo 'Khác đã giao: '.$i;
+                                array_push($arr_unset, $i);
                             }
+                        }
+                        foreach($arr_unset as $unsetIndex) {
+                           unset($model_kh[$k]['donhang'][$unsetIndex]);
                         }
                         continue;
                     }

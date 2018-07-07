@@ -51,7 +51,7 @@ $module = $this->context->module->id;
                     </header>
                     <div class="panel-body">
                         <?php if($data->count > 0):?>
-                            <table class="table table-striped" style="font-size: 13px; width: 100%">
+                            <table id='table-don-hang' class="table responsive-data-table table-striped" style="font-size: 13px; width: 100%">
                                 <thead>
                                     <tr>
                                         <th>
@@ -123,7 +123,7 @@ $module = $this->context->module->id;
                                                                     </div>
 
                                                                     <div style="text-align: right" class="col-md-7 col-sm-6 col-xs-6">
-                                                                        <?= number_format($item->tong_tien, 0, '', ',').' VNĐ'?>
+                                                                        <?= $item->tong_tien.' VNĐ'?>
                                                                     </div>
                                                                 </div>
 
@@ -133,7 +133,7 @@ $module = $this->context->module->id;
                                                                     </div>
 
                                                                     <div style="text-align: right" class="col-md-7 col-sm-6 col-xs-6">
-                                                                        <?= number_format($item->tien_thu_ho, 0, '', ',').' VNĐ'?>
+                                                                        <?= $item->tien_thu_ho.' VNĐ'?>
                                                                     </div>
                                                                 </div>
                                                                 
@@ -393,13 +393,11 @@ $module = $this->context->module->id;
                                             </td>
                                             <td>
                                                 <?php
-                                                    
                                                     echo $ten.'<br>'.$so_dien_thoai;
                                                 ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                    
                                                     echo $nn_ten.'<br>'.$nn_so_dien_thoai.'<br>'.$nn_dia_chi_giao_hang;
                                                 ?>
                                             </td>
@@ -417,20 +415,20 @@ $module = $this->context->module->id;
                                             
                                             <td width='110'>
                                                 <?=
-                                                    $item->tong_tien > 0 ? number_format($item->tong_tien, 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                    $item->tong_tien > 0 ? $item->tong_tien.' VNĐ' : '0 VNĐ';
                                                 ?>
                                                 <?php if ($item->phu_phi):?>
                                                     <br>
                                                     <br>
                                                     <label>Phụ phí:</label>
                                                     <br>
-                                                    <?= number_format($item->phu_phi, 0, '', ',').' VNĐ'?>
+                                                    <?= $item->phu_phi.' VNĐ'?>
                                                 <?php endif;?>
                                             </td>
                                             
                                             <td>
                                                 <?=
-                                                    $item->tien_thu_ho > 0 ? number_format($item->tien_thu_ho, 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                    $item->tien_thu_ho > 0 ? $item->tien_thu_ho.' VNĐ' : '0 VNĐ';
                                                 ?>
                                             </td>
                                             
@@ -690,7 +688,7 @@ $module = $this->context->module->id;
                                                                 ?>
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td><?= number_format($item->phu_phi, 0, '', ',').' VNĐ'?></td>
+                                                                            <td><?= $item->phu_phi.' VNĐ'?></td>
                                                                             <td><?= $ghiChu?></td>
                                                                             <td><?= $ghiChuDate?></td>
                                                                         </tr>
@@ -733,106 +731,7 @@ $module = $this->context->module->id;
                                                     <a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" style='width: 100%' title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
                                                 <?php else:?>
                                                     <div>
-                                                        <?php if ($actionType == 'default'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-default'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            Chọn n/v lấy
-                                                            </button>
-                                                        <?php elseif ($actionType == 'choDuyet'):?>    
-                                                            <?php echo Html::beginForm('donhang/a/index', 'post');?>
-                                                                <input type='hidden' value='<?= $item->dh_id?>' name='dh_id'/>
-                                                            <?php echo Html::submitButton('<i class="glyphicon glyphicon-ok"></i><span> Duyệt đơn</span>', ['class' => 'btn btn-sm btn-default btn-block', 'value' => 'duyetdon', 'name' => 'smForm', 'style' => 'margin-bottom: -10px']);?>
-                                                            <?php echo Html::endForm();?>
-                                                        <?php elseif ($actionType == 'nvlDangLay'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-success'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            <?= $nvl_ten?>
-                                                            </button>
-                                                        <?php elseif ($actionType == 'chonNvg'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-default'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            Chọn n/v giao
-                                                            </button>
-                                                        <?php elseif ($actionType == 'nvgDangGiao'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-success'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            <?= $nvg_ten?>
-                                                            </button>
-                                                        <?php elseif ($actionType == 'chonNvh'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-default'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            Chọn n/v hoàn
-                                                            </button>
-                                                        <?php elseif ($actionType == 'nvhDangHoan'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-success'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            <?= $nvh_ten?>
-                                                            </button>
-                                                        <?php endif;?>
-                                                    </div>
-                                                    <div>
-                                                        <?php if ($actionType == 'nvlDangLay' || $actionType == 'nvgDangGiao' || $actionType == 'nvhDangHoan'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#nv<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-default'
-                                                            >
-                                                            <i class='glyphicon glyphicon-user' style="vertical-align: baseline !important"></i>
-                                                            Chọn n/v khác
-                                                            </button>
-                                                        <!--Hoàn hàng-->
-                                                        <?php elseif ($actionType == 'chonNvg' || $actionType == 'nvgDangGiao'):?>
-                                                            <button
-                                                                data-toggle='modal'
-                                                                data-target='#hh<?= $item->dh_id?>'
-                                                                type="button"
-                                                                style='width:100%; margin-bottom: 3px;'
-                                                                class='btn btn-sm btn-default'
-                                                            >
-                                                            Hoàn hàng
-                                                            </button>
-                                                        <?php endif;?>
-                                                    </div>
-                                                    <div>
-                                                        <a href='<?= $baseUrl."/admin/donhang/a/edit/".$item->dh_id?>'
+                                                        <a href='<?= $baseUrl."/donhang/edit/".$item->dh_id?>'
                                                            target="_blank"
                                                            type="button"
                                                            style="width:100%; margin-bottom: 3px"
@@ -840,28 +739,19 @@ $module = $this->context->module->id;
                                                             <i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa
                                                         </a>
                                                     </div>
-                                                    <div class="dropdown">
-                                                        <button style="width: 100%;" class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                                            Khác   
-                                                            <i class="glyphicon glyphicon-chevron-down" style="vertical-align: baseline !important"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu" style="min-width: 140px">
-                                                        <li>
-                                                            <a data-toggle='modal'
-                                                               data-target='#<?= 'phuphi'.$item->dh_id?>'>
-                                                                Thêm phụ phí
-                                                            </a>
-                                                        </li>
-                                                        <li><a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete" title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a></li>
-                                                        <?php if ($actionType == 'default'):?>  
-                                                            <li>
-                                                                <a data-toggle='modal'
-                                                                   data-target='#<?= 'huydon'.$item->dh_id?>'>
-                                                                    Huỷ đơn
-                                                                </a>                                                                            
-                                                            </li>
-                                                        <?php endif;?>
-                                                        </ul>
+
+                                                    <div>
+                                                        <a data-toggle='modal'
+                                                            type="button"
+                                                            style="width:100%; margin-bottom: 3px"
+                                                            class="btn btn-sm btn-default"
+                                                            data-target='#<?= 'huydon'.$item->dh_id?>'>
+                                                            Huỷ đơn
+                                                        </a> 
+                                                    </div>
+
+                                                    <div>
+                                                        <a style="width:100%; margin-bottom: 3px" onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
                                                     </div>
                                                 <?php endif;?>
                                             </td>
@@ -912,9 +802,14 @@ $module = $this->context->module->id;
         const target = e.target;
         const parent = $(target).parents('.dropdown');
         if ($(parent).hasClass('open')) {
-            $(parent).removeClass('open');
+            setTimeout(() => {
+                $(parent).removeClass('open');
+            }, 88)
         } else {
-            $(parent).addClass('open')
+            setTimeout(() => {
+                $(parent).addClass('open')
+            }, 88)
+            
         }
     })
 </script>

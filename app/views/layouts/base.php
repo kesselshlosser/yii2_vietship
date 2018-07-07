@@ -1,6 +1,8 @@
 <?php
 use yii\helpers\Html;
-$asset = \app\assets\AppAsset::register($this);
+use yii\easyii\assets\AdminTemplateAsset;
+// $asset = \app\assets\AppAsset::register($this);
+$asset = AdminTemplateAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

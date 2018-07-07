@@ -14,6 +14,7 @@ use app\modules\khachhang\models\Khachhang;
 use kartik\depdrop\DepDrop;
 use app\modules\duongpho\models\Duongpho;
 use app\modules\coupon\models\Coupon;
+use app\modules\donhang\models\Donhang;
 
 $module = $this->context->module->id;
 ?>
@@ -47,43 +48,35 @@ $module = $this->context->module->id;
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 col-xs-12 col-sm-6" style="margin-bottom: 5px">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
                             <?php
-                                echo Select2::widget(
-                                    [
-                                        'model' => $model,
-                                        'name' => 'kh_id',
-                                        'data' => ArrayHelper::map(Khachhang::find()->all(), 'kh_id', 'ten_shop'),
-                                        'options' => [
-                                            'placeholder' => 'Chọn khách hàng *',
-                                            'id'=>'kh-id',
-                                        ],
-                                        'pluginOptions' => [
-//                                            'allowClear' => true
-                                        ],
-                                    ]
-                                )
+                                // Get data kho hàng của khách hàng - DEMO kh_id = 12
+                                $data = Donhang::getStock($kh_id);
+                                $out = [];
+                                for($i=0; $i<count($data); $i++)
+                                {
+                                    $pho = Duongpho::find()->where(['dp_id' => $data[$i]['dp_id']])->one()['ten_pho'];
+                                    $dclh_id = $data[$i]['dclh_id'];
+                                    $dclh_value = $data[$i]['ten_goi_nho'].'/'.$data[$i]['so_dien_thoai'].'/'.$data[$i]['dia_chi_text'];
+                                    $out[$dclh_id] = $dclh_value;
+                                }
+                                echo Select2::widget([
+                                    'model' => $model,
+                                    'attribute' => 'dia_chi_lay_hang',
+                                    'data' => $out,
+                                    'options' => [
+                                        'id' => 'dclh-id',
+                                        'placeholder' => 'Chọn kho hàng...'
+                                    ],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                ]);
                             ?>
                         </div>
 
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <?php
-                                echo DepDrop::widget(
-                                    [
-                                        'model' => $model,
-                                        'name' => 'dia_chi_lay_hang',
-                                        'type' => DepDrop::TYPE_SELECT2,
-                                        'options' => 
-                                        [ 
-                                            'id' => 'dclh-id',
-                                        ],
-                                        'pluginOptions'=>[
-                                            'depends'=>[ 'kh-id' ],
-                                            'placeholder'=>'Chọn kho hàng *',
-                                            'url'=>Url::to(['/admin/donhang/a/subcat'])
-                                        ]
-                                    ]);
-                            ?>
+                        <div class="col-md-6 col-xs-12 col-sm-6" style="margin-bottom: 5px">
+                            
                         </div>
                     </div>
                     
@@ -747,6 +740,7 @@ $module = $this->context->module->id;
     }
     
     //Xử lý togger đơn hàng
+    console.log('donhang')
     jQuery(document).on('click', '.fa-chevron-down', function(e){
         e.preventDefault();
         var panel_body = $(e.target).parent().parent().parent().find('.panel-body');
@@ -939,8 +933,8 @@ $module = $this->context->module->id;
     function tinhtientudong(index, cb)
     {
         var kvl_id = $('#dclh-id').val();
-        var kh_id = $('#kh-id').val();
-        var url = '<?= Url::to(['/admin/donhang/a/tinh-tien-tu-dong'])?>';
+        var kh_id = 12;
+        var url = '<?= Url::to(['/donhang/tinh-tien-tu-dong'])?>';
         var data = $('#form'+index).serialize() + "&kvl_id=" + kvl_id + "&kh_id=" + kh_id + "&dvpt=" + JSON.stringify(arr_dvpt[index]);
         $.post(
             url,
@@ -999,7 +993,7 @@ $module = $this->context->module->id;
             var dataObject = {
                 gdv_id : gdv_id
             }
-            var url = '<?= Url::to(['/admin/donhang/a/thong-bao-thoi-gian-ship'])?>';
+            var url = '<?= Url::to(['/donhang/thong-bao-thoi-gian-ship'])?>';
             var data = dataObject;
             $.post(
                 url,
@@ -1025,7 +1019,7 @@ $module = $this->context->module->id;
         var index = $(e.target).parents('.wrapper-form').find('.order_index').val();
         var gdv_id = $('#form'+index+'-goi_dich_vu').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = $('#kh-id').val();
+        var kh_id = 12;
         if(gdv_id && kvl_id && kh_id)
         {
             tinhtientudong(index);
@@ -1041,7 +1035,7 @@ $module = $this->context->module->id;
         var gdv_id = $(e.target).val();
         var kvg_id = $('#form'+index+'-pho_giao_hang').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = $('#kh-id').val();
+        var kh_id = 12;
         if(kvg_id && kvl_id && kh_id)
         {
             tinhtientudong(index, () => thongbaothoigianship(index, gdv_id));
@@ -1082,7 +1076,7 @@ $module = $this->context->module->id;
         var gdv_id = $('#form'+index+'-goi_dich_vu').val();
         var kvg_id = $('#form'+index+'-pho_giao_hang').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = $('#kh-id').val();
+        var kh_id = 12;
         if(gdv_id && kvg_id && kvl_id && kh_id)
         {
             tinhtientudong(index);
@@ -1092,7 +1086,7 @@ $module = $this->context->module->id;
     //Địa chỉ lấy hàng change
     $('#dclh-id').change((e) => {
         var kvl_id = $(e.target).val();
-        var kh_id = $('#kh-id').val();
+        var kh_id = 12;
         $('.wrapper-form').each(function(index, el) {
             if($(el).is(':visible'))
             {
@@ -1115,7 +1109,7 @@ $module = $this->context->module->id;
     //Submit form
     $('form').on('beforeSubmit', function(e){
         var kvl_id = $('#dclh-id').val();
-        var kh_id = $('#kh-id').val()
+        var kh_id = 12
         var dia_chi_lay_hang = $('#dclh-id option:selected').text();
         var form = $(this);
         var index = $(this).find('.order_index').val();
@@ -1143,8 +1137,8 @@ $module = $this->context->module->id;
                 //Thêm mã đơn hàng
                 $('#form'+index+'-ma-don-hang').text("Mã đơn hàng : "+ma_don_hang);
                 //Thêm link sửa và in
-                var edit_url = '<?= Url::to(['/admin/donhang/a/edit'])?>'+'/'+id;
-                var print_url = '<?= Url::to(['/admin/donhang/a/print'])?>'+'/'+id;
+                var edit_url = '<?= Url::to(['/donhang/edit'])?>'+'/'+id;
+                var print_url = '<?= Url::to(['/donhang/print'])?>'+'/'+id;
                 $('#form'+index+'-link-edit').attr('href', edit_url);
                 $('#form'+index+'-link-edit').attr('target', '_blank');
                 $('#form'+index+'-link-print').attr('href', print_url);

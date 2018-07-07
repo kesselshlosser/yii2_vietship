@@ -1,103 +1,50 @@
 <?php
-namespace app\modules\giashipnoithanh\controllers;
+namespace app\controllers;
 
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\widgets\ActiveForm;
 
-use yii\easyii\components\Controller;
+use \yii\web\Controller;
 use app\modules\giashipnoithanh\models\Giashipnoithanh;
 use \app\modules\duongpho\models\Duongpho;
 use \app\modules\goidichvu\models\Goidichvu;
 
-class AController extends Controller
+class GiashipnoithanhController extends Controller
 {
     public function actionIndex()
     {
-        $data = new ActiveDataProvider([
-            'query' => Giashipnoithanh::find(),
-            'pagination' => [
-                'pageSize' => 0
-            ]
-        ]);
-
-        return $this->render('index', [
-            'data' => $data
-        ]);
+        $baseUrl = \yii\helpers\Url::base(true);
+        return $this->redirect($baseUrl.'/giashipnoithanh/calculate-price');
     }
 
     public function actionCreate()
     {
-        $model = new Giashipnoithanh;
-
-        if ($model->load(Yii::$app->request->post())) {
-            if(Yii::$app->request->isAjax){
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            }
-            else{
-                if($model->save()){
-                    $this->flash('success', 'Tạo giá ship nội thành thành công!');
-                    return $this->redirect(['/admin/'.$this->module->id]);
-                }
-                else{
-                    $this->flash('error', 'Tạo giá ship nội thành thất bại! Hãy kiểm tra lại thông tin vừa khởi tạo!');
-                    return $this->refresh();
-                }
-            }
-        }
-        else {
-            return $this->render('create', [
-                'model' => $model
-            ]);
-        }
+        $baseUrl = \yii\helpers\Url::base(true);
+        return $this->redirect($baseUrl.'/giashipnoithanh/calculate-price');
     }
 
     public function actionEdit($id)
     {
-        $model = Giashipnoithanh::findOne($id);
-
-        if($model === null){
-            $this->flash('error', "Không tìm thấy giá ship nội thành nào");
-            return $this->redirect(['/admin/'.$this->module->id]);
-        }
-
-        if ($model->load(Yii::$app->request->post())) {
-            if(Yii::$app->request->isAjax){
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            }
-            else{
-                if($model->save()){
-                    $this->flash('success', "Cập nhật giá ship nội thành thành công");
-                }
-                else{
-                    $this->flash('error', "Cập nhật giá ship nội thành thất bại. Hãy kiểm tra lại thông tin!");
-                }
-                return $this->refresh();
-            }
-        }
-        else {
-            return $this->render('edit', [
-                'model' => $model
-            ]);
-        }
+        $baseUrl = \yii\helpers\Url::base(true);
+        return $this->redirect($baseUrl.'/giashipnoithanh/calculate-price');
     }
 
     public function actionDelete($id)
     {
-        if(($model = Giashipnoithanh::findOne($id))){
-            $model->delete();
-        } else {
-            $this->error = "Không tìm thấy giá ship nội thành nào";
-        }
-        return $this->formatResponse("Xóa giá ship nội thành thành công");
+        $baseUrl = \yii\helpers\Url::base(true);
+        return $this->redirect($baseUrl.'/giashipnoithanh/calculate-price');
     }
     
     public function actionCalculatePrice()
     {
         $model = new Giashipnoithanh();
-        
+        // Lấy địa chỉ lấy hàng mặc định của khách hàng
+        if (Yii::$app->session->has('user')) {
+            $user = Yii::$app->session->get('user');
+            $kh_id = $user['kh_id'];
+            // $dclh_default = 
+        }
         if($model->load(Yii::$app->request->post()))
         {
             $dataForm = Yii::$app->request->post()[$model->formName()];

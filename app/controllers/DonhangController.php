@@ -1,11 +1,11 @@
 <?php
-namespace app\modules\donhang\controllers;
+namespace app\controllers;
 
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\widgets\ActiveForm;
 
-use yii\easyii\components\Controller;
+use \yii\web\Controller;
 use app\modules\donhang\models\Donhang;
 use yii\helpers\Json;
 use app\modules\giashipnoithanh\models\Giashipnoithanh;
@@ -18,14 +18,17 @@ use app\modules\khachhang\models\Khachhang;
 use yii\easyii\models\Quyettoandonhang;
 use \yii\easyii\models\Admin;
 
-class AController extends Controller
+class DonhangController extends Controller
 {
     public function actionIndex()
     {
+        if (\Yii::$app->session->has('user')) {
+            $user = \Yii::$app->session->get('user');
+        }
         $model = new Donhang;
+        $kh_id = $user['kh_id'];
         $data = new ActiveDataProvider([
-            'query' => Donhang::find(),
-            'sort'=> ['defaultOrder' => ['time' => SORT_DESC]],
+            'query' => Donhang::find()->where(['kh_id' => $kh_id]),
             'pagination' => [
                 'pageSize' => 0
             ]
@@ -38,19 +41,6 @@ class AController extends Controller
             $dataArr = [];
             $type = $formData['smForm'];
             switch ($type) {
-                case 'duyetdon':
-                    $dh_id = $formData['dh_id'];
-                    $model = Donhang::findOne($dh_id);
-                    $model->trang_thai = 'Đã duyệt. chờ lấy';
-                    if ($model->save(false)) {
-                        $message = 'Duyệt đơn thành công';
-                        $this->flash('success', $message);
-                    } else {
-                        $message = 'Duyệt đơn thất bại';
-                        $this->flash('error', $message);
-                    }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
-                break;
                 case 'chonNvl':
                 case 'chonNvlKhac':
                     $dataArr['id'] = $formData['nv_id'];
@@ -82,7 +72,7 @@ class AController extends Controller
                         $message = 'Huỷ đơn hàng thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/donhang', '#' => $dh_id]);
                 break;
                 case 'phuphi':
                     $dh_id = $formData['dh_id'];
@@ -102,7 +92,7 @@ class AController extends Controller
                         $message = 'Thêm phụ phí thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/donhang', '#' => $dh_id]);
                 break;
                 case 'hoanhang':
                     $dh_id = $formData['dh_id'];
@@ -129,7 +119,7 @@ class AController extends Controller
                         $model->trang_thai = 'Chờ hoàn hàng';
                     }
                     if ($model->save(false)) {
-                        return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                        return $this->redirect(['/donhang', '#' => $dh_id]);
                     }
                 break;
                 default:
@@ -175,7 +165,7 @@ class AController extends Controller
                 }
                 if ($saveToDhqtStatus) {
                     $this->flash('success', $message);
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/donhang', '#' => $dh_id]);
                 } else {
                     $this->flash('error', $error);
                     return $this->refresh();
@@ -194,7 +184,11 @@ class AController extends Controller
 
     public function actionCreate()
     {
+        if (\Yii::$app->session->has('user')) {
+            $user = \Yii::$app->session->get('user');
+        }
         $model = new Donhang;
+        $kh_id = $user['kh_id'];
         //Khởi tạo mảng dịch vụ phụ trội
         $model_dvpt = [];
         $model_dvpt['dvpt1'] = [
@@ -223,7 +217,10 @@ class AController extends Controller
                 
         if ($model->load(Yii::$app->request->post())) {
             $dataPost = Yii::$app->request->post();
-            $kh_id = $dataPost['kh_id'];
+            if (\Yii::$app->session->has('user')) {
+                $user = \Yii::$app->session->get('user');
+            }
+            $kh_id = $user['kh_id'];
             $hinh_thuc_thanh_toan = $dataPost['Donhang']['hinh_thuc_thanh_toan'];
             $tong_tien = $dataPost['Donhang']['tong_tien'];
             $dia_chi_lay_hang = $dataPost['dia_chi_lay_hang'];
@@ -289,13 +286,12 @@ class AController extends Controller
                 'trangThai' => 'Chờ duyệt'
             ];
             $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
-            $model->trang_thai = 'Đã duyệt,chờ lấy';
+            $model->trang_thai = 'Chờ duyệt';
             $model->kh_id = $kh_id;
             $model->time = time();
             
             if($model->save(false)){
-                if($dataPost['Donhang']['cp_id'])
-                {
+                if($dataPost['Donhang']['cp_id']) {
                     //Lưu khách hàng sử dụng coupon nào vào bảng kh_coupon
                     $cp_id = $dataPost['Donhang']['cp_id'];
                     //Kiểm tra xem đã sử dụng chưa
@@ -337,6 +333,7 @@ class AController extends Controller
         else {
             return $this->render('create', [
                 'model' => $model,
+                'kh_id' => $kh_id
             ]);
         }
     }
@@ -848,8 +845,8 @@ class AController extends Controller
     //Function print order
     public function actionPrint($id)
     {
-        $model = Donhang::findOne($id);
-        return $this->renderPartial('print', ['model' => $model]);
+        // $model = Donhang::findOne($id);
+        // return $this->renderPartial('print', ['model' => $model]);
     }
     
     //Function lấy ra những gói khách hàng được áp dụng đối với khách hàng và có khu vực áp dụng tương ứng với khu vực giao
@@ -1242,12 +1239,8 @@ class AController extends Controller
         }
         if ($model->save(false)) {
             return true;
-            // $this->flash('success', $message);
-            // return $this->redirect(['/admin/donhang']);
         } else {
             return false;
-            // $this->flash('error', $error);
-            // return $this->refresh();
         }
     }
 
