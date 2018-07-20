@@ -8,6 +8,7 @@ use \app\modules\duongpho\models\Duongpho;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use richardfan\widget\JSRegister;
+use \yii\easyii\models\Diachilayhang;
 ?>
 
 <style>
@@ -78,16 +79,21 @@ use richardfan\widget\JSRegister;
                     ]
                 ])?>
                 
-                <?=
-                    $form->field($model, 'noi_lay_id')->widget(Select2::className(), [
+                <?php
+                    $default_noi_lay_hang = Diachilayhang::find()->where(['kh_id' => $kh_id])->orderBy(['dclh_id' => SORT_ASC])->one()['dp_id'];
+                    echo Select2::widget([
+                        'model' => $model,
+                        'name' => 'noi_lay_id',
+                        'value' => $default_noi_lay_hang,
                         'data' => ArrayHelper::map(Duongpho::find()->all(), 'dp_id', 'ten_pho'),
                         'options' => [
                             'class' => 'noi-lay',
+                            'id' => 'noi-lay-id',
                             'placeholder' => 'Chọn nơi lấy'
                         ]
-                    ])
+                    ]);
                 ?>
-
+                        
                 <?=
                     $form->field($model, 'noi_giao_id')->widget(Select2::className(), [
                         'data' => ArrayHelper::map(Duongpho::find()->all(), 'dp_id', 'ten_pho'),
@@ -116,6 +122,10 @@ use richardfan\widget\JSRegister;
 
 <?php JSRegister::begin();?>
 <script>
+    const resultValue = $('#noi-lay-id').find('option:selected').text();
+    console.log('resultValue', resultValue)
+    $('.tt-noi-lay').text(resultValue);
+
     function autoFillPlace(sourceClass, resultClass) {
         const sourceTarget = $(`.${sourceClass}`)
         const resultTarget = $(`.${resultClass}`)

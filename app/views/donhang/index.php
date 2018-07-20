@@ -51,7 +51,7 @@ $module = $this->context->module->id;
                     </header>
                     <div class="panel-body">
                         <?php if($data->count > 0):?>
-                            <table id='table-don-hang' class="table responsive-data-table table-striped" style="font-size: 13px; width: 100%">
+                            <table id='table-don-hang' class="table table-striped" style="font-size: 13px; width: 100%">
                                 <thead>
                                     <tr>
                                         <th>
@@ -123,7 +123,7 @@ $module = $this->context->module->id;
                                                                     </div>
 
                                                                     <div style="text-align: right" class="col-md-7 col-sm-6 col-xs-6">
-                                                                        <?= $item->tong_tien.' VNĐ'?>
+                                                                        <?= number_format($item->tong_tien, 0, '', ',').' VNĐ'?>
                                                                     </div>
                                                                 </div>
 
@@ -133,7 +133,7 @@ $module = $this->context->module->id;
                                                                     </div>
 
                                                                     <div style="text-align: right" class="col-md-7 col-sm-6 col-xs-6">
-                                                                        <?= $item->tien_thu_ho.' VNĐ'?>
+                                                                        <?= number_format($item->tien_thu_ho, 0, '', ',').' VNĐ'?>
                                                                     </div>
                                                                 </div>
                                                                 
@@ -415,7 +415,7 @@ $module = $this->context->module->id;
                                             
                                             <td width='110'>
                                                 <?=
-                                                    $item->tong_tien > 0 ? $item->tong_tien.' VNĐ' : '0 VNĐ';
+                                                    $item->tong_tien > 0 ? number_format($item->tong_tien, 0, '', ',').' VNĐ' : '0 VNĐ';
                                                 ?>
                                                 <?php if ($item->phu_phi):?>
                                                     <br>
@@ -428,7 +428,7 @@ $module = $this->context->module->id;
                                             
                                             <td>
                                                 <?=
-                                                    $item->tien_thu_ho > 0 ? $item->tien_thu_ho.' VNĐ' : '0 VNĐ';
+                                                    $item->tien_thu_ho > 0 ? number_format($item->tien_thu_ho, 0, '', ',').' VNĐ' : '0 VNĐ';
                                                 ?>
                                             </td>
                                             
@@ -612,7 +612,7 @@ $module = $this->context->module->id;
                                                             ]);
                                                         ?>
                                                             <div class="col-md-12">
-                                                                <textarea rows="4" class="col-md-12" placeHolder="Lý do không duyệt" name='ly_do_khong_duyet'></textarea>
+                                                                <textarea rows="4" class="col-md-12" placeHolder="Lý do huỷ đơn" name='ly_do_huy_don'></textarea>
                                                                 <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
                                                             </div>
                                                             <div class='col-md-12' style='margin-top: 10px'>
@@ -739,16 +739,27 @@ $module = $this->context->module->id;
                                                             <i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa
                                                         </a>
                                                     </div>
-
-                                                    <div>
-                                                        <a data-toggle='modal'
+                                                    <?php if ($item->trang_thai == 'Đã duyệt chờ lấy' || $item->trang_thai == 'Đang lấy' || $item->trang_thai == 'Chờ lấy lại' || $item->trang_thai == 'Chờ duyệt'):?>
+                                                        <div>
+                                                            <a data-toggle='modal'
+                                                                type="button"
+                                                                style="width:100%; margin-bottom: 3px"
+                                                                class="btn btn-sm btn-default"
+                                                                data-target='#<?= 'huydon'.$item->dh_id?>'>
+                                                                Huỷ đơn
+                                                            </a> 
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <button
+                                                            data-toggle='modal'
+                                                            data-target='#hh<?= $item->dh_id?>'
                                                             type="button"
-                                                            style="width:100%; margin-bottom: 3px"
-                                                            class="btn btn-sm btn-default"
-                                                            data-target='#<?= 'huydon'.$item->dh_id?>'>
-                                                            Huỷ đơn
-                                                        </a> 
-                                                    </div>
+                                                            style='width:100%; margin-bottom: 3px;'
+                                                            class='btn btn-sm btn-default'
+                                                        >
+                                                        Hoàn hàng
+                                                        </button>
+                                                    <?php endif;?>
 
                                                     <div>
                                                         <a style="width:100%; margin-bottom: 3px" onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>

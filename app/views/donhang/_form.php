@@ -60,9 +60,14 @@ $module = $this->context->module->id;
                                     $dclh_value = $data[$i]['ten_goi_nho'].'/'.$data[$i]['so_dien_thoai'].'/'.$data[$i]['dia_chi_text'];
                                     $out[$dclh_id] = $dclh_value;
                                 }
+                                foreach($out as $k => $o) {
+                                    $default_dclh = $k;
+                                    break;
+                                }
                                 echo Select2::widget([
                                     'model' => $model,
-                                    'attribute' => 'dia_chi_lay_hang',
+                                    'name' => 'dia_chi_lay_hang',
+                                    'value' => $default_dclh,
                                     'data' => $out,
                                     'options' => [
                                         'id' => 'dclh-id',
@@ -692,7 +697,7 @@ $module = $this->context->module->id;
             
                 <div class="row">
                     <div class="col-md-12" style="padding-left : 30px !important; margin-bottom: 15px">
-                        <button class="btn btn-warning" id="add-new-order" disabled><i class="glyphicon glyphicon-plus"></i> Thêm đơn hàng</button>
+                        <button class="btn btn-warning" id="add-new-order"><i class="glyphicon glyphicon-plus"></i> Thêm đơn hàng</button>
                     </div>
                 </div>
         </div>
@@ -765,6 +770,7 @@ $module = $this->context->module->id;
     //Thêm mới đơn hàng
     var order_number = 0;
     $('#add-new-order').on('click', function(e){
+        $('#wrapper-multi-order').show();
         order_number++;
         if(order_number > 19) //display block and remove wrapper_form(id = 'wrapper-formindex') and appendTo wrapper_multi_order
         {
@@ -933,7 +939,7 @@ $module = $this->context->module->id;
     function tinhtientudong(index, cb)
     {
         var kvl_id = $('#dclh-id').val();
-        var kh_id = 12;
+        var kh_id = <?= $kh_id?>;
         var url = '<?= Url::to(['/donhang/tinh-tien-tu-dong'])?>';
         var data = $('#form'+index).serialize() + "&kvl_id=" + kvl_id + "&kh_id=" + kh_id + "&dvpt=" + JSON.stringify(arr_dvpt[index]);
         $.post(
@@ -1019,7 +1025,7 @@ $module = $this->context->module->id;
         var index = $(e.target).parents('.wrapper-form').find('.order_index').val();
         var gdv_id = $('#form'+index+'-goi_dich_vu').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = 12;
+        var kh_id = <?= $kh_id?>;
         if(gdv_id && kvl_id && kh_id)
         {
             tinhtientudong(index);
@@ -1035,7 +1041,7 @@ $module = $this->context->module->id;
         var gdv_id = $(e.target).val();
         var kvg_id = $('#form'+index+'-pho_giao_hang').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = 12;
+        var kh_id = <?= $kh_id?>;
         if(kvg_id && kvl_id && kh_id)
         {
             tinhtientudong(index, () => thongbaothoigianship(index, gdv_id));
@@ -1076,7 +1082,7 @@ $module = $this->context->module->id;
         var gdv_id = $('#form'+index+'-goi_dich_vu').val();
         var kvg_id = $('#form'+index+'-pho_giao_hang').val();
         var kvl_id = $('#dclh-id').val();
-        var kh_id = 12;
+        var kh_id = <?= $kh_id?>;
         if(gdv_id && kvg_id && kvl_id && kh_id)
         {
             tinhtientudong(index);
@@ -1086,7 +1092,7 @@ $module = $this->context->module->id;
     //Địa chỉ lấy hàng change
     $('#dclh-id').change((e) => {
         var kvl_id = $(e.target).val();
-        var kh_id = 12;
+        var kh_id = <?= $kh_id?>;
         $('.wrapper-form').each(function(index, el) {
             if($(el).is(':visible'))
             {
@@ -1099,17 +1105,12 @@ $module = $this->context->module->id;
                 }
             }
         })
-        if(kvl_id)
-        {
-            $('#add-new-order').attr('disabled', false);
-            $('#wrapper-multi-order').show();
-        }
     })
     
     //Submit form
     $('form').on('beforeSubmit', function(e){
         var kvl_id = $('#dclh-id').val();
-        var kh_id = 12
+        var kh_id = <?= $kh_id?>;
         var dia_chi_lay_hang = $('#dclh-id option:selected').text();
         var form = $(this);
         var index = $(this).find('.order_index').val();

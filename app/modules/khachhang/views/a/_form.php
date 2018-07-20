@@ -15,7 +15,7 @@ use yii\bootstrap\Modal;
 $module = $this->context->module->id;
 ?>
 <?php $form = ActiveForm::begin([
-    'enableAjaxValidation'      => true,
+    'enableAjaxValidation' => false,
     'options' => ['enctype' => 'multipart/form-data', 'class' => 'model-form']
 ]); ?>
 <!--<style>
@@ -76,11 +76,11 @@ $module = $this->context->module->id;
                 
                 <div class="row">
                     <div class="col-md-6">
-                        <?= $form->field($model, 'ten_shop')?>
-                    </div>
-                    
-                    <div class="col-md-6">
                         <?= $form->field($model, 'facebook')?>
+                    </div>
+
+                    <div class="col-md-6">
+                        
                     </div>
                 </div>
                 

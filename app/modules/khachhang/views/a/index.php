@@ -38,7 +38,7 @@ $module = $this->context->module->id;
                     </header>
                     <div class="panel-body">
                         <?php if($data->count > 0):?>
-                            <table class="table responsive-data-table table-striped">
+                            <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th width="30px">
@@ -58,6 +58,9 @@ $module = $this->context->module->id;
                                         </th>
                                         <th>
                                             Email
+                                        </th>
+                                        <th>
+                                            Ngày tạo tài khoản
                                         </th>
                                         <th width="120px">
                                             
@@ -338,6 +341,9 @@ $module = $this->context->module->id;
                                             </td>
                                             <td>
                                                 <?= $item->email?>
+                                            </td>
+                                            <td>
+                                                <?= date('H:i d/m/Y', $item->time)?>
                                             </td>
                                             <td style="text-align: center">
                                                 <div class="btn-group btn-group-sm" role="group">

@@ -41,7 +41,7 @@ class AController extends Controller
                 case 'duyetdon':
                     $dh_id = $formData['dh_id'];
                     $model = Donhang::findOne($dh_id);
-                    $model->trang_thai = 'Đã duyệt. chờ lấy';
+                    $model->trang_thai = 'Đã duyệt chờ lấy';
                     if ($model->save(false)) {
                         $message = 'Duyệt đơn thành công';
                         $this->flash('success', $message);
@@ -71,10 +71,10 @@ class AController extends Controller
                 break;
                 case 'huyDon':
                     $dh_id = $formData['dh_id'];
-                    $ly_do_khong_duyet = $formData['ly_do_khong_duyet'];
+                    $ly_do_huy_don = $formData['ly_do_huy_don'];
                     $model = Donhang::findOne($dh_id);
                     $model->trang_thai = 'Huỷ đơn';
-                    $model->ly_do_khong_duyet = $ly_do_khong_duyet;
+                    $model->ly_do_huy_don = $ly_do_huy_don;
                     if ($model->save(false)) {
                         $message = 'Huỷ đơn hàng thành công';
                         $this->flash('success', $message);
@@ -289,7 +289,7 @@ class AController extends Controller
                 'trangThai' => 'Chờ duyệt'
             ];
             $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
-            $model->trang_thai = 'Đã duyệt,chờ lấy';
+            $model->trang_thai = 'Đã duyệt chờ lấy';
             $model->kh_id = $kh_id;
             $model->time = time();
             
@@ -1167,7 +1167,7 @@ class AController extends Controller
                     'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
                     'lydo' => '',
                     'ghichu' => '',
-                    'trangThai' => 'Đã duyệt, chờ lấy'
+                    'trangThai' => 'Đã duyệt chờ lấy'
                 ];
                 $model->nhan_vien_lay_hang = $dataJSON;
                 $model->trang_thai = 'Đang lấy';

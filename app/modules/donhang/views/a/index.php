@@ -614,7 +614,7 @@ $module = $this->context->module->id;
                                                             ]);
                                                         ?>
                                                             <div class="col-md-12">
-                                                                <textarea rows="4" class="col-md-12" placeHolder="Lý do không duyệt" name='ly_do_khong_duyet'></textarea>
+                                                                <textarea rows="4" class="col-md-12" placeHolder="Lý do huỷ đơn" name='ly_do_huy_don'></textarea>
                                                                 <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/>
                                                             </div>
                                                             <div class='col-md-12' style='margin-top: 10px'>

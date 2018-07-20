@@ -16,6 +16,8 @@ use yii\easyii\models\Hinhthucthanhtoan;
 use yii\validators\RequiredValidator;
 use \yii\easyii\models\Hoadon;
 use \yii\easyii\models\Hoadonchitiet;
+use \app\modules\donhang\models\Donhang;
+use \app\modules\goidichvu\models\Goidichvu;
 
 class KhachhangController extends Controller
 {
@@ -534,6 +536,234 @@ class KhachhangController extends Controller
     }
 
     public function actionQuanlytien() {
+        // Hiển thị số tiền còn phải thanh toán được tính dựa trên trạng thái của các đơn hàng của khách
+        // Đơn hàng nằm trong hoá đơn mà có trạng thái:
+        // 1 - Chờ xử lý -> chưa thanh toán -> Tính toán
+        // 2 - Đang thanh toán -> đang thanh toán -> Tính toán
+        // 3 - Đã thanh toán -> đã thanh toán -> không tính toán chỉ hiển thị
         
+        // Lấy ra mảng các đơn hàng của khách hàng đó
+        if (\Yii::$app->session->has('user')) {
+            $user = \Yii::$app->session->get('user');
+            $kh_id = $user['kh_id'];
+        }
+        $model_kh = Khachhang::find()->where(['kh_id' => $kh_id])->one();
+        $model_dh = Donhang::find()
+        ->where(['kh_id' => $kh_id])
+        ->andWhere(['trang_thai' => 'Đã giao'])
+        ->asArray()
+        ->all();
+
+        // Lấy ra tất cả các hoá đơn
+        $model_hd = Hoadon::find()
+        ->with('hoadonchitiet')
+        ->where(['kh_id' => $kh_id])
+        ->asArray()
+        ->all();
+        $model_choxuly = [];
+        $model_dangtt = [];
+        $model_datt = [];
+        foreach($model_hd as $key => $item) {
+            if ($item['trang_thai'] == 'Đang thanh toán') {
+                array_push($model_dangtt, $model_hd[$key]);
+            } else if ($item['trang_thai'] == 'Đã thanh toán') {
+                array_push($model_datt, $model_hd[$key]);
+            } else if ($item['trang_thai'] == 'Chờ xử lý') {
+                array_push($model_choxuly, $model_hd[$key]);
+            }
+        }
+
+        $model_dh_chuatt = [];
+        $model_dh_dangtt = [];
+        $model_dh_datt = [];
+
+        $isContainChoXuLy = false;
+        $isContainDangThanhToan = false;
+        $isContainDaThanhToan = false;
+        for ($i = 0; $i < count($model_dh); $i++) {
+            $ma_dh = $model_dh[$i]['ma_don_hang'];
+            // Đang thanh toán
+            for ($j = 0 ; $j < count($model_dangtt); $j++) {
+                for ($jj = 0; $jj < count($model_dangtt[$j]['hoadonchitiet']); $jj++) {
+                    $ma_dh_compare = $model_dangtt[$j]['hoadonchitiet'][$jj]['ma_don_hang'];
+                    if ($ma_dh == $ma_dh_compare) {
+                        $trang_thai = $model_dangtt[$j]['trang_thai'];
+                        $thoi_gian_thanh_toan = $model_dangtt[$j]['thoi_gian_thanh_toan'];
+
+                        // Push vao mang dang tt
+                        switch($model_dh[$i]['hinh_thuc_thanh_toan']) {
+                            case 'Người gửi thanh toán':
+                            case 'Người nhận thanh toán':
+                            case 'Thanh toán sau':
+                            $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                            $tien_nhan_lai = $tien_thu_ho;  
+                            break;
+                            case 'Thanh toán sau COD':
+                                $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                                $tong_tien = $model_dh[$i]['tong_tien'] > 0 ? $model_dh[$i]['tong_tien'] : 0;
+                                $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                $tien_nhan_lai = $tien_thu_ho_phai_tra;
+                            break;
+                        }
+                        
+                        $new_item = [
+                            'ma_don_hang' => $model_dh[$i]['ma_don_hang'],
+                            'thoi_gian_tao_don' => $model_dh[$i]['time'],
+                            'dia_chi_nguoi_nhan' => JSON_decode($model_dh[$i]['nguoi_nhan'], true)['dia_chi_giao_hang'],
+                            'goi_cuoc' => Goidichvu::find()->where(['gdv_id' => $model_dh[$i]['gdv_id']])->one()['ten_goi_dich_vu'],
+                            'khu_vuc' => $model_dh[$i]['pham_vi_don_hang'],
+                            'phuong_thuc_tra_ship' => $model_dh[$i]['hinh_thuc_thanh_toan'],
+                            'tien_ship' => $model_dh[$i]['tong_tien'],
+                            'tien_thu_ho' => $model_dh[$i]['tien_thu_ho'],
+                            'tien_nhan_lai' => $tien_nhan_lai,
+                            'trang_thai' => $trang_thai,
+                            'thoi_gian_thanh_toan' => $thoi_gian_thanh_toan
+                        ];
+                        array_push($model_dh_dangtt, $new_item);
+                        $isContainDangThanhToan = true;
+                        break;
+                    }
+                }
+            }
+            if ($isContainDangThanhToan) {
+                $isContainDangThanhToan = false;
+                continue;
+            }
+            // Đã thanh toán
+            for ($k = 0 ; $k < count($model_datt); $k++) {
+                for ($kk = 0; $kk < count($model_datt[$k]['hoadonchitiet']); $kk++) {
+                    $ma_dh_compare = $model_datt[$k]['hoadonchitiet'][$kk]['ma_don_hang'];
+                    if ($ma_dh == $ma_dh_compare) {
+                        $trang_thai = $model_datt[$k]['trang_thai'];
+                        $thoi_gian_thanh_toan = $model_datt[$k]['thoi_gian_thanh_toan'];
+
+                        // Push vao mang dang tt
+                        switch($model_dh[$i]['hinh_thuc_thanh_toan']) {
+                            case 'Người gửi thanh toán':
+                            case 'Người nhận thanh toán':
+                            case 'Thanh toán sau':
+                            $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                            $tien_nhan_lai = $tien_thu_ho;  
+                            break;
+                            case 'Thanh toán sau COD':
+                                $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                                $tong_tien = $model_dh[$i]['tong_tien'] > 0 ? $model_dh[$i]['tong_tien'] : 0;
+                                $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                $tien_nhan_lai = $tien_thu_ho_phai_tra;
+                            break;
+                        }
+                        $new_item = [
+                            'ma_don_hang' => $model_dh[$i]['ma_don_hang'],
+                            'thoi_gian_tao_don' => $model_dh[$i]['time'],
+                            'dia_chi_nguoi_nhan' => JSON_decode($model_dh[$i]['nguoi_nhan'], true)['dia_chi_giao_hang'],
+                            'goi_cuoc' => Goidichvu::find()->where(['gdv_id' => $model_dh[$i]['gdv_id']])->one()['ten_goi_dich_vu'],
+                            'khu_vuc' => $model_dh[$i]['pham_vi_don_hang'],
+                            'phuong_thuc_tra_ship' => $model_dh[$i]['hinh_thuc_thanh_toan'],
+                            'tien_ship' => $model_dh[$i]['tong_tien'],
+                            'tien_thu_ho' => $model_dh[$i]['tien_thu_ho'],
+                            'tien_nhan_lai' => $tien_nhan_lai,
+                            'trang_thai' => $trang_thai,
+                            'thoi_gian_thanh_toan' => $thoi_gian_thanh_toan
+                        ];
+                        array_push($model_dh_datt, $new_item);
+                        $isContainDaThanhToan = true;
+                        break;
+                    }
+                }
+            }
+            if ($isContainDaThanhToan) {
+                $isContainDaThanhToan = false;
+                continue;
+            }
+            // Chờ xử lý -> chưa thanh toán
+            for ($l = 0 ; $l < count($model_choxuly); $l++) {
+                for ($ll = 0; $ll < count($model_choxuly[$l]['hoadonchitiet']); $ll++) {
+                    $ma_dh_compare = $model_choxuly[$l]['hoadonchitiet'][$ll]['ma_don_hang'];
+                    if ($ma_dh == $ma_dh_compare) {
+                        $trang_thai = 'Chưa thanh toán';
+                        $thoi_gian_thanh_toan = $model_choxuly[$l]['thoi_gian_thanh_toan'];
+
+                        // Push vao mang dang tt
+                        switch($model_dh[$i]['hinh_thuc_thanh_toan']) {
+                            case 'Người gửi thanh toán':
+                            case 'Người nhận thanh toán':
+                            case 'Thanh toán sau':
+                            $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                            $tien_nhan_lai = $tien_thu_ho;  
+                            break;
+                            case 'Thanh toán sau COD':
+                                $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                                $tong_tien = $model_dh[$i]['tong_tien'] > 0 ? $model_dh[$i]['tong_tien'] : 0;
+                                $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                $tien_nhan_lai = $tien_thu_ho_phai_tra;
+                            break;
+                        }
+                        $new_item = [
+                            'ma_don_hang' => $model_dh[$i]['ma_don_hang'],
+                            'thoi_gian_tao_don' => $model_dh[$i]['time'],
+                            'dia_chi_nguoi_nhan' => JSON_decode($model_dh[$i]['nguoi_nhan'], true)['dia_chi_giao_hang'],
+                            'goi_cuoc' => Goidichvu::find()->where(['gdv_id' => $model_dh[$i]['gdv_id']])->one()['ten_goi_dich_vu'],
+                            'khu_vuc' => $model_dh[$i]['pham_vi_don_hang'],
+                            'phuong_thuc_tra_ship' => $model_dh[$i]['hinh_thuc_thanh_toan'],
+                            'tien_ship' => $model_dh[$i]['tong_tien'],
+                            'tien_thu_ho' => $model_dh[$i]['tien_thu_ho'],
+                            'tien_nhan_lai' => $tien_nhan_lai,
+                            'trang_thai' => $trang_thai,
+                            'thoi_gian_thanh_toan' => $thoi_gian_thanh_toan
+                        ];
+                        array_push($model_dh_chuatt, $new_item);
+                        $isContainChoXuLy = true;
+                        break;
+                    }
+                }
+            }
+            if ($isContainChoXuLy) {
+                $isContainChoXuLy = false;
+                continue;
+            }
+            // Còn lại cho hết vào chưa thanh toán
+            switch($model_dh[$i]['hinh_thuc_thanh_toan']) {
+                case 'Người gửi thanh toán':
+                case 'Người nhận thanh toán':
+                case 'Thanh toán sau':
+                $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                $tien_nhan_lai = $tien_thu_ho;  
+                break;
+                case 'Thanh toán sau COD':
+                    $tien_thu_ho = $model_dh[$i]['tien_thu_ho'] > 0 ? $model_dh[$i]['tien_thu_ho'] : 0;
+                    $tong_tien = $model_dh[$i]['tong_tien'] > 0 ? $model_dh[$i]['tong_tien'] : 0;
+                    $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                    $tien_nhan_lai = $tien_thu_ho_phai_tra;
+                break;
+            }
+            $new_item = [
+                'ma_don_hang' => $model_dh[$i]['ma_don_hang'],
+                'thoi_gian_tao_don' => $model_dh[$i]['time'],
+                'dia_chi_nguoi_nhan' => JSON_decode($model_dh[$i]['nguoi_nhan'], true)['dia_chi_giao_hang'],
+                'goi_cuoc' => Goidichvu::find()->where(['gdv_id' => $model_dh[$i]['gdv_id']])->one()['ten_goi_dich_vu'],
+                'khu_vuc' => $model_dh[$i]['pham_vi_don_hang'],
+                'phuong_thuc_tra_ship' => $model_dh[$i]['hinh_thuc_thanh_toan'],
+                'tien_ship' => $model_dh[$i]['tong_tien'],
+                'tien_thu_ho' => $model_dh[$i]['tien_thu_ho'],
+                'tien_nhan_lai' => $tien_nhan_lai,
+                'trang_thai' => 'Chưa thanh toán',
+                'thoi_gian_thanh_toan' => $thoi_gian_thanh_toan
+            ];
+            array_push($model_dh_chuatt, $new_item);
+        }
+
+        $models = array_merge($model_dh_chuatt, $model_dh_dangtt, $model_dh_datt);
+        $tong_tien_nhan_lai = 0;
+        foreach($models as $model) {
+            if ($model['trang_thai'] != 'Đã thanh toán') {
+                $tong_tien_nhan_lai += $model['tien_nhan_lai'];
+            }
+        }
+        return $this->render('quanlytien', [
+            'models' => $models,
+            'so_du' => $model_kh['sodu'],
+            'so_no' => $model_kh['sono'],
+            'tong_tien_nhan_lai' => $tong_tien_nhan_lai
+        ]);
     }
 }

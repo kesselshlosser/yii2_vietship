@@ -9,6 +9,7 @@ use \yii\easyii\models\LoginFormFrontEnd;
 use app\modules\khachhang\models\Khachhang;
 use \yii\easyii\models\Diachilayhang;
 use \yii\easyii\models\Hinhthucthanhtoan;
+use app\components\AuthHandler;
 
 class SiteController extends Controller
 {
@@ -21,8 +22,17 @@ class SiteController extends Controller
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
+            ],
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'onAuthSuccess'],
             ]
         ];
+    }
+
+    public function onAuthSuccess($client)
+    {
+        (new AuthHandler($client))->handle();
     }
 
     public function actionIndex()
@@ -43,6 +53,8 @@ class SiteController extends Controller
                 $password = md5($loginFormData['password']);
                 $model_kh->ten_dang_nhap = $email;
                 $model_kh->mat_khau = $password;
+                $model_kh->email = $email;
+                $model_kh->time = time();
                 if ($model_kh->save(false)) {
                     $model_khach_hang = new Khachhang();
                     $model_dclh = new Diachilayhang();
@@ -195,7 +207,18 @@ class SiteController extends Controller
     }
 
     public function actionProfile() {
-        return $this->renderPartial('profile', []);
+        if (\Yii::$app->session->has('user')) {
+            $email = \Yii::$app->session->get('user')['email'];
+        }
+        $model_khach_hang = new Khachhang();
+        $model_dclh = new Diachilayhang();
+        $model_httt = new Hinhthucthanhtoan();
+        return $this->renderPartial('profile', [
+            'model_khach_hang' => $model_khach_hang,
+            'model_dclh' => $model_dclh,
+            'model_httt' => $model_httt,
+            'email' => $email
+        ]);
     }
 
     public function actionOut() {

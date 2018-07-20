@@ -84,7 +84,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                 'message' => 'Tiền thu hộ không được nhỏ hơn tổng tiền ship'
             ], 
             [
-                ['lich_trinh_don_hang'],
+                ['lich_trinh_don_hang', 'ly_do_huy_don'],
                 'safe'
             ]           
         ];

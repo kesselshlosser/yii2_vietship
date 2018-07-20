@@ -36,7 +36,8 @@ class AController extends Controller
     public function actionIndex()
     {
         $data = new ActiveDataProvider([
-            'query' => Khachhang::find()->sortDate(),
+            'query' => Khachhang::find(),
+            'sort'=> ['defaultOrder' => ['time' => SORT_DESC]],
             'pagination' => [
                 'pageSize' => 0
             ]
@@ -273,12 +274,11 @@ class AController extends Controller
                 $model->tinh_nang_an = json_encode($model->arr_tinh_nang_an, JSON_UNESCAPED_UNICODE);
             }
             
-            if(Yii::$app->request->isAjax){
+            if (Yii::$app->request->isAjax) {
                 Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                 return ActiveForm::validate($model);
-            }
-            else{
-                if($model->save()){
+            } else {
+                if($model->save(false)) {
                     $kh_id = $model->id;
                     //Tìm id bắt đầu để reset auto increment
                     $id_reset_ai = Diachilayhang::find()->where(['kh_id' => $kh_id])->one()['dclh_id'];
@@ -690,21 +690,21 @@ class AController extends Controller
     }
 
     public function actionHoadon() {
-        $model = Hoadon::find()->with('hoadonchitiet')->asArray()->all();
+        $model_hd = Hoadon::find()->with('hoadonchitiet')->asArray()->all();
         $model_choxuly = [];
         $model_dangtt = [];
         $model_datt = [];
-        foreach($model as $key => $item) {
+        foreach($model_hd as $key => $item) {
             if ($item['trang_thai'] == 'Đang thanh toán') {
-                $model_dangtt[$key] = $model[$key];
+                array_push($model_dangtt, $model_hd[$key]);
             } else if ($item['trang_thai'] == 'Đã thanh toán') {
-                $model_datt[$key] = $model[$key];
+                array_push($model_datt, $model_hd[$key]);
             } else if ($item['trang_thai'] == 'Chờ xử lý') {
-                $model_choxuly[$key] = $model[$key];
+                array_push($model_choxuly, $model_hd[$key]);
             }
         }
         return $this->render('hoadon', [
-            'models' => $model,
+            'models' => $model_hd,
             'models_dangtt' => $model_dangtt,
             'models_datt' => $model_datt,
             'models_choxuly' => $model_choxuly

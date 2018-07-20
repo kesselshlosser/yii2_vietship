@@ -47,8 +47,9 @@ class GiashipnoithanhController extends Controller
         }
         if($model->load(Yii::$app->request->post()))
         {
-            $dataForm = Yii::$app->request->post()[$model->formName()];
-            $noi_lay_id = $dataForm['noi_lay_id'];
+            $dataPost = Yii::$app->request->post();
+            $dataForm = $dataPost[$model->formName()];
+            $noi_lay_id = $dataPost['noi_lay_id'];
             $noi_giao_id = $dataForm['noi_giao_id'];
             $gdv_id = $dataForm['gdv_id'];
             // Tìm khu vực lấy và khu vực giao
@@ -74,7 +75,7 @@ class GiashipnoithanhController extends Controller
             }
             return -1;
         }
-        return $this->render('calculateprice', ['model' => $model]);
+        return $this->render('calculateprice', ['model' => $model, 'kh_id' => $kh_id]);
     }
 
     //Xử lý thông báo giờ lấy hàng và giờ giao hàng ajax thông qua gói dịch vụ

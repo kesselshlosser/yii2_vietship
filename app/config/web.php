@@ -14,7 +14,21 @@ $config = [
     'vendorPath' => $webroot . '/vendor',
     'timeZone' => 'Asia/Ho_Chi_Minh',
     'components' => [
-        
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'google' => [
+                    'class' => 'yii\authclient\clients\Google',
+                    'clientId' => 'google_client_id',
+                    'clientSecret' => 'google_client_secret',
+                ],
+                'facebook' => [
+                    'class' => 'yii\authclient\clients\Facebook',
+                    'clientId' => '424854251257187',
+                    'clientSecret' => '52ca0b59173a13494235fa7713050b5f',
+                ],
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'lfaNhMtuhvTXhN-v_6xcfPvf7KT3AFIe',

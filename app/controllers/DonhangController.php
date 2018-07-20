@@ -29,6 +29,7 @@ class DonhangController extends Controller
         $kh_id = $user['kh_id'];
         $data = new ActiveDataProvider([
             'query' => Donhang::find()->where(['kh_id' => $kh_id]),
+            'sort'=> ['defaultOrder' => ['time' => SORT_DESC]],
             'pagination' => [
                 'pageSize' => 0
             ]
@@ -61,16 +62,16 @@ class DonhangController extends Controller
                 break;
                 case 'huyDon':
                     $dh_id = $formData['dh_id'];
-                    $ly_do_khong_duyet = $formData['ly_do_khong_duyet'];
+                    $ly_do_huy_don = $formData['ly_do_huy_don'];
                     $model = Donhang::findOne($dh_id);
                     $model->trang_thai = 'Huỷ đơn';
-                    $model->ly_do_khong_duyet = $ly_do_khong_duyet;
+                    $model->ly_do_huy_don = $ly_do_huy_don;
                     if ($model->save(false)) {
                         $message = 'Huỷ đơn hàng thành công';
-                        $this->flash('success', $message);
+                        Yii::$app->session->setFlash('success', $message);
                     } else {
                         $message = 'Huỷ đơn hàng thất bại';
-                        $this->flash('error', $message);
+                        Yii::$app->session->setFlash('error', $message);
                     }
                     return $this->redirect(['/donhang', '#' => $dh_id]);
                 break;
@@ -87,10 +88,10 @@ class DonhangController extends Controller
                     $model->ghi_chu = json_encode($arrGhiChu, JSON_UNESCAPED_UNICODE);
                     if ($model->save(false)) {
                         $message = 'Thêm phụ phí thành công';
-                        $this->flash('success', $message);
+                        Yii::$app->session->setFlash('success', $message);
                     } else {
                         $message = 'Thêm phụ phí thất bại';
-                        $this->flash('error', $message);
+                        Yii::$app->session->setFlash('error', $message);
                     }
                     return $this->redirect(['/donhang', '#' => $dh_id]);
                 break;
@@ -164,14 +165,14 @@ class DonhangController extends Controller
                     break;
                 }
                 if ($saveToDhqtStatus) {
-                    $this->flash('success', $message);
+                    Yii::$app->session->setFlash('success', $message);
                     return $this->redirect(['/donhang', '#' => $dh_id]);
                 } else {
-                    $this->flash('error', $error);
+                    Yii::$app->session->setFlash('error', $error);
                     return $this->refresh();
                 }
             } else {
-                $this->flash('error', $error);
+                Yii::$app->session->setFlash('error', $error);
                 return $this->refresh();
             }
         } else {
@@ -213,7 +214,6 @@ class DonhangController extends Controller
         ];
 
         $model->dvpt = $model_dvpt;
-        
                 
         if ($model->load(Yii::$app->request->post())) {
             $dataPost = Yii::$app->request->post();
@@ -1164,7 +1164,7 @@ class DonhangController extends Controller
                     'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
                     'lydo' => '',
                     'ghichu' => '',
-                    'trangThai' => 'Đã duyệt, chờ lấy'
+                    'trangThai' => 'Đã duyệt chờ lấy'
                 ];
                 $model->nhan_vien_lay_hang = $dataJSON;
                 $model->trang_thai = 'Đang lấy';

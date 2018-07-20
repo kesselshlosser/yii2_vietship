@@ -4,6 +4,8 @@ use \app\assets\AppAsset;
 use yii\captcha\Captcha;
 use \yii\bootstrap\ActiveForm;
 use \richardfan\widget\JSRegister;
+use \yii\authclient\widgets\AuthChoice;
+use \yii\helpers\Url;
 $asset = AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -132,8 +134,8 @@ $asset = AppAsset::register($this);
                                 </div>
 
                                 <div class='row auth'>
-                                    <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Đăng nhập bằng Facebook</a>
-                                    <a style='margin-top: 8px' href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Đăng nhập bằng Google+</a>
+                                    <a href="<?= Url::base(true).'/site/auth?authclient=facebook'?>" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Đăng nhập bằng Facebook</a>
+                                    <a href="<?= Url::base(true).'/site/auth?authclient=google'?>"style='margin-top: 8px' href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Đăng nhập bằng Google+</a>
                                 </div>
 
                                 <div class='row' style='margin-top: 24px; text-align: right'>
