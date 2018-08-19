@@ -139,7 +139,7 @@ $asset = AppAsset::register($this);
                                 </div>
 
                                 <div class='row' style='margin-top: 24px; text-align: right'>
-                                    <a href="#" style='col-md-4 col-md-offset-8'>Tôi quên mật khẩu</a>
+                                    <a href="<?= Url::base(true).'/site/quenmatkhau'?>" style='col-md-4 col-md-offset-8'>Tôi quên mật khẩu</a>
                                 </div>
                             </div>
                         </div>

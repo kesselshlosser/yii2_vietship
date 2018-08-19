@@ -1162,5 +1162,20 @@ $module = $this->context->module->id;
     }).on('submit', function(e){
         e.preventDefault();
     });
+
+    $('.dropdown-toggle').click(e => {
+        const target = e.target;
+        const parent = $(target).parents('.dropdown');
+        if ($(parent).hasClass('open')) {
+            setTimeout(() => {
+                $(parent).removeClass('open');
+            }, 88)
+        } else {
+            setTimeout(() => {
+                $(parent).addClass('open')
+            }, 88)
+            
+        }
+    })
 </script>
 <?php JSRegister::end();?>

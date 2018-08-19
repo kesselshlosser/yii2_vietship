@@ -1,7 +1,14 @@
 {
   "name": "noumo/easyii-shop",
   "description": "Easyiicms simple shop with examples of all modules",
-  "keywords": ["yii2", "cms", "control panel", "admin", "easy", "shop"],
+  "keywords": [
+    "yii2",
+    "cms",
+    "control panel",
+    "admin",
+    "easy",
+    "shop"
+  ],
   "homepage": "http://easyiicms.com",
   "type": "project",
   "license": "GNU GPL V3",
@@ -26,25 +33,35 @@
     "kartik-v/yii2-widget-depdrop": "@dev",
     "kartik-v/yii2-widget-switchinput": "*",
     "phpoffice/phpexcel": "1.8.x-dev",
-    "yiisoft/yii2-authclient": "~2.1.0"
+    "yiisoft/yii2-authclient": "~2.1.0",
+    "yidas/yii2-bower-asset": "dev-master",
+    "2amigos/yii2-chartjs-widget": "~2.0"
   },
   "require-dev": {
-    "yiisoft/yii2-codeception": "*",
+    "codeception/codeception": "*",
     "yiisoft/yii2-debug": "*",
     "yiisoft/yii2-gii": "*",
     "yiisoft/yii2-faker": "*"
   },
   "scripts": {
-    "post-create-project-cmd": ["yii\\composer\\Installer::postCreateProject"]
+    "post-create-project-cmd": [
+      "yii\\composer\\Installer::postCreateProject"
+    ]
   },
   "extra": {
     "yii\\composer\\Installer::postCreateProject": {
-      "generateCookieValidationKey": ["app/config/web.php"]
+      "generateCookieValidationKey": [
+        "app/config/web.php"
+      ]
     },
     "asset-installer-paths": {
       "npm-asset-library": "vendor/npm",
       "bower-asset-library": "vendor/bower"
     },
-    "writable": ["assets", "uploads", "runtime"]
+    "writable": [
+      "assets",
+      "uploads",
+      "runtime"
+    ]
   }
 }

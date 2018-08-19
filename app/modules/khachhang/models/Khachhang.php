@@ -26,14 +26,14 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
     {
         return [
             [['ten_dang_nhap', 'email'], 'unique', 'message' => '{attribute} đã tồn tại'],
-            [['ten_dang_nhap', 'mat_khau', 'email', 'so_dien_thoai', 'dia_chi', 'ten_hien_thi'], 'required', 'message' => "Bạn chưa nhập {attribute}"],
+            [['ten_dang_nhap', 'email', 'so_dien_thoai', 'dia_chi', 'ten_hien_thi'], 'required', 'message' => "Bạn chưa nhập {attribute}"],
             [
                 [
-                    'ten_dang_nhap', 'mat_khau', 'ten_hien_thi', 'email',
+                    'ten_dang_nhap', 'ten_hien_thi', 'email',
                     'so_dien_thoai', 'dia_chi', 'website', 'facebook', 'tinh_nang_an'
                 ], 'string', 'message' => "{attribute} phải là kiểu chuỗi"
             ],
-            [['ten_shop'], 'safe'],
+            [['mat_khau', 'ten_shop', 'forgot_password_code'], 'safe'],
             ['email', 'email', 'message' => "Không đúng định dạng email"],
             [['time'], 'integer'],
             [['gkh_id', 'sodu', 'sono', 'cho_thanh_toan', 'don_hang_da_xuat_hoa_don', 'setting'], 'safe'],

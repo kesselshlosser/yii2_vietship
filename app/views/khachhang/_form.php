@@ -90,25 +90,7 @@ $module = $this->context->module->id;
                     </div>
                     
                     <div class="col-md-6">
-                        <legend><small>Tính năng ẩn</small></legend>
-                        <?php foreach($model->arr_tinh_nang_an as $item):?>
-                            <div class="form-group has-success">
-                                <label class="cbx-label" for="<?= $item['key']?>">
-                                <?= CheckboxX::widget([
-                                    'name' => 'tna['.$item['key'].']',
-                                    'value' => $item['value'],
-                                    'initInputType' => CheckboxX::INPUT_CHECKBOX,
-                                    'options'=>['id' => $item['key']],
-                                    'pluginOptions' => [
-                                        'theme' => 'krajee-flatblue',
-                                        'enclosedLabel' => true,
-                                        'threeState' => false
-                                    ]
-                                ]); ?>
-                                <?= $item['content']?>
-                                </label>
-                            </div>
-                        <?php endforeach;?>
+                        
                     </div>
                 </div>
                 

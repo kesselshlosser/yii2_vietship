@@ -38,6 +38,18 @@ $module = $this->context->module->id;
                     <a class="close-box fa fa-times" href="javascript:;"></a>
                 </span>
             </header>
+
+            <!--Warning-->
+            <?php if (Yii::$app->session->hasFlash('success')): ?>
+                <div class="alert alert-success">
+                    <strong>Thành công!</strong> <?= Yii::$app->session->getFlash('success') ?>
+                </div>
+            <?php elseif (Yii::$app->session->hasFlash('error')):?>
+                <div class="alert alert-danger">
+                    <strong>Thất bại!</strong> <?= Yii::$app->session->getFlash('error') ?>
+                </div>
+            <?php endif; ?>
+            <!--End warning-->
             <div class="panel-body">
                 <?php if(!$model->ten_dang_nhap):?>
                 <div class="row">
@@ -80,7 +92,7 @@ $module = $this->context->module->id;
                     </div>
 
                     <div class="col-md-6">
-                        
+                        <?= $form->field($model, 'mat_khau')?>
                     </div>
                 </div>
                 

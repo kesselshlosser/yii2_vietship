@@ -10,6 +10,7 @@ use app\modules\khachhang\models\Khachhang;
 use \yii\easyii\models\Diachilayhang;
 use \yii\easyii\models\Hinhthucthanhtoan;
 use app\components\AuthHandler;
+use yii\easyii\helpers\Mail;
 
 class SiteController extends Controller
 {
@@ -222,7 +223,56 @@ class SiteController extends Controller
     }
 
     public function actionOut() {
+        $baseUrl = \yii\helpers\Url::base(true);
         Yii::$app->session->destroy();
-        return $this->redirect('/vietship');
+        return $this->redirect($baseUrl);
+    }
+
+    public function actionQuenmatkhau() {
+        if (Yii::$app->request->post()) {
+            $dataPost = Yii::$app->request->post();
+            $email = $dataPost['email'];
+            $isExit = false;
+            $model_kh = Khachhang::find()->asArray()->all();
+            foreach($model_kh as $key => $value) {
+                if ($value['email'] == $email) {
+                    $isExit = true;
+                    break;
+                }
+            }
+            // Email không có trong db -> thông báo bằng session
+            if (!$isExit) {
+                Yii::$app->session->setFlash('quenmatkhau-error', "Không tìm thấy email.");
+            } else {
+                // Email có trong db -> gửi email lấy lại mật khẩu
+                $rand = substr(uniqid('', true), -5);
+
+                $model_kh_forgot_pw = Khachhang::find()
+                ->where(['email' => $email])
+                ->one();
+                $model_kh_forgot_pw->forgot_password_code = $rand;
+                if ($model_kh_forgot_pw->save(false)) {
+                    $toEmail = $email;
+                    $fromEmail = 'arcadia2252017@gmail.com';
+                    $subject = 'Vietshipvn.com Đặt lại mật khẩu.';
+                    $template = '@easyii/modules/feedback/mail/en/forgot_password';
+                    $data = [
+                        'forgot_password_code' => $rand,
+                        'email' => $email
+                    ];
+                    $send_forgot_pw = Yii::$app->mailer->compose($template, $data)
+                        ->setTo($toEmail)
+                        ->setSubject($subject)
+                        ->setFrom($fromEmail);
+                    // Less secure app access on gmail setting -> can send email
+                    if ($send_forgot_pw->send()) {
+                        Yii::$app->session->setFlash('quenmatkhau-success', "Chúng tôi đã gửi liên kết để bạn đặt lại mật khẩu vào email. Vui lòng kiểm tra email.");
+                    } else {
+                        Yii::$app->session->setFlash('quenmatkhau-error', "Có lỗi trong quá trình gửi email. Xin vui lòng thử lại sau");
+                    }
+                }
+            }
+        }
+        return $this->renderPartial('quenmatkhau', []);
     }
 }

@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use app\modules\khuvuc\models\Khuvuc;
 use app\modules\goidichvu\models\Goidichvu;
+use richardfan\widget\JSRegister;
 
 $this->title = "Giá ship nội thành";
 
@@ -106,4 +107,21 @@ $module = $this->context->module->id;
         </div>
     </div>
 </div>
-
+<?php JSRegister::begin()?>
+    <script>
+        $('.dropdown-toggle').click(e => {
+            const target = e.target;
+            const parent = $(target).parents('.dropdown');
+            if ($(parent).hasClass('open')) {
+                setTimeout(() => {
+                    $(parent).removeClass('open');
+                }, 88)
+            } else {
+                setTimeout(() => {
+                    $(parent).addClass('open')
+                }, 88)
+                
+            }
+        })
+    </script>
+<?php JSRegister::end();?>

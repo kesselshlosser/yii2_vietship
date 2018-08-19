@@ -56,17 +56,32 @@ $pathToTemplate = $baseUrl.'/vendor/noumo/easyii/media/admin_template/';
                 <li class="dropdown dropdown-usermenu">
                     <a href="#" class=" dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         <div class="user-avatar"><img src="<?= $pathToTemplate?>imgs/a0.jpg" alt="..."></div>
-                        <span class="hidden-sm hidden-xs">Administrator</span>
+                        <span class="hidden-sm hidden-xs">
+                            <?php
+                                if (\Yii::$app->session->has('user')) {
+                                    $user = \Yii::$app->session->get('user');
+                                }
+                                $kh_email = $user['email'];
+                                echo $kh_email;
+                            ?>
+                        </span>
                         <!--<i class="fa fa-angle-down"></i>-->
                         <span class="caret hidden-sm hidden-xs"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-usermenu pull-right">
-                        <li><a href="#"><i class="fa fa-cogs"></i>  Settings</a></li>
+                        <!-- <li><a href="#"><i class="fa fa-cogs"></i>  Settings</a></li>
                         <li><a href="#"><i class="fa fa-user"></i>  Profile</a></li>
                         <li><a href="#"><i class="fa fa-commenting-o"></i>  Feedback</a></li>
                         <li><a href="#"><i class="fa fa-life-ring"></i>  Help</a></li>
-                        <li class="divider"></li>
-                        <li><a href="<?= Url::to(['/site/out'])?>"><i class="fa fa-sign-out"></i> Log Out</a></li>
+                        <li class="divider"></li> -->
+                        <?php
+                            if (\Yii::$app->session->has('user')) {
+                                $user = \Yii::$app->session->get('user');
+                            }
+                            $kh_id = $user['kh_id'];
+                        ?>
+                        <li><a href="<?= Url::to(['/khachhang/doimatkhau/'.$kh_id])?>"><i class="fa fa-user"></i>  Đổi mật khẩu</a></li>
+                        <li><a href="<?= Url::to(['/site/out'])?>"><i class="fa fa-sign-out"></i> Đăng xuất</a></li>
                     </ul>
                 </li>
             </ul>
@@ -101,11 +116,11 @@ $pathToTemplate = $baseUrl.'/vendor/noumo/easyii/media/admin_template/';
             </li>
 
             <li>
-                <a href="#"><i class="fa fa-user"></i><span>Quản lý tài khoản</span></a>
+                <a href="<?= Url::to(['/khachhang/edit'])?>"><i class="fa fa-user"></i><span>Quản lý tài khoản</span></a>
             </li>
 
             <li>
-                <a href="#"><i class="fa fa-pencil-square-o"></i><span>Thống kê</span></a>
+                <a href="<?= Url::to(['/khachhang/thongke'])?>"><i class="fa fa-pencil-square-o"></i><span>Thống kê</span></a>
             </li>
         </ul>
     </aside>

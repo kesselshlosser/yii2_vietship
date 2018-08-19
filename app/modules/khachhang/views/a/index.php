@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\easyii\models\Diachilayhang;
 use yii\easyii\models\Hinhthucthanhtoan;
 use yii\bootstrap\Modal;
+use \richardfan\widget\JSRegister;
 
 $this->title = "Khách hàng";
 
@@ -367,4 +368,21 @@ $module = $this->context->module->id;
         </div>
     </div>
 </div>
-
+<?php JSRegister::begin()?>
+    <script>
+        $('.dropdown-toggle').click(e => {
+            const target = e.target;
+            const parent = $(target).parents('.dropdown');
+            if ($(parent).hasClass('open')) {
+                setTimeout(() => {
+                    $(parent).removeClass('open');
+                }, 88)
+            } else {
+                setTimeout(() => {
+                    $(parent).addClass('open')
+                }, 88)
+                
+            }
+        })
+    </script>
+<?php JSRegister::end();?>

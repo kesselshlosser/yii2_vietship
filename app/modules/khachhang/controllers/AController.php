@@ -174,6 +174,7 @@ class AController extends Controller
     public function actionEdit($id)
     {
         $model = Khachhang::findOne($id);
+        $model->mat_khau = '';
         $result_dclh = Diachilayhang::find()->where(['kh_id' => $id])->all();
         $model_httt = Hinhthucthanhtoan::find()->where(['kh_id' => $id])->one();
 
@@ -257,14 +258,6 @@ class AController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $dataPost = \Yii::$app->request->post();
             $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
-//            echo '<pre>';
-//            print_r($dataPost);
-//            echo '</pre>';
-//            echo 'Hình thức thanh toán trước đây';
-//            echo $model_httt->hinh_thuc_thanh_toan;
-//            exit();
-            //Xử lý model khách hàng
-            ////Xử lý tính năng ẩn
             if(isset($dataPost['tna']))
             {
                 foreach($dataPost['tna'] as $key => $value)
@@ -273,90 +266,91 @@ class AController extends Controller
                 }
                 $model->tinh_nang_an = json_encode($model->arr_tinh_nang_an, JSON_UNESCAPED_UNICODE);
             }
-            
-            if (Yii::$app->request->isAjax) {
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            } else {
-                if($model->save(false)) {
-                    $kh_id = $model->id;
-                    //Tìm id bắt đầu để reset auto increment
-                    $id_reset_ai = Diachilayhang::find()->where(['kh_id' => $kh_id])->one()['dclh_id'];
-                    
-                    //Xử lý địa chỉ lấy hàng
-                    $dataPost_dclh = \Yii::$app->request->post()[$model_dclh->formName()];
-                    ////Xóa toàn bộ địa chỉ lấy hàng cũ
-                    if(Diachilayhang::deleteAll(['kh_id' => $kh_id]))
-                    {
-                        $sql = 'ALTER TABLE dia_chi_lay_hang AUTO_INCREMENT = '.$id_reset_ai;
-                        \Yii::$app->db->createCommand($sql)->execute();
-                        foreach($dataPost_dclh['arr_dclh'] as $dclh)
-                        {
-                            $model_dclh = new Diachilayhang();
-                            $model_dclh->ten_goi_nho = $dclh['ten_goi_nho'];
-                            $model_dclh->ten_nguoi_ban_giao_hang = $dclh['ten_nguoi_ban_giao_hang'];
-                            $model_dclh->so_dien_thoai = $dclh['so_dien_thoai'];
-                            $model_dclh->dia_chi_text = $dclh['dia_chi_text'];
-                            $model_dclh->dp_id = $dclh['dp_id'];
-                            $model_dclh->kh_id = $kh_id;
-                            $model_dclh->save();
-                        }
-                    }
-                    
-                    //Xử lý hình thức thanh toán
-                    $dataPost_httt = \Yii::$app->request->post()[$model_httt->formName()];
-                    ////Xử lý hình thức thanh toán Tiền mặt và Chuyển khoản
-                    $prev_httt = $model_httt->hinh_thuc_thanh_toan;
-                    $current_httt = $dataPost_httt['hinh_thuc_thanh_toan'];
-                    //TH1 : pre = "Tiền mặt" current = "Tiền mặt" -> Cập nhật lại ten_nguoi_nhan, dia_chi, so_dien_thoai
-                    if($prev_httt == 'Tiền mặt' && $current_httt == "Tiền mặt")
-                    {
-                        $model_httt->ten_nguoi_nhan = $dataPost_httt['ten_nguoi_nhan'];
-                        $model_httt->dia_chi = $dataPost_httt['dia_chi'];
-                        $model_httt->so_dien_thoai = $dataPost_httt['so_dien_thoai'];
-                    }
-                    //TH2 : pre = "Tiền mặt" current = "Chuyển khoản" -> ten_nguoi_nhan, dia_chi, so_dien_thoai = NULL, cập nhật lại thong_tin_ngan_hang
-                    else if($prev_httt == 'Tiền mặt' && $current_httt == "Chuyển khoản")
-                    {
-                        $model_httt->ten_nguoi_nhan = NULL;
-                        $model_httt->dia_chi = NULL;
-                        $model_httt->so_dien_thoai = NULL;
-                        $model_httt->thong_tin_ngan_hang = json_encode($dataPost_httt['arr_ttck'], JSON_UNESCAPED_UNICODE);
-                    }
-                    //TH3 : pre = "Chuyển khoản" current = "Tiền mặt" -> thong_tin_ngan_hang = NULL, cập nhật lại ten_nguoi_nhan, dia_chi, so_dien_thoai
-                    else if($prev_httt == 'Chuyển khoản' && $current_httt == "Tiền mặt")
-                    {
-                        $model_httt->ten_nguoi_nhan = $dataPost_httt['ten_nguoi_nhan'];
-                        $model_httt->dia_chi = $dataPost_httt['dia_chi'];
-                        $model_httt->so_dien_thoai = $dataPost_httt['so_dien_thoai'];
-                        $model_httt->thong_tin_ngan_hang = NULL;
-                    }
-                    //TH4 : pre = "Chuyển khoản" current = "Chuyển khoản" -> cập nhật lại thong_tin_ngan_hang
-                    if($prev_httt == 'Chuyển khoản' && $current_httt == "Chuyển khoản")
-                    {
-                        $model_httt->thong_tin_ngan_hang = json_encode($dataPost_httt['arr_ttck'], JSON_UNESCAPED_UNICODE);
-                    }
-                    ////Xử lý thời gian thanh toán
-                    $arr_tgtt = [];
-                    if($dataPost_httt['json_thoi_gian_thanh_toan'] == 'Mỗi tuần 1 lần')
-                    {
-                        $arr_tgtt['type'] = $dataPost_httt['json_thoi_gian_thanh_toan'];
-                        $arr_tgtt['time'] = $dataPost_httt['thanh_toan_theo_tuan'];
-                    }  else {
-                        $arr_tgtt['type'] = $dataPost_httt['json_thoi_gian_thanh_toan'];
-                        $arr_tgtt['time'] = -1;
-                    }
-                    $model_httt->thoi_gian_thanh_toan = json_encode($arr_tgtt, JSON_UNESCAPED_UNICODE);
-                    $model_httt->hinh_thuc_thanh_toan = $dataPost_httt['hinh_thuc_thanh_toan'];
-                    $model_httt->save();
-                    
-                    $this->flash('success', "Cập nhật thông tin khách hàng thành công");
-                }
-                else{
-                    $this->flash('error', "Cập nhật thông tin khách hàng không thành công. Vui lòng kiểm tra lại thông tin");
-                }
-                return $this->refresh();
+
+            // Xử lý phần mật khẩu
+            $mat_khau = $dataPost[$model->formName()]['mat_khau'];
+            if (!empty($mat_khau)) {
+                $model->mat_khau = md5($mat_khau);
             }
+            
+            if($model->save(false)) {
+                $kh_id = $model->id;
+                //Tìm id bắt đầu để reset auto increment
+                $id_reset_ai = Diachilayhang::find()->where(['kh_id' => $kh_id])->one()['dclh_id'];
+                
+                //Xử lý địa chỉ lấy hàng
+                $dataPost_dclh = \Yii::$app->request->post()[$model_dclh->formName()];
+                ////Xóa toàn bộ địa chỉ lấy hàng cũ
+                if(Diachilayhang::deleteAll(['kh_id' => $kh_id]))
+                {
+                    $sql = 'ALTER TABLE dia_chi_lay_hang AUTO_INCREMENT = '.$id_reset_ai;
+                    \Yii::$app->db->createCommand($sql)->execute();
+                    foreach($dataPost_dclh['arr_dclh'] as $dclh)
+                    {
+                        $model_dclh = new Diachilayhang();
+                        $model_dclh->ten_goi_nho = $dclh['ten_goi_nho'];
+                        $model_dclh->ten_nguoi_ban_giao_hang = $dclh['ten_nguoi_ban_giao_hang'];
+                        $model_dclh->so_dien_thoai = $dclh['so_dien_thoai'];
+                        $model_dclh->dia_chi_text = $dclh['dia_chi_text'];
+                        $model_dclh->dp_id = $dclh['dp_id'];
+                        $model_dclh->kh_id = $kh_id;
+                        $model_dclh->save();
+                    }
+                }
+                
+                //Xử lý hình thức thanh toán
+                $dataPost_httt = \Yii::$app->request->post()[$model_httt->formName()];
+                ////Xử lý hình thức thanh toán Tiền mặt và Chuyển khoản
+                $prev_httt = $model_httt->hinh_thuc_thanh_toan;
+                $current_httt = $dataPost_httt['hinh_thuc_thanh_toan'];
+                //TH1 : pre = "Tiền mặt" current = "Tiền mặt" -> Cập nhật lại ten_nguoi_nhan, dia_chi, so_dien_thoai
+                if($prev_httt == 'Tiền mặt' && $current_httt == "Tiền mặt")
+                {
+                    $model_httt->ten_nguoi_nhan = $dataPost_httt['ten_nguoi_nhan'];
+                    $model_httt->dia_chi = $dataPost_httt['dia_chi'];
+                    $model_httt->so_dien_thoai = $dataPost_httt['so_dien_thoai'];
+                }
+                //TH2 : pre = "Tiền mặt" current = "Chuyển khoản" -> ten_nguoi_nhan, dia_chi, so_dien_thoai = NULL, cập nhật lại thong_tin_ngan_hang
+                else if($prev_httt == 'Tiền mặt' && $current_httt == "Chuyển khoản")
+                {
+                    $model_httt->ten_nguoi_nhan = NULL;
+                    $model_httt->dia_chi = NULL;
+                    $model_httt->so_dien_thoai = NULL;
+                    $model_httt->thong_tin_ngan_hang = json_encode($dataPost_httt['arr_ttck'], JSON_UNESCAPED_UNICODE);
+                }
+                //TH3 : pre = "Chuyển khoản" current = "Tiền mặt" -> thong_tin_ngan_hang = NULL, cập nhật lại ten_nguoi_nhan, dia_chi, so_dien_thoai
+                else if($prev_httt == 'Chuyển khoản' && $current_httt == "Tiền mặt")
+                {
+                    $model_httt->ten_nguoi_nhan = $dataPost_httt['ten_nguoi_nhan'];
+                    $model_httt->dia_chi = $dataPost_httt['dia_chi'];
+                    $model_httt->so_dien_thoai = $dataPost_httt['so_dien_thoai'];
+                    $model_httt->thong_tin_ngan_hang = NULL;
+                }
+                //TH4 : pre = "Chuyển khoản" current = "Chuyển khoản" -> cập nhật lại thong_tin_ngan_hang
+                if($prev_httt == 'Chuyển khoản' && $current_httt == "Chuyển khoản")
+                {
+                    $model_httt->thong_tin_ngan_hang = json_encode($dataPost_httt['arr_ttck'], JSON_UNESCAPED_UNICODE);
+                }
+                ////Xử lý thời gian thanh toán
+                $arr_tgtt = [];
+                if($dataPost_httt['json_thoi_gian_thanh_toan'] == 'Mỗi tuần 1 lần')
+                {
+                    $arr_tgtt['type'] = $dataPost_httt['json_thoi_gian_thanh_toan'];
+                    $arr_tgtt['time'] = $dataPost_httt['thanh_toan_theo_tuan'];
+                }  else {
+                    $arr_tgtt['type'] = $dataPost_httt['json_thoi_gian_thanh_toan'];
+                    $arr_tgtt['time'] = -1;
+                }
+                $model_httt->thoi_gian_thanh_toan = json_encode($arr_tgtt, JSON_UNESCAPED_UNICODE);
+                $model_httt->hinh_thuc_thanh_toan = $dataPost_httt['hinh_thuc_thanh_toan'];
+                $model_httt->save();
+                
+                $this->flash('success', "Cập nhật thông tin khách hàng thành công");
+            }
+            else{
+                $this->flash('error', "Cập nhật thông tin khách hàng không thành công. Vui lòng kiểm tra lại thông tin");
+            }
+            return $this->refresh();
         }
         else {
             return $this->render('edit', [

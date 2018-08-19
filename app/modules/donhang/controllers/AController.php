@@ -1278,4 +1278,153 @@ class AController extends Controller
             return false;
         }
     }
+
+    // Hàm thống kê đơn hàng
+    public function actionThongke() {
+        if (\Yii::$app->request->post()) {
+            $dataPost = \Yii::$app->request->post();
+            $fromDate = $dataPost['fromDate'];
+            $toDate = $dataPost['toDate'];
+            $fromTime = strtotime($fromDate);
+            $toTime = strtotime($toDate);
+
+            $model = $this->getBaoCao($fromTime, $toTime);
+            return $this->render('thongke', [
+                'model' => $model,
+                'from' => date('d/m/Y', $fromTime),
+                'to' => date('d/m/Y', $toTime),
+            ]);
+        }
+        // default 7 ngay
+        $fromTime = strtotime('-7 days');
+        $toTime = time();
+        $model = $this->getBaoCao($fromTime, $toTime);
+        return $this->render('thongke', [
+            'model' => $model,
+            'from' => date('d/m/Y', $fromTime),
+            'to' => date('d/m/Y', $toTime),
+        ]);
+    }
+
+    public function getBaoCao($fromDate, $toDate) {
+        $tong_so_don = 0;
+        $tong_cuoc_van_chuyen = 0;
+        $tong_tien_thu_ho = 0 ;
+        $so_don_dang_duyet_cho_lay = 0;
+        $so_don_huy_khong_lay_duoc = 0;
+        $so_don_phat_that_bai = 0;
+        $don_dang_giao = 0;
+        $don_cho_giao = 0;
+        $don_dang_lay_hang = 0;
+        $don_da_giao = 0;
+        $ti_le_hoan_hang = 0;
+        $pie_chart_info = [];
+        $model_dh = Donhang::find()
+            ->andWhere(['>=', 'time', $fromDate])
+            ->andWhere(['<=', 'time', $toDate])
+            ->asArray()
+            ->all();
+        // Tong so don
+        $tong_so_don = count($model_dh);
+        
+        if ($tong_so_don > 0) {
+            foreach($model_dh as $item) {
+                $trang_thai = $item['trang_thai'];
+                // Tinh tong_cuoc && tien_thu_ho
+                if ($trang_thai != 'Huỷ đơn') {
+                    $tong_cuoc_van_chuyen += $item['tong_tien'];
+                    $tong_tien_thu_ho += $item['tien_thu_ho'];
+                } else {
+                    $so_don_huy_khong_lay_duoc++;
+                }
+    
+                // Tinh so don da duyet cho lay
+                if ($trang_thai == 'Đã duyệt, chờ lấy') {
+                    $so_don_dang_duyet_cho_lay++;
+                }
+
+                // Tinh so don phat that bai
+                if ($trang_thai == 'Đã hoàn' || $trang_thai == 'Đang hoàn' || $trang_thai == 'Chờ hoàn hàng' || $trang_thai == 'Chờ hoàn lại') {
+                    $so_don_phat_that_bai++;
+                }
+    
+                // Tinh so don dang giao
+                if ($trang_thai == 'Đang giao' || $trang_thai == 'Chờ giao lại') {
+                    $don_dang_giao++;
+                }
+    
+                // Tinh so don cho giao
+                if ($trang_thai == 'Đã lấy, chờ giao') {
+                    $don_cho_giao++;
+                }
+    
+                // Tinh so don dang lay hang
+                if ($trang_thai == 'Đang lấy' || $trang_thai == 'Chờ lấy lại') {
+                    $don_dang_lay_hang++;
+                }
+    
+                // Tinh so don da giao
+                if ($trang_thai == 'Đã giao') {
+                    $don_da_giao++;
+                }
+            }
+    
+            // Tinh ti le hoan hang
+            $ti_le_hoan_hang = number_format((float)($so_don_phat_that_bai / $tong_so_don * 100), 2, '.', '');
+
+            // Pie chart
+            $list_label = [];
+            $list_data = [];
+            $list_color = [];
+            if ($so_don_dang_duyet_cho_lay > 0) {
+                array_push($list_label, 'Đã duyệt chờ lấy');
+                array_push($list_data, number_format((float)($so_don_dang_duyet_cho_lay / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, 'black');
+            }
+            if ($don_da_giao > 0) {
+                array_push($list_label, 'Đã giao');
+                array_push($list_data, number_format((float)($don_da_giao / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, '#2E9AFE');
+            }
+            if ($so_don_phat_that_bai > 0) {
+                array_push($list_label, 'Không phát được/hoàn');
+                array_push($list_data, number_format((float)($so_don_phat_that_bai / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, '#FA58D0');
+            }
+            if ($don_cho_giao > 0) {
+                array_push($list_label, 'Chờ giao');
+                array_push($list_data, number_format((float)($don_cho_giao / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, '#4B088A');
+            }
+            if ($don_dang_giao > 0) {
+                array_push($list_label, 'Đang giao');
+                array_push($list_data, number_format((float)($don_dang_giao / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, '#0489B1');
+            }
+            if ($so_don_huy_khong_lay_duoc > 0) {
+                array_push($list_label, 'Huỷ/không lấy được');
+                array_push($list_data, number_format((float)($so_don_huy_khong_lay_duoc / $tong_so_don * 100), 2, '.', ''));
+                array_push($list_color, 'red');
+            }
+            $pie_chart_info = [
+                'labels' => $list_label,
+                'data' => $list_data,
+                'color' => $list_color
+            ];
+        }
+        
+        return [
+            'tong_so_don' => $tong_so_don,
+            'tong_cuoc_van_chuyen' => $tong_cuoc_van_chuyen,
+            'tong_tien_thu_ho' => $tong_tien_thu_ho,
+            'so_don_huy_khong_lay_duoc' => $so_don_huy_khong_lay_duoc,
+            'so_don_phat_that_bai' => $so_don_phat_that_bai,
+            'ti_le_hoan_hang' => $ti_le_hoan_hang,
+            'don_dang_giao' => $don_dang_giao,
+            'don_cho_giao' => $don_cho_giao,
+            'don_dang_lay_hang' => $don_dang_lay_hang,
+            'don_da_giao' => $don_da_giao,
+            'pie_chart' => $pie_chart_info
+        ];
+    }
 }
