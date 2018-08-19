@@ -394,7 +394,7 @@ $module = $this->context->module->id;
                                             <td>
                                                 <?php
                                                     
-                                                    echo $ten.'<br>'.$so_dien_thoai;
+                                                    echo $ten.'<br>'.$so_dien_thoai.'<br>'.$item->dia_chi_lay_hang;
                                                 ?>
                                             </td>
                                             <td>

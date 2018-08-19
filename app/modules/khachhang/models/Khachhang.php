@@ -48,7 +48,7 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
         return [
             'ten_dang_nhap' => 'Tên đăng nhập',
             'mat_khau' => "Mật khẩu",
-            'ten_hien_thi' => "Tên công ty/cửa hàng/cá nhân (tên hiển thị)(*)",
+            'ten_hien_thi' => "Tên cá nhân/cửa hàng / công ty (Tên hiển thị)",
             'so_dien_thoai' => "Số điện thoại",
             'dia_chi' => "Địa chỉ",
             'tinh_nang_an' => "Tính năng ẩn",
@@ -202,5 +202,16 @@ class Khachhang extends \yii\easyii\components\ActiveRecord implements \yii\web\
             return true;
         }
         return false;
+    }
+
+    public static function checkSettingProfile($user) {
+        // Nếu chưa thêm thông tin thì vào trang thông tin
+        $kh_id = $user['kh_id'];
+        $model_kh = Khachhang::find()->where(['kh_id' => $kh_id])->one();
+        $setting = (int)$model_kh['setting'];
+        if ($setting === 0) {
+            return false;
+        }
+        return true;
     }
 }

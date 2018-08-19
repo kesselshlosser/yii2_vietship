@@ -226,7 +226,7 @@ $asset = AppAsset::register($this);
                                                     'id' => 'form_kh'
                                                 ]
                                             ]); ?>
-                                            <div class='col-md-6 col-sm-6 col-xs-6'>
+                                            <div class='col-md-7 col-sm-6 col-xs-6'>
                                                 <div class='row marTop' style='margin-top: 8px'>
                                                     <div class="form-group">
                                                         <label class="control-label col-sm-4 col-md-4 col-xs-4">Số điện thoại (*)</label>
@@ -238,7 +238,7 @@ $asset = AppAsset::register($this);
 
                                                 <div class='row marTop' style='margin-top: 8px'>
                                                     <div class="form-group">
-                                                        <label class="control-label col-sm-4 col-md-4 col-xs-4">Tên cty/cửa hàng/cá nhân (tên hiển thị) (*)</label>
+                                                        <label class="control-label col-sm-4 col-md-4 col-xs-4">Tên cá nhân/cửa hàng / công ty (Tên hiển thị) (*)</label>
                                                         <div class="col-sm-8">
                                                             <?= $form_khach_hang->field($model_khach_hang, 'ten_shop')->textInput(['class' => 'form-control', 'id' => 'ten_shop'])->label(false)?>
                                                         </div>
@@ -255,12 +255,12 @@ $asset = AppAsset::register($this);
                                                 </div>
                                             </div>
 
-                                            <div class='col-md-6 col-sm-6 col-xs-6'>
+                                            <div class='col-md-5 col-sm-6 col-xs-6'>
                                                 <div class='row marTop' style='margin-top: 8px'>
                                                     <div class="form-group">
                                                         <label class="control-label col-sm-4 col-md-4 col-xs-4">Địa chỉ (*)</label>
                                                         <div class="col-sm-8">
-                                                            <?= $form_khach_hang->field($model_khach_hang, 'dia_chi')->textInput(['class' => 'form-control', 'id' => 'dia_chi'])->label(false)?>
+                                                            <?= $form_khach_hang->field($model_khach_hang, 'dia_chi')->textarea(['class' => 'form-control', 'id' => 'dia_chi', 'rows' => 4])->label(false)?>
                                                         </div>
                                                     </div>
                                                 </div>

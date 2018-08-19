@@ -151,11 +151,13 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         <?php $ly_do_chua_thanh_toan = json_decode($model['ly_do_chua_thanh_toan'], true);
                                                                                             foreach ($ly_do_chua_thanh_toan as $key => $value):
                                                                                                 $ldctt_nv_id = isset($value['nv_id']) ? $value['nv_id'] : '';
+                                                                                                $nv = Admin::find()->where(['admin_id' => $ldctt_nv_id])->one();
+                                                                                                $ldctt_nv_ten = isset($nv['ten_hien_thi']) ? $nv['ten_hien_thi'] : '';
                                                                                                 $ldctt_status = isset($value['status']) ? $value['status'] : '';
                                                                                                 $ldctt_ly_do = isset($value['ly_do']) ? $value['ly_do'] : '';
                                                                                                 $ldctt_time = isset($value['time']) ? date('H:i d-m-Y', $value['time']) : '';
                                                                                         ?>
-                                                                                            <p>Thanh toán lần <?= $key + 1?>: vào <?= $ldctt_time?> - <?= $ldctt_status?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
+                                                                                            <p>*Thanh toán lần <?= $key + 1?> vào <?= $ldctt_time?> - <?= $ldctt_status?> - Nhân viên <?= $ldctt_nv_id.'_'.$ldctt_nv_ten?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
                                                                                         <?php endforeach;?>
                                                                                     <?php endif;?>
                                                                                 </div>
@@ -503,11 +505,13 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         <?php $ly_do_chua_thanh_toan = json_decode($model['ly_do_chua_thanh_toan'], true);
                                                                                             foreach ($ly_do_chua_thanh_toan as $key => $value):
                                                                                                 $ldctt_nv_id = isset($value['nv_id']) ? $value['nv_id'] : '';
+                                                                                                $nv = Admin::find()->where(['admin_id' => $ldctt_nv_id])->one();
+                                                                                                $ldctt_nv_ten = isset($nv['ten_hien_thi']) ? $nv['ten_hien_thi'] : '';
                                                                                                 $ldctt_status = isset($value['status']) ? $value['status'] : '';
                                                                                                 $ldctt_ly_do = isset($value['ly_do']) ? $value['ly_do'] : '';
                                                                                                 $ldctt_time = isset($value['time']) ? date('H:i d-m-Y', $value['time']) : '';
                                                                                         ?>
-                                                                                            <p>Thanh toán lần <?= $key + 1?>: vào <?= $ldctt_time?> - <?= $ldctt_status?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
+                                                                                            <p>*Thanh toán lần <?= $key + 1?> vào <?= $ldctt_time?> - <?= $ldctt_status?> - Nhân viên <?= $ldctt_nv_id.'_'.$ldctt_nv_ten?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
                                                                                         <?php endforeach;?>
                                                                                     <?php endif;?>
                                                                                 </div>
@@ -852,11 +856,13 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         <?php $ly_do_chua_thanh_toan = json_decode($model['ly_do_chua_thanh_toan'], true);
                                                                                             foreach ($ly_do_chua_thanh_toan as $key => $value):
                                                                                                 $ldctt_nv_id = isset($value['nv_id']) ? $value['nv_id'] : '';
+                                                                                                $nv = Admin::find()->where(['admin_id' => $ldctt_nv_id])->one();
+                                                                                                $ldctt_nv_ten = isset($nv['ten_hien_thi']) ? $nv['ten_hien_thi'] : '';
                                                                                                 $ldctt_status = isset($value['status']) ? $value['status'] : '';
                                                                                                 $ldctt_ly_do = isset($value['ly_do']) ? $value['ly_do'] : '';
                                                                                                 $ldctt_time = isset($value['time']) ? date('H:i d-m-Y', $value['time']) : '';
                                                                                         ?>
-                                                                                            <p>Thanh toán lần <?= $key + 1?>: vào <?= $ldctt_time?> - <?= $ldctt_status?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
+                                                                                            <p>*Thanh toán lần <?= $key + 1?> vào <?= $ldctt_time?> - <?= $ldctt_status?> - Nhân viên <?= $ldctt_nv_id.'_'.$ldctt_nv_ten?> - <?= $ldctt_status == 'Thành công' ? '' : $ldctt_ly_do?></p>
                                                                                         <?php endforeach;?>
                                                                                     <?php endif;?>
                                                                                 </div>

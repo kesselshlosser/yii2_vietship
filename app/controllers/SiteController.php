@@ -40,10 +40,6 @@ class SiteController extends Controller
     {
         $model = new \yii\easyii\models\LoginFormFrontEnd();
         $baseUrl = \yii\helpers\Url::base(true);
-        // Nếu đã đăng nhập rồi, có session thì vào thẳng luôn trang /donhang
-        if (\Yii::$app->session->has('user')) {
-            return $this->redirect($baseUrl.'/donhang');
-        }
         if (Yii::$app->request->post()) {
             $dataPost = Yii::$app->request->post();
             $typeSubmit = $dataPost['smForm'];
@@ -203,6 +199,25 @@ class SiteController extends Controller
                 }
             }
             return $this->renderPartial('index', ['model' => $model]);
+        } else {
+            // Nếu đã đăng nhập rồi, có session thì vào thẳng luôn trang /donhang
+            if (\Yii::$app->session->has('user')) {
+                $user = \Yii::$app->session->get('user');
+                $checkSettingProfile = Khachhang::checkSettingProfile($user);
+                $email = $user['email'];
+                if ($checkSettingProfile) {
+                    return $this->redirect($baseUrl.'/donhang');
+                }
+                $model_khach_hang = new Khachhang();
+                $model_dclh = new Diachilayhang();
+                $model_httt = new Hinhthucthanhtoan();
+                return $this->renderPartial('profile', [
+                    'model_khach_hang' => $model_khach_hang,
+                    'model_dclh' => $model_dclh,
+                    'model_httt' => $model_httt,
+                    'email' => $email
+                ]);
+            }
         }
         return $this->renderPartial('index', ['model' => $model]);
     }

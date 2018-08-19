@@ -10,23 +10,23 @@
             'label' => 'Đã duyệt chờ lấy'
         ],
         [
-            'color' => '#2E9AFE',
+            'color' => '#4982BB',
             'label' => 'Đã giao'
         ],
         [
-            'color' => '#FA58D0',
+            'color' => '#6DE81C',
             'label' => 'Không phát được/hoàn'
         ],
         [
-            'color' => '#4B088A',
+            'color' => '#5C6093',
             'label' => 'Chờ giao'
         ],
         [
-            'color' => '#0489B1',
+            'color' => '#53B8D7',
             'label' => 'Đang giao'
         ],
         [
-            'color' => 'red',
+            'color' => '#F5144D',
             'label' => 'Huỷ/không lấy được'
         ],
         [

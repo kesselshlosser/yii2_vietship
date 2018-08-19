@@ -859,27 +859,27 @@ class KhachhangController extends Controller
             if ($don_da_giao > 0) {
                 array_push($list_label, 'Đã giao');
                 array_push($list_data, number_format((float)($don_da_giao / $tong_so_don * 100), 2, '.', ''));
-                array_push($list_color, '#2E9AFE');
+                array_push($list_color, '#4982BB');
             }
             if ($so_don_phat_that_bai > 0) {
                 array_push($list_label, 'Không phát được/hoàn');
                 array_push($list_data, number_format((float)($so_don_phat_that_bai / $tong_so_don * 100), 2, '.', ''));
-                array_push($list_color, '#FA58D0');
+                array_push($list_color, '#6DE81C');
             }
             if ($don_cho_giao > 0) {
                 array_push($list_label, 'Chờ giao');
                 array_push($list_data, number_format((float)($don_cho_giao / $tong_so_don * 100), 2, '.', ''));
-                array_push($list_color, '#4B088A');
+                array_push($list_color, '#5C6093');
             }
             if ($don_dang_giao > 0) {
                 array_push($list_label, 'Đang giao');
                 array_push($list_data, number_format((float)($don_dang_giao / $tong_so_don * 100), 2, '.', ''));
-                array_push($list_color, '#0489B1');
+                array_push($list_color, '#53B8D7');
             }
             if ($so_don_huy_khong_lay_duoc > 0) {
                 array_push($list_label, 'Huỷ/không lấy được');
                 array_push($list_data, number_format((float)($so_don_huy_khong_lay_duoc / $tong_so_don * 100), 2, '.', ''));
-                array_push($list_color, 'red');
+                array_push($list_color, '#F5144D');
             }
             $pie_chart_info = [
                 'labels' => $list_label,

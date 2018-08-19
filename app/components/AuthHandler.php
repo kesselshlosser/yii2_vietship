@@ -50,17 +50,21 @@ class AuthHandler
                 if ($model_auth->save(false)) {
                     Yii::$app->session->destroy();
                     $user = Khachhang::find()->where(['kh_id' => $kh_id])->asArray()->one();
+                    $email = $user['email'];
                     \Yii::$app->session->set('user', $user);
                     $model_khach_hang = new Khachhang();
                     $model_dclh = new \yii\easyii\models\Diachilayhang();
                     $model_httt = new \yii\easyii\models\Hinhthucthanhtoan();
-                    return Yii::$app->response->redirect(Url::base(true).'/site/profile');
+                    return Yii::$app->response->renderPartial(Url::base(true).'/site/profile', [
+                        'model_khach_hang' => $model_khach_hang,
+                        'model_dclh' => $model_dclh,
+                        'model_httt' => $model_httt,
+                        'email' => $email
+                    ]);
+                    // return Yii::$app->response->redirect(Url::base(true).'/site/profile');
                 }
             }
         } else {
-            // Đăng nhập
-            echo 'auth > 0';
-            exit();
             return Yii::$app->response->redirect(Url::base(true).'/donhang');
         }
 

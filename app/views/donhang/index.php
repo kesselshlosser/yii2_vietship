@@ -389,11 +389,11 @@ $module = $this->context->module->id;
                                                 <?= $item->ma_don_hang?>
                                                 <br>
                                                 <a data-toggle = 'modal' data-target = '#chi-tiet<?= $item->dh_id?>' class="btn btn-sm btn-default" style="margin-bottom: 8px"><i class="glyphicon glyphicon-modal-window" style="vertical-align: baseline"></i> Xem chi tiết</a><br>
-                                                <a target='_blank' class="btn btn-sm btn-default" href="<?= Url::to(['/admin/donhang/a/print']).'/'.$item->dh_id?>"><i class="glyphicon glyphicon-print" style="vertical-align: baseline"></i> In đơn hàng</a>
+                                                <a target='_blank' class="btn btn-sm btn-default" href="<?= Url::to(['/admin/donhang/print']).'/'.$item->dh_id?>"><i class="glyphicon glyphicon-print" style="vertical-align: baseline"></i> In đơn hàng</a>
                                             </td>
                                             <td>
                                                 <?php
-                                                    echo $ten.'<br>'.$so_dien_thoai;
+                                                    echo $ten.'<br>'.$so_dien_thoai.'<br>'.$item->dia_chi_lay_hang;
                                                 ?>
                                             </td>
                                             <td>
@@ -710,7 +710,7 @@ $module = $this->context->module->id;
                                                         ]
                                                     ]);
                                                 ?>
-                                                    <?php echo Html::beginForm('donhang/a/index', 'post');?>
+                                                    <?php echo Html::beginForm('donhang/index', 'post');?>
                                                         <textarea
                                                             required
                                                             rows="4"
@@ -727,18 +727,18 @@ $module = $this->context->module->id;
                                                     <?php echo Html::endForm();?>
                                                 <?php Modal::end()?>
                                                 <!-- End Modal hoàn hàng-->
-                                                <?php if ($item->trang_thai == 'Huỷ đơn' || $item->trang_thai == 'Đã giao'):?>
-                                                    <a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" style='width: 100%' title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
-                                                <?php else:?>
-                                                    <div>
-                                                        <a href='<?= $baseUrl."/donhang/edit/".$item->dh_id?>'
-                                                           target="_blank"
-                                                           type="button"
-                                                           style="width:100%; margin-bottom: 3px"
-                                                           class="btn btn-sm btn-default">
-                                                            <i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa
-                                                        </a>
-                                                    </div>
+                                                <?php if ($item->trang_thai != 'Đã hoàn'):?> <!--Trạng thái "Đã hoàn" thì không hiển thị bất cứ button nào-->
+                                                    <?php if ($item->trang_thai != 'Chờ hoàn hàng' && $item->trang_thai != 'Đang hoàn'):?>
+                                                        <div>
+                                                            <a href='<?= $baseUrl."/donhang/edit/".$item->dh_id?>'
+                                                            target="_blank"
+                                                            type="button"
+                                                            style="width:100%; margin-bottom: 3px"
+                                                            class="btn btn-sm btn-default">
+                                                                <i class="glyphicon glyphicon-pencil" style="vertical-align: baseline !important"></i> Sửa
+                                                            </a>
+                                                        </div>
+                                                    <?php endif;?>
                                                     <?php if ($item->trang_thai == 'Đã duyệt chờ lấy' || $item->trang_thai == 'Đang lấy' || $item->trang_thai == 'Chờ lấy lại' || $item->trang_thai == 'Chờ duyệt'):?>
                                                         <div>
                                                             <a data-toggle='modal'
@@ -760,10 +760,6 @@ $module = $this->context->module->id;
                                                         Hoàn hàng
                                                         </button>
                                                     <?php endif;?>
-
-                                                    <div>
-                                                        <a style="width:100%; margin-bottom: 3px" onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
-                                                    </div>
                                                 <?php endif;?>
                                             </td>
                                         </tr>
