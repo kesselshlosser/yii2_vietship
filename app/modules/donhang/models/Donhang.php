@@ -152,4 +152,22 @@ class Donhang extends \yii\easyii\components\ActiveRecord
     public function getKhachhang() {
         return $this->hasOne(Khachhang::className(), ['kh_id' => 'kh_id']);
     }
+
+    public static function saveLastEmployee($data) {
+        $admin_id = (int)$data;
+        \Yii::$app->session->set('last_employee', $admin_id);
+    }
+
+    public static function removeLastEmployee($key) {
+        if (\Yii::$app->session->has($key)) {
+            \Yii::$app->session->remove($key);
+        }
+    }
+
+    public static function getLastEmployee($key) {
+        if (\Yii::$app->session->has($key)) {
+            return \Yii::$app->session->get($key);
+        }
+        return '';
+    }
 }

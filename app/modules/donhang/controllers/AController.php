@@ -56,18 +56,27 @@ class AController extends Controller
                     $dataArr['id'] = $formData['nv_id'];
                     $dataArr['nvl_date'] = strtotime($formData['nv_date']);
                     $dataArr['ca'] = $formData['ca'];
+                    // Lưu session last employee
+                    Donhang::removeLastEmployee('last_employee');
+                    Donhang::saveLastEmployee($formData['nv_id']);
                 break;
                 case 'chonNvg':
                 case 'chonNvgKhac':
                     $dataArr['id'] = $formData['nv_id'];
                     $dataArr['nvg_date'] = strtotime($formData['nv_date']);
                     $dataArr['ca'] = $formData['ca'];
+                    // Lưu session last employee
+                    Donhang::removeLastEmployee('last_employee');
+                    Donhang::saveLastEmployee($formData['nv_id']);
                 break;
                 case 'chonNvh':
                 case 'chonNvhKhac':
                     $dataArr['id'] = $formData['nv_id'];
                     $dataArr['nvh_date'] = strtotime($formData['nv_date']);
                     $dataArr['ca'] = $formData['ca'];
+                    // Lưu session last employee
+                    Donhang::removeLastEmployee('last_employee');
+                    Donhang::saveLastEmployee($formData['nv_id']);
                 break;
                 case 'huyDon':
                     $dh_id = $formData['dh_id'];

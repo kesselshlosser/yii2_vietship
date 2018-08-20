@@ -13,6 +13,7 @@ use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
 use richardfan\widget\JSRegister;
 use yii\widgets\Pjax;
+use \app\modules\donhang\models\Donhang;
 
 $this->title = "Đơn hàng";
 $baseUrl = \yii\helpers\Url::base(true);
@@ -540,21 +541,42 @@ $module = $this->context->module->id;
                                                             ]);
                                                             ?>
                                                             <div class="col-md-12">
-                                                                <?= Select2::widget([
-                                                                        'name' => 'nv_id',
-                                                                        'data' => ArrayHelper::map(Admin::find()->all(), 'admin_id', 'ten_hien_thi'),
-                                                                        'options' => [
-                                                                            'placeholder' => $placeHolderChonNv,
-                                                                            'style' => 'text-align: left',
-                                                                            'class' => 'form-control col-md-12 chon-nv-input',
-                                                                        ],
-                                                                        'pluginOptions' => [
-                                                                            'allowClear' => true
-                                                                        ],
-                                                                        'pluginEvents' => [
-                                                                            "select2:select" => "function(e) { showHideError(e.target, false) }",
-                                                                        ]
-                                                                    ]);
+                                                                <?php
+                                                                    $last_employee_id = Donhang::getLastEmployee('last_employee');
+                                                                    if ($last_employee_id == '') {
+                                                                        echo Select2::widget([
+                                                                            'name' => 'nv_id',
+                                                                            'data' => ArrayHelper::map(Admin::find()->all(), 'admin_id', 'ten_hien_thi'),
+                                                                            'options' => [
+                                                                                'placeholder' => $placeHolderChonNv,
+                                                                                'style' => 'text-align: left',
+                                                                                'class' => 'form-control col-md-12 chon-nv-input',
+                                                                            ],
+                                                                            'pluginOptions' => [
+                                                                                'allowClear' => true
+                                                                            ],
+                                                                            'pluginEvents' => [
+                                                                                "select2:select" => "function(e) { showHideError(e.target, false) }",
+                                                                            ]
+                                                                        ]);
+                                                                    } else {
+                                                                        echo Select2::widget([
+                                                                            'name' => 'nv_id',
+                                                                            'data' => ArrayHelper::map(Admin::find()->all(), 'admin_id', 'ten_hien_thi'),
+                                                                            'value' => $last_employee_id,
+                                                                            'options' => [
+                                                                                'placeholder' => $placeHolderChonNv,
+                                                                                'style' => 'text-align: left',
+                                                                                'class' => 'form-control col-md-12 chon-nv-input',
+                                                                            ],
+                                                                            'pluginOptions' => [
+                                                                                'allowClear' => true
+                                                                            ],
+                                                                            'pluginEvents' => [
+                                                                                "select2:select" => "function(e) { showHideError(e.target, false) }",
+                                                                            ]
+                                                                        ]);
+                                                                    }
                                                                 ?>
                                                                 <div style='display: none; text-align: center; background-color: red; margin-top: 8px' class='chon-nv-error'><span style='color: white'>Bạn chưa chọn nhân viên</span></div>
                                                             </div>
