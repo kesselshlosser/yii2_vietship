@@ -1156,12 +1156,14 @@ class DonhangController extends Controller
     public function chooseEmployee($model, $dataJSON, $nv_id, $type, $dh_trang_thai) {
         $message = '';
         $error = '';
-        $nvTen = Admin::find()->where(['admin_id' => $nv_id])->one()['ten_hien_thi'];
+        $nvArr = Admin::find()->where(['admin_id' => $nv_id])->one();
+        $nvTen = isset($nvArr['ten_hien_thi']) ? $nvArr['ten_hien_thi'] : '';
+        $nvID = isset($nvArr['admin_id']) ? $nvArr['admin_id'] : '';
         switch ($type) {
             case 'chonNvl':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi lấy hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' => 'Đã duyệt chờ lấy'
@@ -1173,7 +1175,7 @@ class DonhangController extends Controller
             case 'chonNvlKhac':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi lấy hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi lấy hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' => 'Đang lấy'
@@ -1187,7 +1189,7 @@ class DonhangController extends Controller
             case 'chonNvg':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi giao hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi giao hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' =>  $dh_trang_thai === 'Chờ giao lại' ? 'Chờ giao lại' : 'Đã lấy, chờ giao'
@@ -1199,7 +1201,7 @@ class DonhangController extends Controller
             case 'chonNvgKhac':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi giao hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi giao hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' => 'Đang giao'
@@ -1213,7 +1215,7 @@ class DonhangController extends Controller
             case 'chonNvh':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi hoàn hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi hoàn hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' => 'Chờ hoàn hàng'
@@ -1227,7 +1229,7 @@ class DonhangController extends Controller
             case 'chonNvhKhac':
                 $arr_lich_trinh_don = [
                     'time' => time(),
-                    'action' => 'Chọn nhân viên '.$nvTen.' đi hoàn hàng',
+                    'action' => 'Chọn nhân viên '.$nvID.' đi hoàn hàng',
                     'lydo' => '',
                     'ghichu' => '',
                     'trangThai' => 'Đang hoàn'
