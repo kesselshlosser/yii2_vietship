@@ -461,7 +461,30 @@ $module = $this->context->module->id;
                                                             $labelStyle = 'background-color: #f39c12;';
                                                     }     
                                                 ?>
-                                                <span style='<?= $labelStyle?> font-weight: 600; line-height: 1; color: #fff; text-align: center; border-radius: .25em; padding: .5em .3em .6em; font-size: 75%'><?= $item->trang_thai ?></span>
+                                                <span
+                                                    style='<?= $labelStyle?> font-weight: 600; line-height: 1; color: #fff; text-align: center; border-radius: .25em; padding: .5em .3em .6em; font-size: 75%'>
+                                                    <?= $item->trang_thai ?>
+                                                </span>
+                                                <span>
+                                                    <?php if(!empty($item->ly_do)):?>
+                                                        <?php 
+                                                            $ly_do = json_decode($item->ly_do, true);
+                                                            $ly_do_str = '';
+                                                            foreach($ly_do as $ld):
+                                                                $time = date('H:i d-m-Y', $ld['time']);
+                                                                $action = (isset($ld['action']) && !empty($ld['action'])) ? $ld['action'] : '';
+                                                                $lydo = (isset($ld['lydo']) && !empty($ld['lydo'])) ? $ld['lydo'] : '';
+                                                                $ghichu = (isset($ld['ghichu']) && !empty($ld['ghichu'])) ? $ld['ghichu'] : '';
+                                                                $trangThai = (isset($ld['trangThai']) && !empty($ld['trangThai'])) ? $ld['trangThai'] : '';
+                                                                if ($trangThai == $item->trang_thai) {
+                                                                    $str = '*'.$action.' - '.$lydo.'<br>';
+                                                                    $ly_do_str .= $str;
+                                                                }
+                                                        ?>
+                                                            <p style='margin-top: 10px !important'><?= $ly_do_str?></p>
+                                                        <?php endforeach;?>
+                                                    <?php endif;?>
+                                                </span>
                                             </td>
                                             <td>
                                                 <!--Modal chọn nhân viên-->

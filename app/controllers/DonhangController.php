@@ -117,8 +117,16 @@ class DonhangController extends Controller
                             'trangThai' => isset($dh_trang_thai) ? $dh_trang_thai : ''
                         ];
                         $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
-                        $model->trang_thai = 'Chờ hoàn hàng';
                     }
+                    $arr_ly_do = [
+                        'time' => time(),
+                        'action' => 'Hoàn hàng',
+                        'lydo' => $ly_do_hoan_hang,
+                        'ghichu' => 'Báo hoàn',
+                        'trangThai' => 'Chờ hoàn hàng'
+                    ];
+                    $model->ly_do = Donhang::getLyDo($model, $arr_ly_do);
+                    $model->trang_thai = 'Chờ hoàn hàng';
                     if ($model->save(false)) {
                         return $this->redirect(['/donhang', '#' => $dh_id]);
                     }

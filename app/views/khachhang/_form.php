@@ -96,18 +96,8 @@ $module = $this->context->module->id;
                 
                 <div class="row">
                     <div class="col-md-12">
-                        
-                        <?php
-                            
-                            echo $form->field($model, 'gkh_id')->widget(Select2::className(), [
-                                'data' => ArrayHelper::map(Goikhachhang::find()->all(), 'gkh_id', 'ten_goi'),
-                                'options' => [
-                                    'placeholder' => 'Chọn gói khách hàng'
-                                ],
-                                'pluginOptions' => [
-                                    'multiple' => true
-                                ]
-                        ])?>
+                        <label class='control-label'>Gói khách hàng</label>
+                        <input name='gkh' id='gkh' class='form-control'/>
                     </div>
                 </div>
             </div>
@@ -400,6 +390,13 @@ $module = $this->context->module->id;
                 });
             });
         }
+    });
+
+    // Xử lý gói khách hàng
+    $("gkh").blur(function(e){
+        const target = e.target;
+        const inputValue = $(target).val()
+        alert(inputValue);
     });
 </script>
 <?php JSRegister::end();?>

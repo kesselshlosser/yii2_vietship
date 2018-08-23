@@ -81,9 +81,17 @@ class AController extends Controller
                 case 'huyDon':
                     $dh_id = $formData['dh_id'];
                     $ly_do_huy_don = $formData['ly_do_huy_don'];
+                    $arr_ly_do = [
+                        'time' => time(),
+                        'action' => 'Huỷ đơn hàng',
+                        'lydo' => $ly_do_huy_don,
+                        'ghichu' => '',
+                        'trangThai' => 'Huỷ đơn'
+                    ];
                     $model = Donhang::findOne($dh_id);
                     $model->trang_thai = 'Huỷ đơn';
                     $model->ly_do_huy_don = $ly_do_huy_don;
+                    $model->ly_do = Donhang::getLyDo($model, $arr_ly_do);
                     if ($model->save(false)) {
                         $message = 'Huỷ đơn hàng thành công';
                         $this->flash('success', $message);
@@ -135,8 +143,16 @@ class AController extends Controller
                             'trangThai' => isset($dh_trang_thai) ? $dh_trang_thai : ''
                         ];
                         $model->lich_trinh_don_hang = Donhang::getNewLichTrinhDon($model, $arr_lich_trinh_don);
-                        $model->trang_thai = 'Chờ hoàn hàng';
                     }
+                    $arr_ly_do = [
+                        'time' => time(),
+                        'action' => 'Hoàn hàng',
+                        'lydo' => $ly_do_hoan_hang,
+                        'ghichu' => 'Báo hoàn',
+                        'trangThai' => 'Chờ hoàn hàng'
+                    ];
+                    $model->ly_do = Donhang::getLyDo($model, $arr_ly_do);
+                    $model->trang_thai = 'Chờ hoàn hàng';
                     if ($model->save(false)) {
                         return $this->redirect(['/admin/donhang', '#' => $dh_id]);
                     }

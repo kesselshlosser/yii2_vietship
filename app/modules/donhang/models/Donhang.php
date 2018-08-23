@@ -52,7 +52,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                     'ma_don_hang', 'trang_thai', 'nguoi_nhan_dia_chi_giao_hang', 'nguoi_nhan_ten',
                     'san_pham_ten', 'dich_vu_phu_troi', 'ghi_chu', 'ly_do_khong_duyet', 'pham_vi_don_hang',
                     'hoan_hang', 'nguoi_nhan', 'san_pham', 'dia_chi_lay_hang', 'nhan_vien_lay_hang',
-                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang', 'ghi_chu_hinh_thuc_thanh_toan'
+                    'nhan_vien_giao_hang', 'nhan_vien_hoan_hang', 'ghi_chu_hinh_thuc_thanh_toan', 'ly_do'
                 ],
                 'string',
                 'message' => '{attribute phải là kiểu chuỗi}'
@@ -147,6 +147,19 @@ class Donhang extends \yii\easyii\components\ActiveRecord
         array_push($new_arr, $arr_lich_trinh_don);
         $lich_trinh_don_hang = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
         return $lich_trinh_don_hang;
+    }
+
+    public static function getLyDo($model_dh, $arr_ly_do) {
+        if (!empty($model_dh->ly_do)) {
+            // Có rồi thì thêm lịch trình đơn hàng
+            $new_arr = json_decode($model_dh->ly_do, true);
+        } else {
+            // Chưa có tạo mới
+            $new_arr = [];
+        }
+        array_push($new_arr, $arr_ly_do);
+        $ly_do = json_encode($new_arr, JSON_UNESCAPED_UNICODE);
+        return $ly_do;
     }
 
     public function getKhachhang() {
