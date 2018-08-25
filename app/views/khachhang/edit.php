@@ -18,7 +18,8 @@ $this->title = "Sửa thông tin khách hàng";
         <?= $this->render('_form', [
             'model' => $model,
             'model_dclh' => $model_dclh,
-            'model_httt' => $model_httt
+            'model_httt' => $model_httt,
+            'kh_id' => $kh_id
             ]) ?>
     </div>
 </div>

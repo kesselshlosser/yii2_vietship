@@ -99,13 +99,15 @@ $module = $this->context->module->id;
                                                 <?php
                                                     $str_kv = '';
                                                     $arr_kv = json_decode($item->khu_vuc, true);
-                                                    foreach($arr_kv as $kv)
-                                                    {
-                                                        if($kv['value'] == 1)
+                                                    if (isset($arr_kv) && !empty($arr_kv)) {
+                                                        foreach($arr_kv as $kv)
                                                         {
-                                                            $str_kv .= app\modules\khuvuc\models\Khuvuc::find()->where(['kv_id' => $kv['id']])->one()['ten_khu_vuc'].'<br>';
+                                                            if($kv['value'] == 1)
+                                                            {
+                                                                $str_kv .= app\modules\khuvuc\models\Khuvuc::find()->where(['kv_id' => $kv['id']])->one()['ten_khu_vuc'].'<br>';
+                                                            }
+                                                            
                                                         }
-                                                        
                                                     }
                                                     echo $str_kv;
                                                 ?>

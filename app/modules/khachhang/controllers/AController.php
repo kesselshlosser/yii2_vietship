@@ -84,8 +84,11 @@ class AController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $dataPost = \Yii::$app->request->post();
+            $gkh_id = $dataPost[$model->formName()]['gkh_id'];
             //Xử lý gói khách hàng
-            $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
+            if (!empty($gkh_id)) {
+                $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
+            }
             //Xử lý model khách hàng
             ////Xử lý tính năng ẩn
             if(isset($dataPost['tna']))
@@ -257,7 +260,11 @@ class AController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             $dataPost = \Yii::$app->request->post();
-            $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
+            $gkh_id = $dataPost[$model->formName()]['gkh_id'];
+            //Xử lý gói khách hàng
+            if (!empty($gkh_id)) {
+                $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
+            }
             if(isset($dataPost['tna']))
             {
                 foreach($dataPost['tna'] as $key => $value)

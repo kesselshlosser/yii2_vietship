@@ -297,12 +297,14 @@ $module = $this->context->module->id;
                                                             <?php endif;?>
                                                             <p><span style='font-weight: bold'>Dịch vụ phụ trội :</span></p>
                                                             <?php
-                                                                $dvpt = json_decode($model_gkh['dich_vu_phu_troi'], true);
-                                                                foreach($dvpt as $dvpt)
-                                                                {
-                                                                    if($dvpt['value'] == 1)
+                                                                if (isset($model_gkh['dich_vu_phu_troi']) && !empty($model_gkh['dich_vu_phu_troi'])) {
+                                                                    $dvpt = json_decode($model_gkh['dich_vu_phu_troi'], true);
+                                                                    foreach($dvpt as $dvpt)
                                                                     {
-                                                                        echo '<p style="padding-left : 10px">- '.$dvpt['content'].'</p>';
+                                                                        if($dvpt['value'] == 1)
+                                                                        {
+                                                                            echo '<p style="padding-left : 10px">- '.$dvpt['content'].'</p>';
+                                                                        }
                                                                     }
                                                                 }
                                                             ?>

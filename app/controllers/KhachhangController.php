@@ -18,6 +18,7 @@ use \yii\easyii\models\Hoadon;
 use \yii\easyii\models\Hoadonchitiet;
 use \app\modules\donhang\models\Donhang;
 use \app\modules\goidichvu\models\Goidichvu;
+use \app\modules\goikhachhang\models\Goikhachhang;
 
 class KhachhangController extends Controller
 {
@@ -113,20 +114,28 @@ class KhachhangController extends Controller
             $model_httt->thanh_toan_theo_tuan = $arr_thoi_gian_thanh_toan['time'];
         }
         
-        $model->gkh_id = json_decode($model->gkh_id, true);
-        
-        if ($model->load(Yii::$app->request->post())) {
+        if (\Yii::$app->request->post()) {
             $dataPost = \Yii::$app->request->post();
-            $model->gkh_id = json_encode($dataPost[$model->formName()]['gkh_id'], JSON_UNESCAPED_UNICODE);
-//            echo '<pre>';
-//            print_r($dataPost);
-//            echo '</pre>';
-//            echo 'Hình thức thanh toán trước đây';
-//            echo $model_httt->hinh_thuc_thanh_toan;
-//            exit();
+            $so_dien_thoai = $dataPost['Khachhang']['so_dien_thoai'];
+            $email = $dataPost['Khachhang']['email'];
+            $ten_hien_thi = $dataPost['Khachhang']['ten_hien_thi'];
+            $website = $dataPost['Khachhang']['website'];
+            $ten_shop = $dataPost['Khachhang']['ten_shop'];
+            $facebook = $dataPost['Khachhang']['facebook'];
+            $dia_chi = $dataPost['Khachhang']['dia_chi'];
+
+            $model_kh = Khachhang::findOne($kh_id);
+            $model_kh->so_dien_thoai = $so_dien_thoai;
+            $model_kh->email = $email;
+            $model_kh->ten_hien_thi = $ten_hien_thi;
+            $model_kh->website = $website;
+            $model_kh->ten_shop = $ten_shop;
+            $model_kh->facebook = $facebook;
+            $model_kh->dia_chi = $dia_chi;
+
             //Xử lý model khách hàng
-            if($model->save(false)) {
-                $kh_id = $model->id;
+            if($model_kh->save(false)) {
+                $kh_id = $model_kh->id;
                 //Tìm id bắt đầu để reset auto increment
                 $id_reset_ai = Diachilayhang::find()->where(['kh_id' => $kh_id])->one()['dclh_id'];
                 
@@ -210,7 +219,8 @@ class KhachhangController extends Controller
             return $this->render('edit', [
                 'model' => $model,
                 'model_dclh' => $model_dclh,
-                'model_httt' => $model_httt
+                'model_httt' => $model_httt,
+                'kh_id' => $kh_id
             ]);
         }
     }
@@ -931,5 +941,62 @@ class KhachhangController extends Controller
             }
         }
         return $this->renderPartial('laylaimatkhau', ['email' => $email]);
+    }
+
+    public function actionUpdateGoiKhachHang() {
+        $dataForm = Yii::$app->request->post();
+        $gkh = $dataForm['gkh'];
+        $kh_id = $dataForm['kh_id'];
+        // gkh empty
+        if (empty($gkh)) {
+            $result = [
+                'errorCode' => 'Không có gói khách hàng'
+            ];
+            return json_encode($result, JSON_UNESCAPED_UNICODE);
+        }
+        // check có tồn tại gói khách hàng này hay không
+        $model_gkh = Goikhachhang::find()->where(['ten_goi' => $gkh])->one();
+        $number_gkh = count($model_gkh);
+        if ($number_gkh <= 0) {
+            $result = [
+                'errorCode' => 'Mã gói khách hàng không hợp lệ'
+            ];
+            return json_encode($result, JSON_UNESCAPED_UNICODE);
+        }
+        // có gói khách hàng
+        $gkh_id = $model_gkh['gkh_id'];
+        // Thêm gói khách hàng cho khách hàng
+        $model_kh = Khachhang::findOne($kh_id);
+        if (isset($model_kh->gkh_id) && !empty($model_kh->gkh_id)) {
+            $gkh_kh_json = $model_kh->gkh_id;
+            $arr_gkh = json_decode($gkh_kh_json, true);
+            if (in_array($gkh_id, $arr_gkh)) {
+                $result = [
+                    'errorCode' => 'Gói khách hàng đã tồn tại'
+                ];
+                return json_encode($result, JSON_UNESCAPED_UNICODE);
+            } else {
+                // Thêm gói khách hàng vào khách hàng
+                array_push($arr_gkh, (string)$gkh_id);
+                $model_kh->gkh_id = json_encode($arr_gkh, JSON_UNESCAPED_UNICODE);
+                if ($model_kh->save(false)) {
+                    $result = [
+                        'errorCode' => 'Gói khách hàng được thêm thành công'
+                    ];
+                    return json_encode($result, JSON_UNESCAPED_UNICODE);
+                }
+            }
+        } else {
+            $new_gkh = [];
+            array_push($new_gkh, (string)$gkh_id);
+            $new_gkh_json = json_encode($new_gkh, JSON_UNESCAPED_UNICODE);
+            $model_kh->gkh_id = $new_gkh_json;
+            if ($model_kh->save(false)) {
+                $result = [
+                    'errorCode' => 'Gói khách hàng được thêm thành công'
+                ];
+                return json_encode($result, JSON_UNESCAPED_UNICODE);
+            }
+        }
     }
 }

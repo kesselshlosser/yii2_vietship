@@ -96,10 +96,78 @@ $module = $this->context->module->id;
                 
                 <div class="row">
                     <div class="col-md-12">
-                        <label class='control-label'>Gói khách hàng</label>
-                        <input name='gkh' id='gkh' class='form-control'/>
+                        <label style="padding-left: 0px !important" class='control-label col-md-12'>Gói khách hàng</label>
+                        
+                        <div class='col-md-12' style="padding-left: 0px !important">
+                            <div class='col-md-4' style="padding-left: 0px !important">
+                                <input name='gkh_id' id='gkh' class='form-control' placeholder='Nhập mã gói khách hàng'/>
+                            </div>
+                            
+                            <a id='add_gkh' class='btn btn-primary col-md-2'>
+                                Xác nhận
+                            </a>
+
+                            <div class='col-md-6' id='errorWrapper'>
+                                <span id='error' style='height: 34px; line-height: 34px; color: red'></span>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
+
+                <!--Hiển thị chi tiết gói khách hàng-->
+                <?php 
+                    if (!empty($model->gkh_id)):
+                ?>
+                    <div class='row'>
+                        <?php 
+                            $gkh_id = $model->gkh_id;
+                            if (gettype($gkh_id) == 'array') {
+
+                            } else {
+                                $gkh_id = json_decode($model->gkh_id, true);
+                            }
+                            $model_gkh = Goikhachhang::find()->where(['gkh_id' => $gkh_id])->asArray()->all();
+                            foreach($model_gkh as $item):
+                        ?>
+                            <div class='col-md-4'>
+                                <h3 style='text-align: center; border-bottom: 1px solid black;'><?= $item['ten_goi']?></h3>
+                                <p><span style='font-weight: bold'>Hình thức khuyến mại :</span> <span><?= $item['hinh_thuc']?></span></p>
+                                <p><span style='font-weight: bold'>Giá trị :</span> <span><?= $item['gia_tri']?> VNĐ</span></p>
+                                <?php if($item['chi_giam_dich_vu_phu_troi'] == 1):?>
+                                    <p><span style='font-weight: bold'>Áp dụng giảm cho dịch vụ phụ trội</span></p>
+                                <?php else:?>
+                                    <p><span style='font-weight: bold'>Áp dụng giảm cho toàn bộ tiền cước</span></p>
+                                <?php endif;?>
+                                <p><span style='font-weight: bold'>Dịch vụ phụ trội :</span></p>
+                                <?php
+                                    if (isset($item['dich_vu_phu_troi']) && !empty($item['dich_vu_phu_troi'])) {
+                                        $dvpt = json_decode($item['dich_vu_phu_troi'], true);
+                                        foreach($dvpt as $dvpt)
+                                        {
+                                            if($dvpt['value'] == 1)
+                                            {
+                                                echo '<p style="padding-left : 10px">- '.$dvpt['content'].'</p>';
+                                            }
+                                        }
+                                    }
+                                ?>
+                                <?php
+                                    $ngay_gio_status = 0;
+                                    if($item['day_ngay_bat_dau'] && $item['day_ngay_ket_thuc'])
+                                    {
+                                        $ngay_gio_status = 1; //Áp dụng theo ngày
+                                    }
+                                ?>
+                                <?php if($ngay_gio_status == 1):?>
+                                <p><span style='font-weight: bold'>Áp dụng theo ngày: </span><span>từ <?= date('d-m-Y', $item['day_ngay_bat_dau'])?> đến <?= date('d-m-Y', $item['day_ngay_ket_thuc'])?></span></p>
+                                <?php elseif($ngay_gio_status == 0):?>
+                                <p><span style='font-weight: bold'>Áp dụng theo giờ : </span><span>từ <?= date('d-m-Y', $item['hour_thoi_gian_ap_dung'])?> vào lúc <?= $item['hour_gio_ap_dung']?> giờ</span></p>
+                                <?php endif;?>
+                            </div>
+                        <?php endforeach;?>
+                    </div>
+                <?php endif;?>
             </div>
         </div>
     </div>
@@ -393,10 +461,33 @@ $module = $this->context->module->id;
     });
 
     // Xử lý gói khách hàng
-    $("gkh").blur(function(e){
-        const target = e.target;
-        const inputValue = $(target).val()
-        alert(inputValue);
-    });
+    $('#add_gkh').click(e => {
+        const gkh = $('#gkh').val();
+        if (!gkh) return;
+        const kh_id = <?= $kh_id?>;
+        const url = '<?= Url::to(['/khachhang/update-goi-khach-hang'])?>';
+        const data = {
+            gkh: gkh,
+            kh_id: kh_id
+        }
+        $.post(
+            url,
+            data
+        )
+        .done((response) => {
+            const result = JSON.parse(response);
+            const errorCode = result.errorCode;
+            $('#error').text(errorCode)
+            if (errorCode === 'Gói khách hàng được thêm thành công') {
+                setTimeout(() => {
+                    location.reload();
+                }, 500)
+            }
+        })
+        .fail((err) => {
+            console.log(err);
+        })
+    })
+    
 </script>
 <?php JSRegister::end();?>
