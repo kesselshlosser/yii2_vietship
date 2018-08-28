@@ -240,7 +240,7 @@ $asset = AppAsset::register($this);
                                                     <div class="form-group">
                                                         <label class="control-label col-sm-4 col-md-4 col-xs-4">Tên cá nhân/cửa hàng / công ty (Tên hiển thị) (*)</label>
                                                         <div class="col-sm-8">
-                                                            <?= $form_khach_hang->field($model_khach_hang, 'ten_shop')->textInput(['class' => 'form-control', 'id' => 'ten_shop'])->label(false)?>
+                                                            <?= $form_khach_hang->field($model_khach_hang, 'ten_hien_thi')->textInput(['class' => 'form-control', 'id' => 'ten_hien_thi'])->label(false)?>
                                                         </div>
                                                     </div>
                                                 </div>

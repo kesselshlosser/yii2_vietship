@@ -393,7 +393,7 @@
                     <div class='col-md-6 col-sm-6 col-xs-6' style='padding-left: 7px !important; padding-right: 7px !important'>
                         <div class=' info-text info-yellow'>
                             <span class='box-text'>
-                                <p class='text-white text-normal'><?= number_format($model['tong_tien_thu_ho'], 0, ',', '.').' VNĐ' ?></p>
+                                <p class='text-white text-normal'><?= number_format($model['tong_cuoc_van_chuyen'], 0, ',', '.').' VNĐ' ?></p>
                                 <p class='text-white text-normal'>Tổng cước v/c</p>
                             </span>
                         </div>

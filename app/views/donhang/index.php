@@ -772,7 +772,7 @@ $module = $this->context->module->id;
                                                                 Huỷ đơn
                                                             </a> 
                                                         </div>
-                                                    <?php else: ?>
+                                                    <?php elseif ($item->trang_thai != 'Chờ hoàn hàng' && $item->trang_thai != 'Đang hoàn'):?>
                                                         <button
                                                             data-toggle='modal'
                                                             data-target='#hh<?= $item->dh_id?>'

@@ -17,6 +17,7 @@ use app\modules\goikhachhang\models\Goikhachhang;
 use app\modules\khachhang\models\Khachhang;
 use yii\easyii\models\Quyettoandonhang;
 use \yii\easyii\models\Admin;
+use app\models\Log;
 
 class AController extends Controller
 {
@@ -905,17 +906,19 @@ class AController extends Controller
         foreach($arrGoiKhachHangApDung as $key => $item)
         {
             $khuvuc = json_decode($item['khu_vuc'], true);
+            
             $delete = 0;
             
             //Kiểm tra khu vực
-            foreach($khuvuc as $kv)
-            {
-                if($kv['value'] == 1)
+            if (is_array($khuvuc)) {
+                foreach($khuvuc as $key => $kv)
                 {
-                    
-                    if($kv['id'] == $kvg_id)
+                    if($kv['value'] == 1)
                     {
-                        $delete++;
+                        if($kv['id'] == $kvg_id)
+                        {
+                            $delete++;
+                        }
                     }
                 }
             }

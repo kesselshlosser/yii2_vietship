@@ -99,7 +99,7 @@ class SiteController extends Controller
                 $khachHangData = Yii::$app->request->post()['Khachhang'];
                 $so_dien_thoai = $khachHangData['so_dien_thoai'];
                 $dia_chi = $khachHangData['dia_chi'];
-                $ten_shop = $khachHangData['ten_shop'];
+                $ten_hien_thi = $khachHangData['ten_hien_thi'];
                 $website = $khachHangData['website'];
                 $facebook = $khachHangData['facebook'];
                 $email = Yii::$app->request->post()['email'];
@@ -108,8 +108,8 @@ class SiteController extends Controller
                 $model_kh = Khachhang::findOne($kh_id);
                 $model_kh->so_dien_thoai = $so_dien_thoai;
                 $model_kh->dia_chi = $dia_chi;
-                if (!empty($ten_shop)) {
-                    $model_kh->ten_shop = $ten_shop;
+                if (!empty($ten_hien_thi)) {
+                    $model_kh->ten_hien_thi = $ten_hien_thi;
                 }
                 if (!empty($website)) {
                     $model_kh->website = $website;

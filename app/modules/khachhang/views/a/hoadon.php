@@ -221,11 +221,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                 <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                             </td>
                                                                                             <td class='font14'>
-                                                                                                <?= $hdct['tong_tien'].' VNĐ' ?>
+                                                                                                <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
-                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                     echo $tien_thu_ho;
                                                                                                 ?>
                                                                                             </td>
@@ -246,7 +246,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                             $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                         break;
                                                                                                     }
-                                                                                                    echo $chuyen_tra_khach.' VNĐ';
+                                                                                                    echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                                     $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                                 ?>
                                                                                             </td>
@@ -364,11 +364,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                 <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                             </td>
                                                                                             <td class='font14'>
-                                                                                                <?= $hdct['tong_tien'].' VNĐ' ?>
+                                                                                                <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
-                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                     echo $tien_thu_ho;
                                                                                                 ?>
                                                                                             </td>
@@ -389,7 +389,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                             $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                         break;
                                                                                                     }
-                                                                                                    echo $chuyen_tra_khach.' VNĐ';
+                                                                                                    echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                                     $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                                 ?>
                                                                                             </td>
@@ -672,11 +672,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                         </td>
                                                                                         <td class='font14'>
-                                                                                            <?= $hdct['tong_tien'].' VNĐ' ?>
+                                                                                            <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
@@ -697,7 +697,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                         $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach.' VNĐ';
+                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                                 $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                             ?>
                                                                                         </td>
@@ -813,11 +813,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                         </td>
                                                                                         <td class='font14'>
-                                                                                            <?= $hdct['tong_tien'].' VNĐ' ?>
+                                                                                            <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
@@ -838,7 +838,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                         $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach.' VNĐ'
+                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
@@ -1120,11 +1120,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                         </td>
                                                                                         <td class='font14'>
-                                                                                            <?= $hdct['tong_tien'].' VNĐ' ?>
+                                                                                            <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
@@ -1145,7 +1145,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                         $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach.' VNĐ';
+                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                                 $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                             ?>
                                                                                         </td>
@@ -1261,11 +1261,11 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             <?= $hdct['hinh_thuc_thanh_toan']?>
                                                                                         </td>
                                                                                         <td class='font14'>
-                                                                                            <?= $hdct['tong_tien'] ?>
+                                                                                            <?= $hdct['tong_tien'] > 0 ? number_format($hdct['tong_tien'], 0, '', ',').' VNĐ' : 0?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] ? $hdct['tien_thu_ho'].' VNĐ' : '0 VNĐ';
+                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
@@ -1286,7 +1286,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                         $chuyen_tra_khach = $tien_thu_ho_phai_tra;
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach.' VNĐ'
+                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>

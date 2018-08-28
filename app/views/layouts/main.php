@@ -100,7 +100,7 @@ $pathToTemplate = $baseUrl.'/vendor/noumo/easyii/media/admin_template/';
             </li>
 
             <li>
-                <a href="<?= Url::to(['/donhang/create'])?>"><i class="fa fa-shopping-cart"></i><span>Thêm đơn hàng</span></a>
+                <a href="<?= Url::to(['/donhang/create'])?>"><i class="fa fa-plus"></i><span>Thêm đơn hàng</span></a>
             </li>
 
             <li>

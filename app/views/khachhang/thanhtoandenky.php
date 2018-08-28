@@ -207,7 +207,7 @@ $this->title = "Thanh toán với khách hàng";
                                                                             <?php foreach($donhang as $dh):?>
                                                                                 <tr>
                                                                                     <td>
-                                                                                        <?= $dh['dh_id']?>
+                                                                                        <?= $dh['ma_don_hang']?>
                                                                                     </td>
                                                                                     <td>
                                                                                         <?php
@@ -229,10 +229,10 @@ $this->title = "Thanh toán với khách hàng";
                                                                                         <?= $dh['hinh_thuc_thanh_toan']?>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <?= $dh['tong_tien'].' VNĐ'?>
+                                                                                        <?= $dh['tong_tien'] > 0 ? number_format((float)($dh['tong_tien']), 0, '', ',').' VNĐ' : 0?>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <?= $dh['tien_thu_ho'] > 0 ? $dh['tien_thu_ho'].' VNĐ' : 0?>
+                                                                                        <?= $dh['tien_thu_ho'] > 0 ? number_format((float)($dh['tien_thu_ho']), 0, '', ',').' VNĐ' : 0?>
                                                                                     </td>
                                                                                     <td>
                                                                                         <?= date('H:i d/m/Y', $dh['time'])?>
@@ -264,7 +264,7 @@ $this->title = "Thanh toán với khách hàng";
                                                                     break;
                                                                 }    
                                                             }
-                                                            echo $tong_tien_thu_ho > 0 ? $tong_tien_thu_ho.' VNĐ' : 0
+                                                            echo $tong_tien_thu_ho > 0 ? number_format($tong_tien_thu_ho, 0, '', ',').' VNĐ' : 0
                                                         ?>
                                                         <button
                                                             data-toggle='modal'
@@ -283,7 +283,7 @@ $this->title = "Thanh toán với khách hàng";
                                                             $sodu = $model['sodu'] > 0 ? $model['sodu'] : 0;
                                                             $sono = $model['sono'] > 0 ? $model['sono'] : 0;
                                                             $tien_tra_khach = $tong_tien_thu_ho - $sono + $sodu;
-                                                            echo $tien_tra_khach > 0 ? $tien_tra_khach.' VNĐ' : 0;
+                                                            echo $tien_tra_khach > 0 ? number_format($tien_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                         ?>
                                                         <button
                                                             type="button"

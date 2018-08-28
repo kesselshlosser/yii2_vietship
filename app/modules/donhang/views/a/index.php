@@ -774,7 +774,7 @@ $module = $this->context->module->id;
                                                     <?php echo Html::endForm();?>
                                                 <?php Modal::end()?>
                                                 <!-- End Modal hoàn hàng-->
-                                                <?php if ($item->trang_thai == 'Huỷ đơn' || $item->trang_thai == 'Đã giao'):?>
+                                                <?php if ($item->trang_thai == 'Huỷ đơn' || $item->trang_thai == 'Đã giao' || $item->trang_thai == 'Đã hoàn'):?>
                                                     <a onclick="return confirm('Bạn chắc chắn muốn xoá đơn hàng này?');"href="<?= Url::to(['/admin/'.$module.'/a/delete', 'id' => $item->dh_id]) ?>" class="confirm-delete btn btn-sm btn-default" style='width: 100%' title="<?= Yii::t('easyii', 'Delete item') ?>">Xoá</a>
                                                 <?php else:?>
                                                     <div>

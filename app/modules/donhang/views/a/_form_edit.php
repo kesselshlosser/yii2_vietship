@@ -273,63 +273,63 @@ $module = $this->context->module->id;
 
                                                 <div class="col-md-12" id='form0-wrapper-ung_tien'>
                                                     <?php
-                                                        if($model->ung_tien)
-                                                        {
-                                                            echo $form->field($model, 'ung_tien')->widget(CheckboxX::classname(), [
-                                                                'autoLabel'=>true,
-                                                                'value' => $model->ung_tien,
-                                                                'options' => [
-                                                                    'id' => 'form0-ung_tien'
-                                                                ],
-                                                                'pluginOptions'=>[
-                                                                    'threeState' => false,
-                                                                    'size' => 'sm'
-                                                                ]
-                                                            ])->label(false);
-                                                        }else
-                                                        {
-                                                            echo $form->field($model, 'ung_tien')->widget(CheckboxX::classname(), [
-                                                                'autoLabel'=>true,
-                                                                'options' => [
-                                                                    'id' => 'form0-ung_tien'
-                                                                ],
-                                                                'pluginOptions'=>[
-                                                                    'threeState' => false,
-                                                                    'size' => 'sm'
-                                                                ]
-                                                            ])->label(false);
-                                                        }
+                                                        // if($model->ung_tien)
+                                                        // {
+                                                        //     echo $form->field($model, 'ung_tien')->widget(CheckboxX::classname(), [
+                                                        //         'autoLabel'=>true,
+                                                        //         'value' => $model->ung_tien,
+                                                        //         'options' => [
+                                                        //             'id' => 'form0-ung_tien'
+                                                        //         ],
+                                                        //         'pluginOptions'=>[
+                                                        //             'threeState' => false,
+                                                        //             'size' => 'sm'
+                                                        //         ]
+                                                        //     ])->label(false);
+                                                        // }else
+                                                        // {
+                                                        //     echo $form->field($model, 'ung_tien')->widget(CheckboxX::classname(), [
+                                                        //         'autoLabel'=>true,
+                                                        //         'options' => [
+                                                        //             'id' => 'form0-ung_tien'
+                                                        //         ],
+                                                        //         'pluginOptions'=>[
+                                                        //             'threeState' => false,
+                                                        //             'size' => 'sm'
+                                                        //         ]
+                                                        //     ])->label(false);
+                                                        // }
                                                     ?>
                                                 </div>
 
                                                 <div class="col-md-12" id='form0-wrapper-lay_hang_ve'>
                                                     <?php
-                                                        if($model->lay_hang_ve)
-                                                        {
-                                                            echo $form->field($model, 'lay_hang_ve')->widget(CheckboxX::classname(), [
-                                                                'autoLabel'=>true,
-                                                                'value' => $model->lay_hang_ve,
-                                                                'options' => [
-                                                                    'id' => 'form0-lay_hang_ve'
-                                                                ],
-                                                                'pluginOptions'=>[
-                                                                    'threeState' => false,
-                                                                    'size' => 'sm'
-                                                                ]
-                                                            ])->label(false);
-                                                        }else
-                                                        {
-                                                            echo $form->field($model, 'lay_hang_ve')->widget(CheckboxX::classname(), [
-                                                                'autoLabel'=>true,
-                                                                'options' => [
-                                                                    'id' => 'form0-lay_hang_ve'
-                                                                ],
-                                                                'pluginOptions'=>[
-                                                                    'threeState' => false,
-                                                                    'size' => 'sm'
-                                                                ]
-                                                            ])->label(false);
-                                                        }
+                                                        // if($model->lay_hang_ve)
+                                                        // {
+                                                        //     echo $form->field($model, 'lay_hang_ve')->widget(CheckboxX::classname(), [
+                                                        //         'autoLabel'=>true,
+                                                        //         'value' => $model->lay_hang_ve,
+                                                        //         'options' => [
+                                                        //             'id' => 'form0-lay_hang_ve'
+                                                        //         ],
+                                                        //         'pluginOptions'=>[
+                                                        //             'threeState' => false,
+                                                        //             'size' => 'sm'
+                                                        //         ]
+                                                        //     ])->label(false);
+                                                        // }else
+                                                        // {
+                                                        //     echo $form->field($model, 'lay_hang_ve')->widget(CheckboxX::classname(), [
+                                                        //         'autoLabel'=>true,
+                                                        //         'options' => [
+                                                        //             'id' => 'form0-lay_hang_ve'
+                                                        //         ],
+                                                        //         'pluginOptions'=>[
+                                                        //             'threeState' => false,
+                                                        //             'size' => 'sm'
+                                                        //         ]
+                                                        //     ])->label(false);
+                                                        // }
                                                     ?>
                                                 </div>
 
