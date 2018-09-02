@@ -410,19 +410,25 @@ $this->title = "Hoá đơn thanh toán";
                                                                                 </div>
                                                                                 <div class='col-md-6 col-sm-6 col-xs-6'>
                                                                                     <?php
-                                                                                        $model_kh = Khachhang::find()->where(['kh_id' => $model['kh_id']])->one();
-                                                                                        $sodu = $model_kh['sodu'];
-                                                                                        $sono = $model_kh['sodu'];
-                                                                                        $tong = $model['chuyen_tra_khach'] + $sodu + $sono;
+                                                                                        $so_du = 0;
+                                                                                        $so_no = 0;
+                                                                                        $model_kh = Khachhang::find()->with('donhang')->where(['kh_id' => $model['kh_id']])->asArray()->one();
+                                                                                        $model_dh = $model_kh['donhang'];
+                                                                                        if (count($model_dh) > 0) {
+                                                                                            foreach($model_dh as $dh) {
+                                                                                                $so_no += (int)$dh['so_no'];
+                                                                                            }
+                                                                                        }
+                                                                                        $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
                                                                                     ?>
                                                                                     <p class='right'>
-                                                                                        <?= $sodu.' VNĐ'?>
+                                                                                        <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                     </p>
                                                                                     <p class='right'>
-                                                                                        <?= $sono.' VNĐ'?>
+                                                                                        <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                     </p>
                                                                                     <p class='right'>
-                                                                                        <?= $tong.' VNĐ'?>
+                                                                                        <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : 0?>
                                                                                     </p>
                                                                                     <p class='right'>
                                                                                         <button
@@ -856,19 +862,25 @@ $this->title = "Hoá đơn thanh toán";
                                                                             </div>
                                                                             <div class='col-md-6 col-sm-6 col-xs-6'>
                                                                                 <?php
-                                                                                    $model_kh = Khachhang::find()->where(['kh_id' => $model['kh_id']])->one();
-                                                                                    $sodu = $model_kh['sodu'];
-                                                                                    $sono = $model_kh['sodu'];
-                                                                                    $tong = $model['chuyen_tra_khach'] + $sodu + $sono;
+                                                                                    $so_du = 0;
+                                                                                    $so_no = 0;
+                                                                                    $model_kh = Khachhang::find()->with('donhang')->where(['kh_id' => $model['kh_id']])->asArray()->one();
+                                                                                    $model_dh = $model_kh['donhang'];
+                                                                                    if (count($model_dh) > 0) {
+                                                                                        foreach($model_dh as $dh) {
+                                                                                            $so_no += (int)$dh['so_no'];
+                                                                                        }
+                                                                                    }
+                                                                                    $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
                                                                                 ?>
                                                                                 <p class='right'>
-                                                                                    <?= $sodu.' VNĐ'?>
+                                                                                    <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $sono.' VNĐ'?>
+                                                                                    <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $tong.' VNĐ'?>
+                                                                                    <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
                                                                                     <button
@@ -1304,19 +1316,25 @@ $this->title = "Hoá đơn thanh toán";
                                                                             </div>
                                                                             <div class='col-md-6 col-sm-6 col-xs-6'>
                                                                                 <?php
-                                                                                    $model_kh = Khachhang::find()->where(['kh_id' => $model['kh_id']])->one();
-                                                                                    $sodu = $model_kh['sodu'];
-                                                                                    $sono = $model_kh['sodu'];
-                                                                                    $tong = 0;
+                                                                                    $so_du = 0;
+                                                                                    $so_no = 0;
+                                                                                    $model_kh = Khachhang::find()->with('donhang')->where(['kh_id' => $model['kh_id']])->asArray()->one();
+                                                                                    $model_dh = $model_kh['donhang'];
+                                                                                    if (count($model_dh) > 0) {
+                                                                                        foreach($model_dh as $dh) {
+                                                                                            $so_no += (int)$dh['so_no'];
+                                                                                        }
+                                                                                    }
+                                                                                    $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
                                                                                 ?>
                                                                                 <p class='right'>
-                                                                                    <?= $sodu.' VNĐ'?>
+                                                                                    <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $sono.' VNĐ'?>
+                                                                                    <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $tong.' VNĐ'?>
+                                                                                    <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
                                                                                     <a id="dlink"  style="display:none;"></a>

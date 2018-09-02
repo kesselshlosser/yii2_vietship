@@ -19,7 +19,8 @@ $this->title = "Sửa thông tin khách hàng";
             'model' => $model,
             'model_dclh' => $model_dclh,
             'model_httt' => $model_httt,
-            'kh_id' => $kh_id
+            'kh_id' => $kh_id,
+            'hien_thi_du_no' => 1
             ]) ?>
     </div>
 </div>

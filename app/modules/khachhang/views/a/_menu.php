@@ -16,7 +16,7 @@ $module = $this->context->module->id;
     </li>
     <li <?= ($action === 'create') ? 'class="active"' : '' ?>><a href="<?= Url::to(['/admin/'.$module.'/a/create']) ?>"><?= "Tạo khách hàng mới" ?></a></li>
     <li <?= ($action === 'thanhtoan') ? 'class="active"' : '' ?>><a href="<?= Url::to(['/admin/'.$module.'/a/thanhtoan']) ?>"><?= "Thanh toán" ?></a></li>
-    <li <?= ($action === 'thanhtoanky') ? 'class="active"' : '' ?>><a href="<?= Url::to(['/admin/'.$module.'/a/thanhtoanky']) ?>"><?= "Thanh toán đến kỳ" ?></a></li>
+    <li <?= ($action === 'thanhtoanky') ? 'class="active"' : '' ?>><a href="<?= Url::to(['/admin/'.$module.'/a/thanhtoandenky']) ?>"><?= "Thanh toán đến kỳ" ?></a></li>
     <li <?= ($action === 'hoadon') ? 'class="active"' : '' ?>><a href="<?= Url::to(['/admin/'.$module.'/a/hoadon']) ?>"><?= "Hoá đơn thanh toán" ?></a></li>
 </ul>
 <br/>

@@ -11,6 +11,7 @@ use unclead\multipleinput\MultipleInput;
 use app\modules\duongpho\models\Duongpho;
 use richardfan\widget\JSRegister;
 use yii\bootstrap\Modal;
+use \app\modules\donhang\models\Donhang;
 
 $module = $this->context->module->id;
 ?>
@@ -126,9 +127,7 @@ $module = $this->context->module->id;
                 
                 <div class="row">
                     <div class="col-md-12">
-                        
                         <?php
-                            
                             echo $form->field($model, 'gkh_id')->widget(Select2::className(), [
                                 'data' => ArrayHelper::map(Goikhachhang::find()->all(), 'gkh_id', 'ten_goi'),
                                 'options' => [
@@ -144,6 +143,149 @@ $module = $this->context->module->id;
         </div>
     </div>
     
+    <?php if (isset($hien_thi_du_no) && $hien_thi_du_no == 1):?>
+        <div class='col-md-12 col-xs-12 col-sm-12'>
+            <div class='panel'>
+                <header class="panel-heading">
+                    Dư nợ hiện tại
+                    <span class="tools pull-right">
+                        <a class="refresh-box fa fa-repeat" href="javascript:;"></a>
+                        <a class="collapse-box fa fa-chevron-down" href="javascript:;"></a>
+                        <a class="close-box fa fa-times" href="javascript:;"></a>
+                    </span>
+                </header>
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?php
+                                $kh_id = $model->kh_id;
+                                $tong_so_du = 0;
+                                $tong_so_no = 0;
+                                $model_dh = Donhang::find()->where(['kh_id' => $kh_id])->asArray()->all();
+                                if (count($model_dh) > 0) {
+                                    foreach ($model_dh as $key => $dh) {
+                                        $so_no = (int)$dh['so_no'];
+                                        $tong_so_no += $so_no;
+                                    }
+                                }
+                            ?>
+
+                            <?php
+                                $model_dh_no = Donhang::find()
+                                ->where(['kh_id' => $kh_id])
+                                ->andWhere(['>', 'so_no', 0])
+                                ->asArray()->all();
+                                $tong_so_no_str = $tong_so_no > 0 ? number_format($tong_so_no, 0, '', ',').' VNĐ' : 0;
+                                Modal::begin([
+                                    'header'=> '<h3 style="text-align : center;">Số nợ: '.$tong_so_no_str.'</h3>',
+                                    'id'    => 'so-no',
+                                    'size'  => 'modal-lg',
+                                ]);
+                            ?>
+                                <?php if (count($model_dh_no) > 0):?>
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Lý do</th>
+                                                <th>Mã vận đơn</th>
+                                                <th>Khu vực giao hàng</th>
+                                                <th>Phương thức trả ship</th>
+                                                <th>Tiền ship</th>
+                                                <th>Tiền thu hộ</th>
+                                                <th>Thời gian</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($model_dh_no as $key => $dh):?>
+                                                <tr>
+                                                    <td>
+                                                        Lý do
+                                                    </td>
+
+                                                    <td>
+                                                        <?= $dh['ma_don_hang']?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?php
+                                                            if (!empty($dh['nguoi_nhan'])) {
+                                                                $nguoi_nhan_json = $dh['nguoi_nhan'];
+                                                                $dcgh = json_decode($nguoi_nhan_json, true)['dia_chi_giao_hang'];
+                                                                echo $dcgh;
+                                                            }
+                                                        ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= $dh['hinh_thuc_thanh_toan']?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?php
+                                                            if (isset($dh['tong_tien']) && !empty($dh['tong_tien'])) {
+                                                                $tong_tien = $dh['tong_tien'];
+                                                                echo $tong_tien > 0 ? number_format($tong_tien, 0, '', ',').' VNĐ' : 0;
+                                                            }
+                                                        ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?php
+                                                            if (isset($dh['tien_thu_ho']) && !empty($dh['tien_thu_ho'])) {
+                                                                $tien_thu_ho = $dh['tien_thu_ho'];
+                                                                echo $tien_thu_ho > 0 ? number_format($tien_thu_ho, 0, '', ',').' VNĐ' : 0;
+                                                            }
+                                                        ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= date('d/m/Y', $dh['time'])?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach;?>
+                                        </tbody>
+                                    </table>
+                                <?php endif;?>
+                            <?php
+                                Modal::end();
+                            ?>
+                            <div class='col-md-6'>
+                                <span>Số dư: <?= $tong_so_du > 0 ? number_format($tong_so_du, 0, '', ',').' VNĐ' : 0?></span>
+                                <button
+                                    data-toggle='modal'
+                                    data-target='#so-du'
+                                    type="button"
+                                    style='margin-left: 8px'
+                                    class='btn btn-sm btn-success'
+                                >
+                                Chi tiết
+                                </button>
+                            </div>
+
+                            <div class='col-md-6'>
+                                <span>Số nợ: <?= $tong_so_no > 0 ? number_format($tong_so_no, 0, '', ',').' VNĐ' : 0?></span>
+                                <button
+                                    data-toggle='modal'
+                                    data-target='#so-no'
+                                    type="button"
+                                    style='margin-left: 8px'
+                                    class='btn btn-sm btn-success'
+                                >
+                                Chi tiết
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class='col-md-6'>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif;?>
+
     <div class="col-md-12 col-xs-12 col-sm-12">
         <div class="panel">
             <header class="panel-heading">

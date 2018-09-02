@@ -77,6 +77,7 @@ $this->title = "Thanh toán với khách hàng";
                                     <tbody>
                                         <?php foreach($models as $model):?>
                                             <?php if (count($model['donhang']) > 0):?>
+                                                <?php $donhang = $model['donhang'];?>
                                                 <tr>
                                                     <!--Mã khách hàng-->
                                                     <td class='font14'>
@@ -176,13 +177,19 @@ $this->title = "Thanh toán với khách hàng";
                                                     </td>
                                                     <!--Số nợ-->
                                                     <td class='font14' style='text-align: center'>
-                                                        <?= $model['sono'] > 0 ? $model['sono'].' VNĐ' : 0?>
+                                                        <?php
+                                                            $so_du = 0;
+                                                            $so_no = 0;
+                                                            foreach($donhang as $model_dh) {
+                                                                $so_no += (int)$model_dh['so_no'];
+                                                            }
+                                                        ?>
+                                                        <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : 0?>
                                                     </td>
                                                     <!--Tiền thu hộ-->
                                                     <td class='font14' style='text-align: center'>
                                                         <?php
                                                             $tong_tien_thu_ho = 0;
-                                                            $donhang = $model['donhang'];
                                                             Modal::begin([
                                                                 'header'=> '<h3 style="text-align : center;">Chi tiết tiền thu hộ của '.$model['ten_hien_thi'].'</h3>',
                                                                 'id'    => 'tienthuho'.$model['kh_id'],
@@ -280,9 +287,7 @@ $this->title = "Thanh toán với khách hàng";
                                                     <!--Tiền trả khách-->
                                                     <td class='font14' style='text-align: center'>
                                                         <?php
-                                                            $sodu = $model['sodu'] > 0 ? $model['sodu'] : 0;
-                                                            $sono = $model['sono'] > 0 ? $model['sono'] : 0;
-                                                            $tien_tra_khach = $tong_tien_thu_ho - $sono + $sodu;
+                                                            $tien_tra_khach = $tong_tien_thu_ho - $so_no + $so_du;
                                                             echo $tien_tra_khach > 0 ? number_format($tien_tra_khach, 0, '', ',').' VNĐ' : 0;
                                                         ?>
                                                         <button
