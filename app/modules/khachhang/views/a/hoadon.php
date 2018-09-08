@@ -419,7 +419,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                                 $so_no += (int)$dh['so_no'];
                                                                                             }
                                                                                         }
-                                                                                        $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
+                                                                                        $tong = $tong_chuyen_tra_khach + $so_du - $so_no;
                                                                                     ?>
                                                                                     <p class='right'>
                                                                                         <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
@@ -428,7 +428,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                     </p>
                                                                                     <p class='right'>
-                                                                                        <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : 0?>
+                                                                                        <?= number_format($tong, 0, '', ',').' VNĐ'?>
                                                                                     </p>
                                                                                     <p class='right'>
                                                                                         <button
@@ -871,7 +871,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             $so_no += (int)$dh['so_no'];
                                                                                         }
                                                                                     }
-                                                                                    $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
+                                                                                    $tong = $tong_chuyen_tra_khach + $so_du - $so_no;
                                                                                 ?>
                                                                                 <p class='right'>
                                                                                     <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
@@ -880,7 +880,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                     <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : '0 VNĐ'?>
+                                                                                    <?= number_format($tong, 0, '', ',').' VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
                                                                                     <button
@@ -1325,7 +1325,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             $so_no += (int)$dh['so_no'];
                                                                                         }
                                                                                     }
-                                                                                    $tong = $model['chuyen_tra_khach'] + $so_du + $so_no;
+                                                                                    $tong = $tong_chuyen_tra_khach + $so_du - $so_no;
                                                                                 ?>
                                                                                 <p class='right'>
                                                                                     <?= $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : '0 VNĐ'?>
@@ -1334,7 +1334,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                     <?= $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : '0 VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
-                                                                                    <?= $tong > 0 ? number_format($tong, 0, '', ',').' VNĐ' : '0 VNĐ'?>
+                                                                                    <?= number_format($tong, 0, '', ',').' VNĐ'?>
                                                                                 </p>
                                                                                 <p class='right'>
                                                                                     <a id="dlink"  style="display:none;"></a>
