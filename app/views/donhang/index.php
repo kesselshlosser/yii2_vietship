@@ -470,7 +470,7 @@ $module = $this->context->module->id;
                                                         <?php 
                                                             $ly_do = json_decode($item->ly_do, true);
                                                             $ly_do_str = '';
-                                                            foreach($ly_do as $ld):
+                                                            foreach($ly_do as $ld) {
                                                                 $time = date('H:i d-m-Y', $ld['time']);
                                                                 $action = (isset($ld['action']) && !empty($ld['action'])) ? $ld['action'] : '';
                                                                 $lydo = (isset($ld['lydo']) && !empty($ld['lydo'])) ? $ld['lydo'] : '';
@@ -480,9 +480,9 @@ $module = $this->context->module->id;
                                                                     $str = '*'.$action.' - '.$lydo.'<br>';
                                                                     $ly_do_str .= $str;
                                                                 }
+                                                            }
                                                         ?>
-                                                            <p style='margin-top: 10px !important'><?= $ly_do_str?></p>
-                                                        <?php endforeach;?>
+                                                        <p style='margin-top: 10px !important'><?= $ly_do_str?></p>
                                                     <?php endif;?>
                                                 </span>
                                             </td>
