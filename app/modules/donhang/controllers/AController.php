@@ -911,7 +911,7 @@ class AController extends Controller
             
             //Kiểm tra khu vực
             if (is_array($khuvuc)) {
-                foreach($khuvuc as $key => $kv)
+                foreach($khuvuc as $k => $kv)
                 {
                     if($kv['value'] == 1)
                     {
@@ -924,32 +924,32 @@ class AController extends Controller
             }
             //Kiểm tra thời gian áp dụng
             $thoi_gian_ap_dung = $this->ApDungTheoNgayHayGio($item);
-            if($thoi_gian_ap_dung['type'] == 'day') //Áp dụng theo ngày
+            if ($thoi_gian_ap_dung['type'] == 'day') //Áp dụng theo ngày
             {
                 $begin = $thoi_gian_ap_dung['begin'];
                 $end = $thoi_gian_ap_dung['end'];
-                if($begin <= $currentTime && $end >= $currentTime)
+                if ($begin <= $currentTime && $end >= $currentTime)
                 {
                     
-                }else
+                } else
                 {
                     unset($arrGoiKhachHangApDung[$key]);
                     continue;
                 }
-            }else if($thoi_gian_ap_dung['type'] == 'hour') //Áp dụng theo giờ
+            }else if ($thoi_gian_ap_dung['type'] == 'hour') //Áp dụng theo giờ
             {
                 $begin = $thoi_gian_ap_dung['begin'];
                 $time = $thoi_gian_ap_dung['time']*3600000;
                 $timeCompare = $begin + $time;
-                if($timeCompare > $currentTime)
+                if ($timeCompare > $currentTime)
                 {
                     unset($arrGoiKhachHangApDung[$key]);
                     continue;
                 }
             }
-            if($delete == 0)
+            if ($delete == 0)
             {
-                unset($arrGoiKhachHangApDung[$key]);
+                unset ($arrGoiKhachHangApDung[$key]);
                 continue;
             }
             //Kiểm tra gói dịch vụ

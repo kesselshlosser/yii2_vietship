@@ -10,6 +10,7 @@ use app\modules\khachhang\models\Khachhang;
 use yii\bootstrap\Modal;
 use richardfan\widget\JSRegister;
 use \app\modules\goidichvu\models\Goidichvu;
+use \app\modules\donhang\models\Donhang;
 
 $this->title = "Thanh toán";
 
@@ -69,16 +70,29 @@ $this->title = "Thanh toán";
                         </header>
                         <div class="panel-body">
                             <div class='row' style='margin-top: 10px'>
+                                <?php
+                                    $tong_so_du = 0;
+                                    $tong_so_no = 0;
+                                    $model_dh = Donhang::find()->where(['kh_id' => $kh_id])->asArray()->all();
+                                    if (count($model_dh) > 0) {
+                                        foreach ($model_dh as $key => $dh) {
+                                            $so_no = (int)$dh['so_no'];
+                                            $tong_so_no += $so_no;
+                                        }
+                                    }
+                                    $tong_tien_nhan_lai = !empty($tong_tien_nhan_lai) ? $tong_tien_nhan_lai : 0;
+                                    $tong_tien_nhan_lai = $tong_tien_nhan_lai + $tong_so_du - $tong_so_no;
+                                ?>
                                 <div class='col-md-5'>
-                                    Tổng tiền chưa được thanh toán: <?= !empty($tong_tien_nhan_lai) && $tong_tien_nhan_lai > 0 ? number_format($tong_tien_nhan_lai, 0, '', ',').' VNĐ' : 0?>
+                                    Tổng tiền chưa được thanh toán: <?= $tong_tien_nhan_lai > 0 ? number_format($tong_tien_nhan_lai, 0, '', ',').' VNĐ' : 0?>
                                 </div>
 
                                 <div class='col-md-2'>
-                                    Số dư: <?= !empty($so_du) && $so_du > 0 ? number_format($so_du, 0, '', ',').' VNĐ' : 0;?>    
+                                    Số dư: <?= $tong_so_du > 0 ? number_format($tong_so_du, 0, '', ',').' VNĐ' : 0;?>    
                                 </div>
 
                                 <div class='col-md-2'>
-                                    Số nợ: <?= !empty($so_no) && $so_no > 0 ? number_format($so_no, 0, '', ',').' VNĐ' : 0;?>    
+                                    Số nợ: <?= $tong_so_no > 0 ? number_format($tong_so_no, 0, '', ',').' VNĐ' : 0;?>    
                                 </div>
 
                                 <div class='col-md-3'>

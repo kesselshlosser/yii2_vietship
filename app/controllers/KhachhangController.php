@@ -753,8 +753,7 @@ class KhachhangController extends Controller
         }
         return $this->render('quanlytien', [
             'models' => $models,
-            'so_du' => $model_kh['sodu'],
-            'so_no' => $model_kh['sono'],
+            'kh_id' => $kh_id,
             'tong_tien_nhan_lai' => $tong_tien_nhan_lai
         ]);
     }
