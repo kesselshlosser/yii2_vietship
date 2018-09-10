@@ -1127,7 +1127,7 @@ $this->title = "Hoá đơn thanh toán";
                                                                                     $model_dh = $model_kh['donhang'];
                                                                                     if (count($model_dh) > 0) {
                                                                                         foreach($model_dh as $dh) {
-                                                                                            $so_no += (int)$dh['so_no'];
+                                                                                            $so_no += (int)$dh['so_no_da_thanh_toan'];
                                                                                         }
                                                                                     }
                                                                                     $tong = $tong_chuyen_tra_khach + $so_du - $so_no;
