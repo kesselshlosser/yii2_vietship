@@ -411,9 +411,17 @@ $module = $this->context->module->id;
                                             </td>
                                             
                                             <td>
-                                                <?=
-                                                    $item->hinh_thuc_thanh_toan;
+                                                <p><?= $item->hinh_thuc_thanh_toan?></p>
+                                                <?php
+                                                    $ghi_chu_hinh_thuc_thanh_toan = $item->ghi_chu_hinh_thuc_thanh_toan;
+                                                    if ($ghi_chu_hinh_thuc_thanh_toan):
+                                                    $arr_ghi_chu_hinh_thuc_thanh_toan = json_decode($ghi_chu_hinh_thuc_thanh_toan, true);
+                                                    $prev_httt = $arr_ghi_chu_hinh_thuc_thanh_toan['prev'];
+                                                    $reason_httt = $arr_ghi_chu_hinh_thuc_thanh_toan['reason'];
                                                 ?>
+                                                    <p style='text-decoration: line-through;'><?= $prev_httt?></p>
+                                                    <p>Lý do: <?= $reason_httt?></p>
+                                                <?php endif;?>
                                             </td>
                                             
                                             <td width='110'>

@@ -814,9 +814,13 @@ class KhachhangController extends Controller
         if ($tong_so_don > 0) {
             foreach($model_dh as $item) {
                 $trang_thai = $item['trang_thai'];
-                // Tinh tong_cuoc && tien_thu_ho
-                if ($trang_thai != 'Huỷ đơn') {
+                // Tinh tong_cuoc
+                if ($trang_thai == 'Đã giao' || $trang_thai == 'Đã hoàn') {
                     $tong_cuoc_van_chuyen += $item['tong_tien'];
+                }
+
+                // Tinh tien_thu_ho
+                if ($trang_thai != 'Huỷ đơn') {
                     $tong_tien_thu_ho += $item['tien_thu_ho'];
                 } else {
                     $so_don_huy_khong_lay_duoc++;
