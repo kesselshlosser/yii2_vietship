@@ -50,7 +50,8 @@ class AController extends Controller
                         $message = 'Duyệt đơn thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    // return $this->redirect(['/admin/donhang?scroll='.$dh_id, '#' => $dh_id]);
+                    return $this->redirect(['/admin/donhang?scroll='.$dh_id]);
                 break;
                 case 'chonNvl':
                 case 'chonNvlKhac':
@@ -100,7 +101,8 @@ class AController extends Controller
                         $message = 'Huỷ đơn hàng thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    // return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/admin/donhang?scroll='.$dh_id]);
                 break;
                 case 'phuphi':
                     $dh_id = $formData['dh_id'];
@@ -120,7 +122,8 @@ class AController extends Controller
                         $message = 'Thêm phụ phí thất bại';
                         $this->flash('error', $message);
                     }
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    // return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/admin/donhang?scroll='.$dh_id]);
                 break;
                 case 'hoanhang':
                     $dh_id = $formData['dh_id'];
@@ -155,7 +158,8 @@ class AController extends Controller
                     $model->ly_do = Donhang::getLyDo($model, $arr_ly_do);
                     $model->trang_thai = 'Chờ hoàn hàng';
                     if ($model->save(false)) {
-                        return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                        // return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                        return $this->redirect(['/admin/donhang?scroll='.$dh_id]);
                     }
                 break;
                 default:
@@ -201,7 +205,8 @@ class AController extends Controller
                 }
                 if ($saveToDhqtStatus) {
                     $this->flash('success', $message);
-                    return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    // return $this->redirect(['/admin/donhang', '#' => $dh_id]);
+                    return $this->redirect(['/admin/donhang?scroll='.$dh_id]);
                 } else {
                     $this->flash('error', $error);
                     return $this->refresh();
@@ -901,7 +906,10 @@ class AController extends Controller
             }
         }
         
-        $arrGoiKhachHangApDung = Goikhachhang::find()->where(['muc_do_uu_tien' => $muc_do_uu_tien_nho_nhat])->asArray()->all();
+        $arrGoiKhachHangApDung = Goikhachhang::find()
+        ->where(['muc_do_uu_tien' => $muc_do_uu_tien_nho_nhat])
+        ->andWhere(['gkh_id' => $arrGoiKhachHang])
+        ->asArray()->all();
         
         foreach($arrGoiKhachHangApDung as $key => $item)
         {
@@ -926,8 +934,9 @@ class AController extends Controller
             $thoi_gian_ap_dung = $this->ApDungTheoNgayHayGio($item);
             if ($thoi_gian_ap_dung['type'] == 'day') //Áp dụng theo ngày
             {
-                $begin = $thoi_gian_ap_dung['begin'];
-                $end = $thoi_gian_ap_dung['end'];
+                $begin = (int)$thoi_gian_ap_dung['begin'];
+                $end = (int)$thoi_gian_ap_dung['end']; // Đầu ngày -> convert to cuối ngày
+                $end = $end + 23 * 60 * 60 + 59 * 60 + 59;
                 if ($begin <= $currentTime && $end >= $currentTime)
                 {
                     

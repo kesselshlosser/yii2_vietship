@@ -307,7 +307,7 @@ class KhachhangController extends Controller
                     $arr_unset = [];
                     $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
                     for ($i = 0; $i < $number_don_hang; $i++) {
-                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                             // unset($model_kh[$k]['donhang'][$i]);
                             array_push($arr_unset, $i);
                             continue;
@@ -327,7 +327,7 @@ class KhachhangController extends Controller
                 } else {
                     $arr_unset = [];
                     for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
-                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                             // unset($model_kh[$k]['donhang'][$i]);
                             array_push($arr_unset, $i);
                         }

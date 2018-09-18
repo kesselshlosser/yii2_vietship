@@ -880,7 +880,10 @@ class DonhangController extends Controller
             }
         }
         
-        $arrGoiKhachHangApDung = Goikhachhang::find()->where(['muc_do_uu_tien' => $muc_do_uu_tien_nho_nhat])->asArray()->all();
+        $arrGoiKhachHangApDung = Goikhachhang::find()
+        ->where(['muc_do_uu_tien' => $muc_do_uu_tien_nho_nhat])
+        ->andWhere(['gkh_id' => $arrGoiKhachHang])
+        ->asArray()->all();
         
         foreach($arrGoiKhachHangApDung as $key => $item)
         {
@@ -903,8 +906,9 @@ class DonhangController extends Controller
             $thoi_gian_ap_dung = $this->ApDungTheoNgayHayGio($item);
             if($thoi_gian_ap_dung['type'] == 'day') //Áp dụng theo ngày
             {
-                $begin = $thoi_gian_ap_dung['begin'];
-                $end = $thoi_gian_ap_dung['end'];
+                $begin = (int)$thoi_gian_ap_dung['begin'];
+                $end = (int)$thoi_gian_ap_dung['end']; // Đầu ngày -> convert to cuối ngày
+                $end = $end + 23 * 60 * 60 + 59 * 60 + 59;
                 if($begin <= $currentTime && $end >= $currentTime)
                 {
                     

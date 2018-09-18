@@ -813,6 +813,16 @@ $module = $this->context->module->id;
             $(errorWarning).hide();
         }
     }
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
     // Validate chon nhan vien
     $('.btn-chon-nv').click(e => {
         const target = e.target
@@ -842,5 +852,13 @@ $module = $this->context->module->id;
             
         }
     })
+
+    const scroll = getParameterByName('scroll'); 
+    const scrollID = `#${parseInt(scroll)}`;
+    if ($(scrollID).offset() !== undefined) {
+        $('html, body').animate({
+            scrollTop: $(scrollID).offset().top - 50
+        }, 500)
+    }
 </script>
 <?php JSRegister::end(); ?>

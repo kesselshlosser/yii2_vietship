@@ -177,6 +177,7 @@ class AController extends Controller
     public function actionEdit($id)
     {
         $model = Khachhang::findOne($id);
+        $matkhaucu = $model->mat_khau;
         $model->mat_khau = '';
         $result_dclh = Diachilayhang::find()->where(['kh_id' => $id])->all();
         $model_httt = Hinhthucthanhtoan::find()->where(['kh_id' => $id])->one();
@@ -278,6 +279,8 @@ class AController extends Controller
             $mat_khau = $dataPost[$model->formName()]['mat_khau'];
             if (!empty($mat_khau)) {
                 $model->mat_khau = md5($mat_khau);
+            } else {
+                $model->mat_khau = $matkhaucu;
             }
             
             if($model->save(false)) {
@@ -496,7 +499,12 @@ class AController extends Controller
                     $arr_unset = [];
                     $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
                     for ($i = 0; $i < $number_don_hang; $i++) {
-                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        // if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        //     // unset($model_kh[$k]['donhang'][$i]);
+                        //     array_push($arr_unset, $i);
+                        //     continue;
+                        // }
+                        if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                             // unset($model_kh[$k]['donhang'][$i]);
                             array_push($arr_unset, $i);
                             continue;
@@ -516,7 +524,11 @@ class AController extends Controller
                 } else {
                     $arr_unset = [];
                     for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
-                        if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        // if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                        //     // unset($model_kh[$k]['donhang'][$i]);
+                        //     array_push($arr_unset, $i);
+                        // }
+                        if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                             // unset($model_kh[$k]['donhang'][$i]);
                             array_push($arr_unset, $i);
                         }
@@ -616,7 +628,7 @@ class AController extends Controller
                         $arr_unset = [];
                         $arr_don_hang_da_xuat_hoa_don = json_decode($don_hang_da_xuat_hoa_don, true);
                         for ($i = 0; $i < $number_don_hang; $i++) {
-                            if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                            if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                                 // unset($model_kh[$k]['donhang'][$i]);
                                 array_push($arr_unset, $i);
                                 continue;
@@ -636,7 +648,7 @@ class AController extends Controller
                     } else {
                         $arr_unset = [];
                         for ($i = 0; $i < count($model_kh[$k]['donhang']); $i++) {
-                            if ($model_kh[$k]['donhang'][$i]['trang_thai'] != 'Đã giao') {
+                            if ($model_kh[$k]['donhang'][$i]['so_no'] == 0) {
                                 echo 'Khác đã giao: '.$i;
                                 array_push($arr_unset, $i);
                             }
