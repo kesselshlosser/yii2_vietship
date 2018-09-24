@@ -395,6 +395,13 @@ $module = $this->context->module->id;
                                                 <?php
                                                     echo $ten.'<br>'.$so_dien_thoai.'<br>'.$item->dia_chi_lay_hang;
                                                 ?>
+                                                <?php 
+                                                    if ($item->ghi_chu):
+                                                ?>
+                                                    <br>
+                                                    <br>
+                                                    <p><span style='font-weight: bold; background-color: red; color: white'>Ghi chú: </span><?= $item->ghi_chu?></p>
+                                                <?php endif;?>
                                             </td>
                                             <td>
                                                 <?php
@@ -422,15 +429,80 @@ $module = $this->context->module->id;
                                             </td>
                                             
                                             <td width='110'>
-                                                <?=
-                                                    $item->tong_tien > 0 ? number_format($item->tong_tien, 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                <?php
+                                                Modal::begin([
+                                                    'header'=> '<h3 style="text-align : center;">Phụ phí</h3>',
+                                                    'id'    => 'xemphuphi'.$item->dh_id,
+                                                    'options' => [
+                                                        'tabindex' => false
+                                                    ]
+                                                ]);
                                                 ?>
-                                                <?php if ($item->phu_phi):?>
-                                                    <br>
-                                                    <br>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Số tiền</th>
+                                                            <th>Ghi chú</th>
+                                                            <th>Ngày tháng</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <?php if (!empty($item->phu_phi)):?>
+                                                        <tbody>
+                                                            <?php 
+                                                                $arrPhuPhi = json_decode($item->phu_phi, true);
+                                                                foreach($arrPhuPhi as $phuPhi):
+                                                                    $ghiChu = '';
+                                                                    $ghiChuDate = '';
+                                                                    if ($phuPhi['ghi_chu']) {
+                                                                        $ghiChu = $phuPhi['ghi_chu'];
+                                                                    }
+                                                                    $ghiChuDate = date('d-m-Y H:i:s', $phuPhi['ghi_chu_thoi_gian']);
+                                                                    $phuphi = (int)$phuPhi['phu_phi'];
+                                                            ?>
+                                                                <tr>
+                                                                    <td><?= number_format($phuphi, 0, '', ',').' VNĐ'?></td>
+                                                                    <td><?= $ghiChu?></td>
+                                                                    <td><?= $ghiChuDate?></td>
+                                                                </tr>
+                                                            <?php endforeach;?>
+                                                        </tbody>
+                                                    <?php endif;?>
+                                                </table>
+                                                <?php Modal::end()?>
+                                                <?php
+                                                    $tongPhuPhi = 0;
+                                                    if (!empty($item->phu_phi)) {
+                                                        $pPhi = json_decode($item->phu_phi, true);
+                                                        foreach($pPhi as $pp) {
+                                                            $tongPhuPhi += $pp['phu_phi'];
+                                                        }
+                                                    }
+                                                ?>
+                                                <?php
+                                                    $tong_tien_cuoc = $item->tong_tien + $tongPhuPhi;
+                                                    echo $tong_tien_cuoc > 0 ? number_format($tong_tien_cuoc, 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                ?>
+                                                <?php
+                                                    if ($tongPhuPhi > 0) {
+                                                        echo '<p>Tiền cước bao gồm phụ phí</p>';
+                                                    }
+                                                ?>
+
+                                                <?php
+                                                    if (!empty($item->phu_phi)):
+                                                ?>
                                                     <label>Phụ phí:</label>
                                                     <br>
-                                                    <?= $item->phu_phi.' VNĐ'?>
+                                                    <p><?= $tongPhuPhi > 0 ? number_format($tongPhuPhi, 0, '', ',').' VNĐ' : '0 VNĐ'?></p>
+                                                    <button
+                                                        data-toggle='modal'
+                                                        data-target='#xemphuphi<?= $item->dh_id?>'
+                                                        type="button"
+                                                        style='width:100%;'
+                                                        class='btn btn-sm btn-default'
+                                                    >
+                                                        Xem chi tiết
+                                                    </button>
                                                 <?php endif;?>
                                             </td>
                                             
@@ -686,7 +758,7 @@ $module = $this->context->module->id;
                                                             <div class="col-md-12" style='margin-top: 10px'>
                                                                 <label>Ghi chú</label>
                                                                 <br>
-                                                                <textarea rows='3' class="form-control" style='width: 100%' name='ghi_chu'></textarea>
+                                                                <textarea rows='3' class="form-control" style='width: 100%' name='ghi_chu_phu_phi'></textarea>
                                                             </div>
                                                             <div class='col-md-12' style='margin-top: 10px'>
                                                                 <input type="hidden" name="dh_id" value="<?= $item->dh_id ?>"/> 
@@ -705,24 +777,25 @@ $module = $this->context->module->id;
                                                                         <th>Ngày tháng</th>
                                                                     </tr>
                                                                 </thead>
-                                                                <?php if ($item->phu_phi):?>
-                                                                <?php
-                                                                    $arrGhiChu = $item->ghi_chu ? json_decode($item->ghi_chu, true) : [];
-                                                                    $ghiChu = '';
-                                                                    $ghiChuDate = '';
-                                                                    if (count($arrGhiChu) > 0) {
-                                                                        if ($arrGhiChu['ghi_chu']) {
-                                                                            $ghiChu = $arrGhiChu['ghi_chu'];
-                                                                        }
-                                                                        $ghiChuDate = date('d-m-Y H:i:s', $arrGhiChu['ghi_chu_thoi_gian']);
-                                                                    }
-                                                                ?>
+                                                                <?php if (!empty($item->phu_phi)):?>
                                                                     <tbody>
-                                                                        <tr>
-                                                                            <td><?= $item->phu_phi.' VNĐ'?></td>
-                                                                            <td><?= $ghiChu?></td>
-                                                                            <td><?= $ghiChuDate?></td>
-                                                                        </tr>
+                                                                        <?php 
+                                                                            $arrPhuPhi = json_decode($item->phu_phi, true);
+                                                                            foreach($arrPhuPhi as $phuPhi):
+                                                                                $ghiChu = '';
+                                                                                $ghiChuDate = '';
+                                                                                if ($phuPhi['ghi_chu']) {
+                                                                                    $ghiChu = $phuPhi['ghi_chu'];
+                                                                                }
+                                                                                $ghiChuDate = date('d-m-Y H:i:s', $phuPhi['ghi_chu_thoi_gian']);
+                                                                                $phuphi = (int)$phuPhi['phu_phi'];
+                                                                        ?>
+                                                                            <tr>
+                                                                                <td><?= number_format($phuphi, 0, '', ',').' VNĐ'?></td>
+                                                                                <td><?= $ghiChu?></td>
+                                                                                <td><?= $ghiChuDate?></td>
+                                                                            </tr>
+                                                                        <?php endforeach;?>
                                                                     </tbody>
                                                                 <?php endif;?>
                                                             </table>

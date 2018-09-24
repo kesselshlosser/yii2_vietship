@@ -60,7 +60,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
             [
                 [
                     'kh_id', 'tong_tien', 'cp_id', 'dclh_id', 'te',
-                    'tien_thu_ho', 'ung_tien', 'phu_phi',
+                    'tien_thu_ho', 'ung_tien',
                     'time', 'lay_hang_ve', 'dvpt4_dai', 'dvpt4_rong', 'dvpt4_cao', 'dvpt4_can_nang'
                 ],
                 'integer',
@@ -84,7 +84,7 @@ class Donhang extends \yii\easyii\components\ActiveRecord
                 'message' => 'Tiền thu hộ không được nhỏ hơn tổng tiền ship'
             ], 
             [
-                ['lich_trinh_don_hang', 'ly_do_huy_don', 'so_no', 'tinh_so_no', 'so_no_da_thanh_toan'],
+                ['lich_trinh_don_hang', 'ly_do_huy_don', 'so_no', 'tinh_so_no', 'so_no_da_thanh_toan', 'phu_phi'],
                 'safe'
             ]           
         ];

@@ -232,7 +232,14 @@ $this->title = "Thanh toán với khách hàng";
                                                                                         <?= $dh['tong_tien'] > 0 ? number_format((float)($dh['tong_tien']), 0, '', ',').' VNĐ' : 0?>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <?= $dh['tien_thu_ho'] > 0 ? number_format((float)($dh['tien_thu_ho']), 0, '', ',').' VNĐ' : 0?>
+                                                                                        <?php
+                                                                                            $trang_thai = $dh['trang_thai'];
+                                                                                            if ($trang_thai == 'Đã hoàn') {
+                                                                                                echo 0;
+                                                                                            } else {
+                                                                                                echo number_format((float)($dh['tien_thu_ho']), 0, '', ',').' VNĐ';
+                                                                                            }
+                                                                                        ?>
                                                                                     </td>
                                                                                     <td>
                                                                                         <?= date('H:i d/m/Y', $dh['time'])?>
@@ -253,14 +260,23 @@ $this->title = "Thanh toán với khách hàng";
                                                                     case 'Người gửi thanh toán':
                                                                     case 'Người nhận thanh toán':
                                                                     case 'Thanh toán sau':
-                                                                        $tien_thu_ho = $dh['tien_thu_ho'] > 0 ? $dh['tien_thu_ho'] : 0;
+                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                            $tien_thu_ho = 0;
+                                                                        } else {
+                                                                            $tien_thu_ho = $dh['tien_thu_ho'] > 0 ? $dh['tien_thu_ho'] : 0;
+                                                                        }
                                                                         $tong_tien_thu_ho += $tien_thu_ho;  
                                                                     break;
                                                                     case 'Thanh toán sau COD':
-                                                                        $tien_thu_ho = $dh['tien_thu_ho'] > 0 ? $dh['tien_thu_ho'] : 0;
-                                                                        $tong_tien = $dh['tong_tien'] > 0 ? $dh['tong_tien'] : 0;
-                                                                        $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                        $tong_tien_thu_ho += $tien_thu_ho_phai_tra;
+                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                            $tien_thu_ho = 0;
+                                                                            $tong_tien_thu_ho += $tien_thu_ho;
+                                                                        } else {
+                                                                            $tien_thu_ho = $dh['tien_thu_ho'] > 0 ? $dh['tien_thu_ho'] : 0;
+                                                                            $tong_tien = $dh['tong_tien'] > 0 ? $dh['tong_tien'] : 0;
+                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                            $tong_tien_thu_ho += $tien_thu_ho_phai_tra;
+                                                                        }
                                                                     break;
                                                                 }    
                                                             }
@@ -283,7 +299,7 @@ $this->title = "Thanh toán với khách hàng";
                                                             $sodu = $model['sodu'] > 0 ? $model['sodu'] : 0;
                                                             $sono = $model['sono'] > 0 ? $model['sono'] : 0;
                                                             $tien_tra_khach = $tong_tien_thu_ho - $sono + $sodu;
-                                                            echo $tien_tra_khach > 0 ? number_format($tien_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                            echo number_format($tien_tra_khach, 0, '', ',').' VNĐ';
                                                         ?>
                                                         <button
                                                             type="button"

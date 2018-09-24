@@ -10,6 +10,7 @@ use app\modules\khachhang\models\Khachhang;
 use yii\bootstrap\Modal;
 use richardfan\widget\JSRegister;
 use \app\modules\goidichvu\models\Goidichvu;
+use app\modules\donhang\models\Donhang;
 
 $this->title = "Hoá đơn thanh toán";
 
@@ -225,28 +226,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
-                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                    $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                    if ($trang_thai == 'Đã hoàn') {
+                                                                                                        $tien_thu_ho = 0;
+                                                                                                    } else {
+                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                    }
                                                                                                     echo $tien_thu_ho;
                                                                                                 ?>
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
                                                                                                     $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                    $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                     switch($httt) {
                                                                                                         case 'Người gửi thanh toán':
                                                                                                         case 'Người nhận thanh toán':
                                                                                                         case 'Thanh toán sau':
-                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                            if ($trang_thai == 'Đã hoàn') {
+                                                                                                                $tien_thu_ho = 0;    
+                                                                                                            } else {
+                                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            }
                                                                                                             $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                         break;
                                                                                                         case 'Thanh toán sau COD':
-                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                            if ($trang_thai == 'Đã hoàn') {
+                                                                                                                $tien_thu_ho = 0;
+                                                                                                                $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                            } else {
+                                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                                $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                                $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                                $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                            }
                                                                                                         break;
                                                                                                     }
-                                                                                                    echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                    echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                                     $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                                 ?>
                                                                                             </td>
@@ -368,28 +386,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
-                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                    $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                    if ($trang_thai == 'Đã hoàn') {
+                                                                                                        $tien_thu_ho = 0;
+                                                                                                    } else {
+                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                    }
                                                                                                     echo $tien_thu_ho;
                                                                                                 ?>
                                                                                             </td>
                                                                                             <td class='font14'>
                                                                                                 <?php
                                                                                                     $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                    $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                     switch($httt) {
                                                                                                         case 'Người gửi thanh toán':
                                                                                                         case 'Người nhận thanh toán':
                                                                                                         case 'Thanh toán sau':
-                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                            if ($trang_thai == 'Đã hoàn') {
+                                                                                                                $tien_thu_ho = 0;    
+                                                                                                            } else {
+                                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            }
                                                                                                             $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                         break;
                                                                                                         case 'Thanh toán sau COD':
-                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                            if ($trang_thai == 'Đã hoàn') {
+                                                                                                                $tien_thu_ho = 0;
+                                                                                                                $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                            } else {
+                                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                                $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                                $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                                $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                            }
                                                                                                         break;
                                                                                                     }
-                                                                                                    echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                    echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                                     $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                                 ?>
                                                                                             </td>
@@ -682,28 +717,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                if ($trang_thai == 'Đã hoàn') {
+                                                                                                    $tien_thu_ho = 0;
+                                                                                                } else {
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                }
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
                                                                                                 $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                 switch($httt) {
                                                                                                     case 'Người gửi thanh toán':
                                                                                                     case 'Người nhận thanh toán':
                                                                                                     case 'Thanh toán sau':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;    
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                        }
                                                                                                         $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                     break;
                                                                                                     case 'Thanh toán sau COD':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                        $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                        $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                        $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        }
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                                 $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                             ?>
                                                                                         </td>
@@ -823,28 +875,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                if ($trang_thai == 'Đã hoàn') {
+                                                                                                    $tien_thu_ho = 0;
+                                                                                                } else {
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                }
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
                                                                                                 $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                 switch($httt) {
                                                                                                     case 'Người gửi thanh toán':
                                                                                                     case 'Người nhận thanh toán':
                                                                                                     case 'Thanh toán sau':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;    
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                        }
                                                                                                         $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                     break;
                                                                                                     case 'Thanh toán sau COD':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                        $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                        $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                        $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        }
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
@@ -1136,28 +1205,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                if ($trang_thai == 'Đã hoàn') {
+                                                                                                    $tien_thu_ho = 0;
+                                                                                                } else {
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                }
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
                                                                                                 $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                 switch($httt) {
                                                                                                     case 'Người gửi thanh toán':
                                                                                                     case 'Người nhận thanh toán':
                                                                                                     case 'Thanh toán sau':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;    
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                        }
                                                                                                         $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                     break;
                                                                                                     case 'Thanh toán sau COD':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                        $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                        $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                        $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        }
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                                 $tong_chuyen_tra_khach += $chuyen_tra_khach;
                                                                                             ?>
                                                                                         </td>
@@ -1277,28 +1363,45 @@ $this->title = "Hoá đơn thanh toán";
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
-                                                                                                $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
+                                                                                                if ($trang_thai == 'Đã hoàn') {
+                                                                                                    $tien_thu_ho = 0;
+                                                                                                } else {
+                                                                                                    $tien_thu_ho = $hdct['tien_thu_ho'] && $hdct['tien_thu_ho'] > 0 ? number_format($hdct['tien_thu_ho'], 0, '', ',').' VNĐ' : '0 VNĐ';
+                                                                                                }
                                                                                                 echo $tien_thu_ho;
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>
                                                                                             <?php
                                                                                                 $httt = $hdct['hinh_thuc_thanh_toan'];
+                                                                                                $ma_don_hang = $hdct['ma_don_hang'];
+                                                                                                    $trang_thai = Donhang::find()->where(['ma_don_hang' => $ma_don_hang])->one()['trang_thai'];
                                                                                                 switch($httt) {
                                                                                                     case 'Người gửi thanh toán':
                                                                                                     case 'Người nhận thanh toán':
                                                                                                     case 'Thanh toán sau':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;    
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                        }
                                                                                                         $chuyen_tra_khach = $tien_thu_ho;  
                                                                                                     break;
                                                                                                     case 'Thanh toán sau COD':
-                                                                                                        $tien_thu_ho = $hdct['tien_thu_ho'] > 0 ? $hdct['tien_thu_ho'] : 0;
-                                                                                                        $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
-                                                                                                        $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
-                                                                                                        $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        if ($trang_thai == 'Đã hoàn') {
+                                                                                                            $tien_thu_ho = 0;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho;
+                                                                                                        } else {
+                                                                                                            $tien_thu_ho = $hdct['tien_thu_ho'];
+                                                                                                            $tong_tien = $hdct['tong_tien'] > 0 ? $hdct['tong_tien'] : 0;
+                                                                                                            $tien_thu_ho_phai_tra = $tien_thu_ho - $tong_tien;
+                                                                                                            $chuyen_tra_khach = $tien_thu_ho_phai_tra;
+                                                                                                        }
                                                                                                     break;
                                                                                                 }
-                                                                                                echo $chuyen_tra_khach > 0 ? number_format($chuyen_tra_khach, 0, '', ',').' VNĐ' : 0;
+                                                                                                echo number_format($chuyen_tra_khach, 0, '', ',').' VNĐ';
                                                                                             ?>
                                                                                         </td>
                                                                                         <td class='font14'>

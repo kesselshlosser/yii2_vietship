@@ -78,14 +78,26 @@ class DonhangController extends Controller
                 case 'phuphi':
                     $dh_id = $formData['dh_id'];
                     $phu_phi = $formData['phu_phi'];
-                    $arrGhiChu = [];
-                    if ($formData['ghi_chu']) {
-                        $arrGhiChu['ghi_chu'] = $formData['ghi_chu'];
-                    }
-                    $arrGhiChu['ghi_chu_thoi_gian'] = time();
+                    $ghi_chu = isset($formData['ghi_chu_phu_phi']) && !empty($formData['ghi_chu_phu_phi']) ? $formData['ghi_chu_phu_phi'] : '';
+                    $ghi_chu_thoi_gian = time();
+                    $arrPhuPhi = [
+                        'phu_phi' => $phu_phi,
+                        'ghi_chu' => $ghi_chu,
+                        'ghi_chu_thoi_gian' => $ghi_chu_thoi_gian
+                    ];
+
                     $model = Donhang::findOne($dh_id);
-                    $model->phu_phi = $phu_phi;
-                    $model->ghi_chu = json_encode($arrGhiChu, JSON_UNESCAPED_UNICODE);
+                    $phuphi = $model->phu_phi;
+
+                    if (isset($phuphi) && !empty($phuphi)) {
+                        $arr_phu_phi = json_decode($phuphi, true);
+                    } else {
+                        $arr_phu_phi = [];
+                    }
+                    array_push($arr_phu_phi, $arrPhuPhi);
+                    
+                    $model->phu_phi = json_encode($arr_phu_phi, JSON_UNESCAPED_UNICODE);
+
                     if ($model->save(false)) {
                         $message = 'Thêm phụ phí thành công';
                         Yii::$app->session->setFlash('success', $message);
